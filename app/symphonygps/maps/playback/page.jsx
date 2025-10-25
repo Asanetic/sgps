@@ -17,8 +17,7 @@ export async function generateMetadata({ searchParams }) {
     },
   };
 }
-
-
+//v
 export default async function MapPage() {
 
   return (
