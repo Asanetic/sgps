@@ -1,0 +1,43 @@
+{
+    "smsmessages": {
+        "base": "/api/dsgportal/smsbox/smsmessages",
+        "delete": "/api/dsgportal/smsbox/delete"
+    },
+    "appcore": {
+        "sendsms": "https://asanetic.com/sms/sendsms"
+    },
+    "myaccount": {
+        "base": "/api/dairysacco/accounts/myaccount",
+        "delete": "/api/dairysacco/accounts/delete"
+    },
+    "dashboard": {
+        "admin": "/api/dairysacco/dashboard/admin"
+    },
+    "projectportfolio": {
+        "base": "/api/appnebula/apps/projectportfolio",
+        "delete": "/api/appnebula/apps/delete"
+    },
+    "registeredsites": {
+        "base": "/api/symphonygps/gpssites/registeredsites",
+        "delete": "/api/symphonygps/gpssites/delete",
+        "map": "/api/symphonygps/gpssites/map"
+    },
+    "devicelist": {
+        "base": "/api/symphonygps/devices/devicelist",
+        "map": "/api/symphonygps/devices/map",
+        "delete": "/api/symphonygps/devices/delete"
+    },
+    "devicegpslogs": {
+        "base": "/api/symphonygps/gpslogs/devicegpslogs",
+        "addlog": "/api/symphonygps/logdevice/createlog",        
+        "delete": "/api/symphonygps/gpslogs/delete"
+    },
+    "devicealarms": {
+        "base": "/api/symphonygps/devicealarms/devicealarms",
+        "delete": "/api/symphonygps/devicealarms/delete"
+    },
+    "systemusersmanagement": {
+        "base": "/api/symphonygps/users/systemusersmanagement",
+        "delete": "/api/symphonygps/users/delete"
+    }
+}

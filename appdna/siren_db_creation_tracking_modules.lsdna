@@ -1,0 +1,97 @@
+//dna options== Digital Nexus Architecture (DNA) 
+$dna_file_name = "db_creation_tracking_modules"; 
+$create_dna = "yes"; //yes | no
+$overwrite_dna_file = "yes"; //yes | no 
+//dna options==
+
+
+//======= create table in db
+
+//=========== SITES TABLE
+$sites_table_script = "
+`primkey` int(11) PRIMARY KEY AUTO_INCREMENT,
+`record_id` varchar(500) NOT NULL,
+`site_name` varchar(500) NOT NULL,
+`latitude` varchar(500) NOT NULL,
+`longitude` varchar(500) NOT NULL,
+`location_address` longtext NOT NULL,
+`remark` longtext NOT NULL,
+`created_at` datetime DEFAULT CURRENT_TIMESTAMP
+";
+
+$sites_table = 'sites';
+create_table($mysqliconn, $dbname, $sites_table, $sites_table_script);
+
+
+//=========== DEVICES TABLE
+$devices_table_script = "
+`primkey` int(11) PRIMARY KEY AUTO_INCREMENT,
+`record_id` varchar(500) NOT NULL,
+`imei` varchar(500) NOT NULL,
+`device_name` varchar(500) NOT NULL,
+`site_id` varchar(500) NOT NULL,
+`site_name` varchar(500) NOT NULL,
+`battery_level` varchar(500) NOT NULL,
+`remark` varchar(500) NOT NULL,
+`last_seen` varchar(500) NOT NULL,
+`date_installed` varchar(500) NOT NULL,
+`status` varchar(500) NOT NULL,
+`remark` longtext NOT NULL,
+`last_update` datetime,
+`created_at` datetime DEFAULT CURRENT_TIMESTAMP
+";
+
+$devices_table = 'devices';
+create_table($mysqliconn, $dbname, $devices_table, $devices_table_script);
+
+
+//=========== GPS LOGS TABLE
+$gps_logs_table_script = "
+`primkey` int(11) PRIMARY KEY AUTO_INCREMENT,
+`record_id` varchar(500) NOT NULL,
+`device_id` varchar(500) NOT NULL,
+`latitude` varchar(500) NOT NULL,
+`longitude` varchar(500) NOT NULL,
+`speed` varchar(500) NOT NULL,
+`heading` varchar(500) NOT NULL,
+`remark` longtext NOT NULL,
+`timestamp` datetime,
+`created_at` datetime DEFAULT CURRENT_TIMESTAMP
+";
+
+$gps_logs_table = 'gps_logs';
+create_table($mysqliconn, $dbname, $gps_logs_table, $gps_logs_table_script);
+
+
+//=========== DEVICE PINGS TABLE
+$device_pings_table_script = "
+`primkey` int(11) PRIMARY KEY AUTO_INCREMENT,
+`record_id` varchar(500) NOT NULL,
+`device_id` varchar(500) NOT NULL,
+`ping_time` datetime,
+`signal_strength` varchar(500) NOT NULL,
+`battery_level` varchar(500) NOT NULL,
+`remark` longtext NOT NULL,
+`status` varchar(500) NOT NULL,
+`created_at` datetime DEFAULT CURRENT_TIMESTAMP
+";
+
+$device_pings_table = 'device_pings';
+create_table($mysqliconn, $dbname, $device_pings_table, $device_pings_table_script);
+
+
+//=========== ALARMS TABLE
+$alarms_table_script = "
+`primkey` int(11) PRIMARY KEY AUTO_INCREMENT,
+`record_id` varchar(500) NOT NULL,
+`device_id` varchar(500) NOT NULL,
+`alarm_type` varchar(500) NOT NULL,
+`alarm_message` text,
+`triggered_at` datetime,
+`remark` longtext NOT NULL,
+`acknowledged` varchar(500) NOT NULL,
+`created_at` datetime DEFAULT CURRENT_TIMESTAMP
+";
+
+$alarms_table = 'alarms';
+create_table($mysqliconn, $dbname, $alarms_table, $alarms_table_script);

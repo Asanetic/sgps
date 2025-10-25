@@ -1,0 +1,28 @@
+  const currpg = mosyFileUrl()
+  if(currpg=="home")
+  {
+    closeMosyModal("modal1")
+    mosyUpdateUrlParam('device_list_uptoken', btoa(data?.token))
+    
+    const parentSetter = data?.setters.parentStateSetters 
+
+    parentSetter?.setLocalEventSignature(magicRandomStr())
+    parentSetter?.setActiveScrollId('DevicelistProfileTray')
+
+
+    MosyCard("",<DevicelistProfile dataIn={{showNavigationIsle:false}} />,true, "modal1","mosycard_wide")
+    return;
+  }
+
+
+            {device_listNode?.device_logs?.length >0 &&(<>
+            <h5 className="col-md-12 text-left  border-bottom pl-lg-1 text-muted mb-3"> {`Latest device location`} </h5>
+            
+            <SimpleMap 
+            className="col-md-12 mb-4"
+            points={[{y:device_listNode?.device_logs[0]?.latitude, x:device_listNode?.device_logs[0]?.longitude, name : device_listNode?.device_name}]}/>
+            </>)}
+            
+            <h5 className="col-md-12 text-left  border-bottom pl-lg-1 text-muted mb-3 mt-5"> {`GPS Logs History`} </h5>
+            
+              

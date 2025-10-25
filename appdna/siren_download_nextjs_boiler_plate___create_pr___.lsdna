@@ -1,0 +1,64 @@
+eval(find_snippet("1185"));
+
+include('../appdna/blueprint.php');
+
+//dna options==
+$dna_file_name="download_nextjs_boiler_plate___create_pr___"; 
+$create_dna="yes"; //yes | no; 
+$overwrite_dna_file="yes"; //yes | no 
+//dna options==
+
+$project_folder="../app";
+ 
+$zip_name="mosy_nextjs_boiler.zip";
+Recycle($project_folder."/".$zip_name);
+
+ui_write_to_file(''.$project_folder.'/'.$zip_name, file_get_contents('https://github.com/Asanetic/nextjs_lightpeed/blob/main/mosy_nextjs_boiler.zip?raw=true'));
+
+
+$zip = new ZipArchive;
+$res = $zip->open(''.$project_folder.'/'.$zip_name);
+
+if ($res === TRUE) 
+{
+ $zip->extractTo(''.$project_folder.'/');
+ $zip->close();
+}
+
+
+$unzipped_folder = $project_folder . '/mosy_nextjs_boiler';
+
+
+
+
+$source =$project_folder.'/mosy_nextjs_boiler';
+$destination = $project_folder;
+
+// Open the source directory
+$dir = opendir($source);
+
+while (($file = readdir($dir)) !== false) {
+    if ($file === '.' || $file === '..') continue;
+
+    $srcPath = $source . '/' . $file;
+    $destPath = $destination . '/' . $file;
+
+    // Move file or directory
+    if (is_dir($srcPath)) {
+        rename($srcPath, $destPath); // Moves folder
+    } else {
+        rename($srcPath, $destPath); // Moves file
+    }
+}
+
+// Close the directory
+closedir($dir);
+
+// Optionally remove the now-empty folder
+rmdir($source);
+
+echo "All files moved out of 'next_js_terminal' successfully!";
+
+
+
+rename($project_folder."/demo", $project_folder."/".$appname);
