@@ -35,7 +35,7 @@ export default function SimpleMap({ points = [] }) {
       <GoogleMap
         mapContainerStyle={{ height: "100vh", width: "100%" }}
         center={center}
-        zoom={12}
+        zoom={10}
       >
         {points.map((p, i) => (
           <Marker
