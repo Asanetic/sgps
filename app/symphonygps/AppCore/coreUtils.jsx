@@ -1,11 +1,14 @@
+import React, { useState, useEffect } from "react";
+
 import { mosy_push_data, mosyBtoa, mosyGetElemVal, mosyPostData, mosyPostFormData, mosyUpdateUrlParam } from "../../MosyUtils/hiveUtils";
 import { MosyAlertCard, MosyNotify } from "../../MosyUtils/ActionModals";
 
 import { getApiRoutes } from '../AppRoutes/apiRoutesHandler';
-import { MosyCard } from "../../components/MosyCard";
 import {LiveSearchDropdown} from "../UiControl/componentControl"
 import DevicelistProfile from "../devices/uiControl/DevicelistProfile";
-import { PlaybackData } from "../maps/playback/playbackdata";
+import { MosyCard } from "../../components/MosyCard";
+import { PlayBackMapData } from "../maps/playback/playbackdata";
+import {loadSiteData} from "../maps/loadSite";
 
 const apiRoutes = getApiRoutes(); // Use the imported JSON directly
 
@@ -16,7 +19,7 @@ const apiRoutes = getApiRoutes(); // Use the imported JSON directly
 export function viewLastGPS(device_id)
 {
 
-  MosyCard(`Device Playback`, <PlaybackData device_id={device_id}/>, true, "modal2", "mosycard_wide");
+  MosyCard(`Device Playback`, <PlayBackMapData device_id={device_id}/>, true, "topmost", "mosycard_wide");
   
 }
 
@@ -145,7 +148,7 @@ export function logDeviceLocation(device) {
 
 export  function loadTackerProfile(sitedata)
 {
-    mosyUpdateUrlParam("device_list_uptoken", mosyBtoa(sitedata.token));
+    mosyUpdateUrlParam("device_list_uptoken", mosyBtoa(sitedata.token || sitedata.primkey || ""));
     MosyCard("",<DevicelistProfile dataIn={{showNavigationIsle:false}}/>,true, "modal1","mosycard_wide")
     
 }
@@ -188,6 +191,103 @@ export function GeofenceAlerts({ alerts=[], title = "Alarms" }) {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+
+//dashboard log device location
+export function DashSiteInfoData({ alerts=[], title = "Sites" }) {
+
+  console.log("Rendering DashSiteInfoData  with alerts:", alerts);
+  return (
+    <div
+      className="position-fixed bottom-50 end-0 translate-middle-y p-3"
+      style={{
+        width: "300px",
+        maxHeight: "30vh",
+        overflowY: "auto",
+        bottom: "20px",
+        right: "20px"
+      }}
+    >
+      <div className="card shadow-sm border rounded">
+        <div className="card-header bg-info text-white">
+          <strong>{title}</strong>
+        </div>
+        <div className=" p-2">
+          {alerts.length > 0 ? (
+            <ul className="list-group list-group-flush">
+              {alerts.map((site, i) => (
+                <li
+                  onClick={()=>{loadSiteData(site)}}
+                  key={`alert-${i}`}
+                  className="cpointer  bg-purple text-white mb-3 p-2 row justify-content-center"
+                >
+                  <div className="col-md-12 text-white border-bottom border-white"><b>{site.name} </b></div>
+                  <div className="col-md-12 text-white">Y : {site.y} ,<br/> X : {site.x}</div>
+                  </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-muted mb-0">No alerts</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function FloatingSearchBar({ onSearch }) {
+  const [filter, setFilter] = useState("sites");
+  const [query, setQuery] = useState("");
+
+  function handleSearch(e) {
+    e.preventDefault();
+    if (onSearch) onSearch({ filter, query });
+  }
+
+  return (
+    <div
+      className="floating-search-bar top-0 start-50 translate-middle-x p-2 bg-white"
+      style={{
+        zIndex: 1050,
+        width: "90%",
+        maxWidth: "60%",
+      }}
+    >
+      <div className="row justify-content-center p-0 m-0 ">
+       <LiveSearchDropdown       
+          apiEndpoint={apiRoutes.registeredsites.base}       
+          tblName="sites"       
+          parentTable="device_list"       
+          inputName="txt__sites_site_name_site_id"       
+          hiddenInputName="txt_site_id"       
+          valueField="record_id"       
+          displayField="site_name"       
+          label="Location site"       
+          onSelect={(id) => console.log("Just the ID:", id)}       
+          onSelectFull={(dataRes) => { loadSiteData(dataRes); console.log("Data seleted")}}       
+          defaultColSize="col-md-6 hive_data_cell "       
+          context={{hostParent : "FloatingSearchBar"}}
+          
+       />
+      <LiveSearchDropdown      
+      apiEndpoint={apiRoutes.devicelist.base}      
+      tblName="device_list"      
+      parentTable="gps_logs"      
+      inputName="txt__device_list_device_name_device_id"      
+      hiddenInputName="txt_device_id"      
+      valueField="record_id"      
+      displayField="device_name"      
+      label="Trackers"          
+      onSelect={(id) => console.log("Just the ID:", id)}      
+      onSelectFull={(dataRes) => {loadTackerProfile(dataRes); console.log("Data seleted")}}      
+      defaultColSize="col-md-6 hive_data_cell"      
+      context={{hostParent : "FloatingSearchBar"}}
+      
+      /> 
+       </div>    
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 //hive / data utils
-import { mosyPostFormData, mosyGetData, mosyUrlParam, mosyUpdateUrlParam , deleteUrlParam, magicRandomStr, mosyGetLSData  } from '../../../MosyUtils/hiveUtils';
+import { mosyPostFormData, mosyGetData, mosyUrlParam, mosyUpdateUrlParam , deleteUrlParam, magicRandomStr, mosyGetLSData, mosyFileUrl  } from '../../../MosyUtils/hiveUtils';
 
 //action modals 
 import { MosyNotify , closeMosyModal, MosyAlertCard } from '../../../MosyUtils/ActionModals';
@@ -14,6 +14,8 @@ import { customEventHandler } from '../../DataControl/customDataFunction';
 //routes manager
 ///handle routes 
 import { getApiRoutes } from '../../AppRoutes/apiRoutesHandler';
+import { MosyCard } from '../../../components/MosyCard';
+import DevicelistProfile from '../uiControl/DevicelistProfile';
 
 // Use default base root (/)
 const apiRoutes = getApiRoutes();
@@ -336,6 +338,21 @@ export async function devicelistProfileData(customQueryStr, setters, router, cus
 export function InteprateDevicelistEvent(data) {
      
   //console.log('🎯 Devicelist Child gave us:', data);
+  const currpg = mosyFileUrl()
+  if(currpg=="home"  || "tracker" || "playback")
+  {
+    closeMosyModal("modal1")
+    mosyUpdateUrlParam('device_list_uptoken', btoa(data?.token))
+    
+    const parentSetter = data?.setters.parentStateSetters 
+
+    parentSetter?.setLocalEventSignature(magicRandomStr())
+    parentSetter?.setActiveScrollId('DevicelistProfileTray')
+
+
+    MosyCard("",<DevicelistProfile dataIn={{showNavigationIsle:false}} />,true, "modal1","mosycard_wide")
+    return;
+  }
 
   const actionName = data?.actionName
 

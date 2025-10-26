@@ -203,7 +203,7 @@ export default function DevicelistProfile({ dataIn = {}, dataOut = {} }) {
                 {paramDevicelistUptoken && (
                   <>
                 <MosyActionButton
-                  label=" View Last Location "
+                  label="Movement playback"
                   icon="map-marker"
                   onClick={()=>{viewLastGPS(device_listNode?.primkey)}}
                   />

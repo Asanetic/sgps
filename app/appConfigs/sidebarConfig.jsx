@@ -6,7 +6,7 @@ export const sidebarConfig = [
     type: "link", 
     label: "Dashboard", 
     icon: "fa fa-tachometer", 
-    href: (routes) => `${routes.cms}/maps/tracker`, 
+    href: (routes) => `${routes.cms}/maps/home`, 
     roles: [] 
   },
 
@@ -26,12 +26,13 @@ export const sidebarConfig = [
   // Devices
   {
     type: "submenu",
-    label: "Devices",
+    label: "Trackers",
     icon: "fa fa-microchip",
     roles: [],
     items: [
-      { label: "All Devices", href: (routes) => `${routes.cms}/devices/list`, roles: [] },
-      { label: "Register Device", href: (routes) => `${routes.cms}/devices/profile`, roles: [] },
+      { label: "Tracker map", href: (routes) => `${routes.cms}/maps/tracker`, roles: [] },
+      { label: "All Trackers", href: (routes) => `${routes.cms}/devices/list`, roles: [] },
+      { label: "Register Tracker", href: (routes) => `${routes.cms}/devices/profile`, roles: [] },
     ],
   },
 

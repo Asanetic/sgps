@@ -33,7 +33,7 @@ const mosyThemeConfigs = {
   skinPlasma: "rgba(255, 255, 255, 0.0)",
   bodySkinCss: "#fff",
 
-  systemBorderRadius : "2px",
+  systemBorderRadius : "20px",
 
   // Gradient and Sidebar
   btnFirstColor: "#000000",
@@ -54,7 +54,7 @@ const mosyThemeConfigs = {
   get sideBarChipTxt() {
     return this.sideBarTxt;
   },
-  sideBarType: "", // mini-sidebar || ""
+  sideBarType: "mini-sidebar", // mini-sidebar || ""
 
   // App Colors Shortcut
   get skinClr() {

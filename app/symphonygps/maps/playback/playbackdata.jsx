@@ -3,9 +3,8 @@ import { useEffect, useState } from "react";
 import { mosyGetData , mosyBtoa} from "../../../MosyUtils/hiveUtils";
 import { getApiRoutes } from "../../AppRoutes/apiRoutesHandler";
 import { refactorDeviceData } from "../../AppCore/coreUtils";
-import Playback from "./playback";
-import { MosyCard } from "../../../components/MosyCard";
 import { MosyNotify } from "../../../MosyUtils/ActionModals";
+import PlayBack from "./playback";
 
 const apiRoutes = getApiRoutes();
 
@@ -59,7 +58,7 @@ export function PlayBackMapData({device_id=""}) {
   return (
     <div className="col-md-12 p-0 m-0">
       {deviceData.length > 0 ? (
-        <Playback devices={deviceData} />
+        <PlayBack devices={deviceData} />
       ) : (
         <div className="col-md-12 p-5 text-center h3">Loading map...</div>
       )}

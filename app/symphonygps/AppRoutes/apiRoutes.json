@@ -29,7 +29,7 @@
     },
     "devicegpslogs": {
         "base": "/api/symphonygps/gpslogs/devicegpslogs",
-        "addlog": "/api/symphonygps/logdevice/createlog",        
+        "addlog": "/api/symphonygps/logdevice/createlog",
         "delete": "/api/symphonygps/gpslogs/delete"
     },
     "devicealarms": {

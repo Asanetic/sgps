@@ -20,7 +20,7 @@ const saAuthConfigs = {
   sessionColumns : "user_id,tel,name,email,hive_site_id,hive_site_name",
 
   // Post-login redirect
-  afterSplashPage:`${hiveRoutes.cms}/maps/tracker`,
+  afterSplashPage:`${hiveRoutes.cms}/maps/home`,
 
   // UI toggles
   showResetLink: false, // true || false

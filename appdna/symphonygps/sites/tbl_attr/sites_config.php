@@ -188,11 +188,12 @@
   $interlink_profile=[
    /*"linkedAlarm"=>[ 
      "filter_str"=>"site_id='{sitesNode?.record_id}'",
-     "module_name"=>"Alarms",
-     "profile_title"=>"Recent Alarms",
+     "module_name"=>"Devicelist",
+     "profile_title"=>"Manage devices",
      "event_name"=>"InteprateSitesEvent",
-     "event_path"=>"../../sites/dataControl/SitesRequestHandler",     
-     "list_table_name"=>"alarms",
+     "event_path"=>"",     
+     "module_path"=>"../../devices/uiControl/DevicelistProfile",     
+     "list_table_name"=>"devices_list",
    ]*/
   ];  
 

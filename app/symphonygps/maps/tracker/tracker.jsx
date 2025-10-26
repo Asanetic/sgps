@@ -8,7 +8,7 @@ import { hiveRoutes } from "../../../appConfigs/hiveRoutes";
 export default function Tracker({ devices = [] }) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   console.log("Google Maps API Key:", apiKey);
-  
+
   const { isLoaded } = useLoadScript({ googleMapsApiKey: apiKey });
   const [selected, setSelected] = useState(null);
   const  [geofenceAlerts, setGeofenceAlerts] = useState([]);
@@ -67,7 +67,7 @@ export default function Tracker({ devices = [] }) {
     <GoogleMap
       mapContainerStyle={{ height: "100vh", width: "100%" }}
       center={center}
-      zoom={13}
+      zoom={12}
       onRightClick={(e) => {
         e.domEvent.preventDefault();
         const lat = e.latLng.lat();
@@ -107,7 +107,7 @@ export default function Tracker({ devices = [] }) {
     ))}
 
     {/* Render floating alerts card */}
-    <GeofenceAlerts alerts={geofenceAlerts} title="Geofence alerts" />
+    <GeofenceAlerts alerts={geofenceAlerts} title="Tracker alerts" />
 
       {selected && (
         <InfoWindow

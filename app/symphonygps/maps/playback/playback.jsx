@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { hiveRoutes } from "../../../appConfigs/hiveRoutes";
 import { loadSiteData } from "../loadSite";
 
-export default function Playback({ devices = [] }) {
+export default function PlayBack({ devices = [] }) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const { isLoaded } = useLoadScript({ googleMapsApiKey: apiKey });
 
@@ -64,7 +64,7 @@ export default function Playback({ devices = [] }) {
         <GoogleMap
           mapContainerStyle={{ height: "100vh", width: "100%" }}
           center={visiblePath[visiblePath.length - 1] || center}
-          zoom={14}
+          zoom={13}
         >
           {/* 🧭 Gradual line draw */}
           {visiblePath.length > 1 && (

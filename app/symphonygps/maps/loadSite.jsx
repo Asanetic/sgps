@@ -4,7 +4,7 @@ import RegisteredsitesProfile from "../gpssites/uiControl/RegisteredsitesProfile
 
 export  function loadSiteData(sitedata)
 {
-    mosyUpdateUrlParam("sites_uptoken", mosyBtoa(sitedata.token));
+    mosyUpdateUrlParam("sites_uptoken", mosyBtoa(sitedata.token || sitedata.primkey || ""));
     MosyCard("",<RegisteredsitesProfile dataIn={{showNavigationIsle:false}}/>,true, "modal1","mosycard_wide")
     
 }
