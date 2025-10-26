@@ -45,7 +45,7 @@ export default function SimpleMap({ points = [] }) {
             onMouseOut={handleMouseOut}
             onClick={() => handleMarkerClick(p)}
             icon={{
-              url: `${hiveRoutes.hiveBaseRoute}/logo.png`,
+              url: `${hiveRoutes.hiveBaseRoute}/siteicon.png`,
               scaledSize: new google.maps.Size(60, 60), // Use google.maps.Size for scaling
             }}
           />
