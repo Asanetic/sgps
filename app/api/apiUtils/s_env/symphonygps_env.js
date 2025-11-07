@@ -9,9 +9,13 @@ const mosyDbConfig = {
   production: {
     DB_HOST: '127.0.0.1',
     DB_USER: 'root',
-    DB_PASS: 'UltraSecurePass123!',
+    DB_PASS: 'StrongPasswordHere',
     DB_NAME: 'symphonygps',
   }
+
 };
 
+
+
+//export 
 export default mosyDbConfig; 
