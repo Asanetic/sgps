@@ -36,8 +36,7 @@ export default function DashboardLayout({ children }) {
         userAvatar={userAvatar}
         />
         {children}
-        <AdminFooter />
-          
+        <AdminFooter />         
 
     </>
   );
