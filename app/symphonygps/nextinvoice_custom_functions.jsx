@@ -8,29 +8,29 @@ import { magicTrimText, mosyBtoa, mosyGetData, mosyGetElemVal, mosyNl2br, mosyPo
 import { MosyAlertCard, MosyConfirm, MosyNotify } from '../MosyUtils/ActionModals';
 import { closeMosyCard, MosyCard } from '../components/MosyCard';
 import { insertInvoicelist } from './docs/dataControl/InvoicelistRequestHandler';
-import SmsremindersProfile from './reminders/uiControl/SmsremindersProfile';
+//import SmsremindersProfile from './reminders/uiControl/SmsremindersProfile';
 import MessageoutboxProfile from './reminders/uiControl/MessageoutboxProfile';
-import { insertClientlist } from "./clients/dataControl/ClientlistRequestHandler";
-
+//import { insertClientlist } from "./clients/dataControl/ClientlistRequestHandler";
 
 export function loadVendorHeaders(dataRes)
 {
   const vendorHeaders = `${dataRes?.business_name}
-${dataRes?.mobile}
-${dataRes?.email}
-${dataRes?.location}`
+
+  ${dataRes?.mobile}
+  ${dataRes?.email}
+  ${dataRes?.location}`
 
   return vendorHeaders
 
 }
 
-
 export function loadClientHeaders(dataRes)
 {
+
   const clientHeaders = `${dataRes?.client_name}
-${dataRes?.client_tel}
-${dataRes?.client_email}
-${dataRes?.client_location}`
+  ${dataRes?.client_tel}
+  ${dataRes?.client_email}
+  ${dataRes?.client_location}`
 
   return clientHeaders
 
@@ -38,10 +38,12 @@ ${dataRes?.client_location}`
 
 export async function downloadInvoiceOld({invoiceId="test"})
 {
-          try {
-            MosyNotify({message : "Generating invoice...", addTimer: false, icon:"copy"})
-            const response = await mosyGetData({
-              endpoint: '/api/nextinvoice/docs/generateinvoice',
+
+  try {
+    MosyNotify({message : "Generating invoice...", addTimer: false, icon:"copy"})
+       
+    const response = await mosyGetData({    
+      endpoint: '/api/nextinvoice/docs/generateinvoice',
               params: { 
                 invoice: mosyBtoa(invoiceId), 
                 },

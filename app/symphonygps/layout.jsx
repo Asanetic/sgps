@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }) {
   const appName = appConfigs.mosyAppName;
   const userAvatar = userAvatarImg.src;
   
-  console.log(" DashboardLayout LOADED: /nextinvoice/layout");
+  //console.log(" DashboardLayout LOADED: /nextinvoice/layout");
 
   return (
     <>
