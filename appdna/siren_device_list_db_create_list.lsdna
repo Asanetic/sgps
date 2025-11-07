@@ -1,0 +1,25 @@
+//dna options== Digital Nexus Architecture (DNA) 
+$dna_file_name = "device_list_db_create_list"; 
+$create_dna = "yes"; //yes | no; 
+$overwrite_dna_file = "yes"; //yes | no 
+//dna options==
+
+
+//======= create table in db
+
+//=========== CLIENTS TABLE
+$client_table_script = "
+`primkey` int(11) PRIMARY KEY AUTO_INCREMENT,
+`record_id` varchar(100) NOT NULL,
+`device_name` varchar(255) NOT NULL,
+`date_installed` date NOT NULL,
+`manufacture_date` date NOT NULL,
+`serial_number` varchar(255) NOT NULL,
+`remark` longtext NOT NULL,
+`site_id` varchar(50),
+`site_name` varchar(255),
+`reg_date` datetime DEFAULT CURRENT_TIMESTAMP
+";
+
+$client_table = 'device_list';
+create_table($mysqliconn, $dbname, $client_table, $client_table_script);
