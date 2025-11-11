@@ -5,8 +5,8 @@ import { MosyNotify } from "../../../MosyUtils/ActionModals";
 import GeofenceMonitor, { computeGeofence, FloatingSearchBar, GeofenceAlerts, loadTackerProfile, loadTrackerDataCard, useGeofenceAlerts } from "../../AppCore/coreUtils";
 import { hiveRoutes } from "../../../appConfigs/hiveRoutes";
 import { MosyTitleTag } from "../../UiControl/componentControl";
-import DeviceSummaryDetails from "../../devicesummary/uiControl/DevicesummaryDetails";
 import { mosyUrlParam } from "../../../MosyUtils/hiveUtils";
+import DeviceSummaryDetails from "../../devicesummary/uiControl/DevicesummaryDetails";
 
 export default function Tracker({ devices = [] }) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
