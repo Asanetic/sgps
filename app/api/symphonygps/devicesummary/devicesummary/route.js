@@ -2,15 +2,15 @@
 //utils 
 import { mosySqlInsert, mosySqlUpdate, base64Decode, mosyFlexSelect, mosyUploadFile, mosyDeleteFile, magicRandomStr } from '../../../apiUtils/dataControl/dataUtils';
 
-import {RegisteredsitesRowMutations} from './RegisteredsitesRowMutations';
+import {DevicesummaryRowMutations} from './DevicesummaryRowMutations';
 
-import listRegisteredsitesRowMutationsKeys from './RegisteredsitesMutationKeys';
+import listDevicesummaryRowMutationsKeys from './DevicesummaryMutationKeys';
 
 //be gate keeper and auth 
 import { validateSelect , mosyMutateQuery, mutateInputArray } from '../../beMonitor';
 import { processAuthToken } from '../../../auth/authManager';
 
-import { AddRegisteredsites, UpdateRegisteredsites } from './RegisteredsitesDbGateway';
+import { AddDevicesummary, UpdateDevicesummary } from './DevicesummaryDbGateway';
 
 
 export async function GET(request) {
@@ -42,7 +42,7 @@ export async function GET(request) {
 
     // ✅ Provide default fallbacks
     const enhancedParams = {
-      tbl: 'sites',
+      tbl: 'device_list',
       colstr: queryParams.colstr || 'Kg==', // default to *
       ...queryParams 
     };
@@ -53,11 +53,11 @@ export async function GET(request) {
     if (!enhancedParams.function_cols) enhancedParams.function_cols = '';
 
     //append further queries to client query request , account filters order by group by  etc
-    const mutatedQparam = mosyMutateQuery('sites', searchParams, authData, 'primkey')
+    const mutatedQparam = mosyMutateQuery('device_list', searchParams, authData, 'primkey')
 
     enhancedParams.q=mutatedQparam
     
-    let requestValid =validateSelect('sites', queryParams, authData)
+    let requestValid =validateSelect('device_list', queryParams, authData)
 
     if(!requestValid)
     {
@@ -69,21 +69,21 @@ export async function GET(request) {
     }
  
     const isEmpty = (obj) => !obj || Object.keys(obj).length === 0;
-    const mutationsObj = isEmpty(requestedMutationsObj) ? listRegisteredsitesRowMutationsKeys : requestedMutationsObj;
+    const mutationsObj = isEmpty(requestedMutationsObj) ? listDevicesummaryRowMutationsKeys : requestedMutationsObj;
     
     if(requestValid){
     
-      const result = await mosyFlexSelect(enhancedParams, mutationsObj, RegisteredsitesRowMutations);
+      const result = await mosyFlexSelect(enhancedParams, mutationsObj, DevicesummaryRowMutations);
 
       return Response.json({
         status: 'success',
-        message: 'Registeredsites data retrieved',
+        message: 'Devicesummary data retrieved',
         ...result,
       });
       
    }
   } catch (err) {
-    console.error('GET Registeredsites failed:', err);
+    console.error('GET Devicesummary failed:', err);
     return Response.json(
       { status: 'error', message: err.message },
       { status: 500 }
@@ -93,16 +93,16 @@ export async function GET(request) {
 
 
 
-export async function POST(RegisteredsitesRequest) {
+export async function POST(DevicesummaryRequest) {
   try {
     let body;
     let isMultipart = false;
 
-    const contentType = RegisteredsitesRequest.headers.get("content-type") || "";
+    const contentType = DevicesummaryRequest.headers.get("content-type") || "";
 
     if (contentType.includes("multipart/form-data")) {
       isMultipart = true;
-      const formData = await RegisteredsitesRequest.formData();
+      const formData = await DevicesummaryRequest.formData();
 
       // Convert FormData to plain object
       body = {};
@@ -111,11 +111,11 @@ export async function POST(RegisteredsitesRequest) {
       }
 
     } else {
-      body = await RegisteredsitesRequest.json();
+      body = await DevicesummaryRequest.json();
     }
     
     
-    const { valid: isTokenValid, reason: tokenError, data: authData } = processAuthToken(RegisteredsitesRequest);
+    const { valid: isTokenValid, reason: tokenError, data: authData } = processAuthToken(DevicesummaryRequest);
      
     if (!isTokenValid) {
       return Response.json(
@@ -124,80 +124,71 @@ export async function POST(RegisteredsitesRequest) {
       );
     }
     
-    const RegisteredsitesFormAction = body.sites_mosy_action;
-    const sites_uptoken_value = base64Decode(body.sites_uptoken);
+    const DevicesummaryFormAction = body.device_list_mosy_action;
+    const device_list_uptoken_value = base64Decode(body.device_list_uptoken);
     
     const newId = magicRandomStr(7);
 
 
 		
   
-  //--- Begin  sites inputs array ---// 
-  const RegisteredsitesInputsArr = {
+  //--- Begin  device_list inputs array ---// 
+  const DevicesummaryInputsArr = {
 
+    "device_name" : "?", 
+    "serial_number" : "?", 
     "site_name" : "?", 
-    "site_code" : "?", 
-    "manager" : "?", 
-    "contact_person" : "?", 
-    "latitude" : "?", 
-    "longitude" : "?", 
-    "location_address" : "?", 
+    "site_id" : "?", 
+    "geofence" : "?", 
+    "date_installed" : "?", 
     "remark" : "?", 
-    "created_at" : "?", 
-    "country" : "?", 
-    "city" : "?", 
-    "county" : "?", 
-    "town" : "?", 
+    "reg_date" : "?", 
     "hive_site_id" : "?", 
     "hive_site_name" : "?", 
-    "manager_mobile" : "?", 
-    "manager_email" : "?", 
-    "contact_person_mobile" : "?", 
-    "contact_person_email" : "?", 
 
   };
 
-  //--- End sites inputs array --//
+  //--- End device_list inputs array --//
 
     //mutate requested values
-    const mutatedDataArray =mutateInputArray('sites',RegisteredsitesInputsArr, RegisteredsitesRequest, newId, authData)
+    const mutatedDataArray =mutateInputArray('device_list',DevicesummaryInputsArr, DevicesummaryRequest, newId, authData)
 
-    if (RegisteredsitesFormAction === "add_sites") 
+    if (DevicesummaryFormAction === "add_device_list") 
     {
       
       mutatedDataArray.record_id = newId;
       
-      // Insert into table Registeredsites
-      const result = await AddRegisteredsites(newId, mutatedDataArray, body, authData);     
+      // Insert into table Devicesummary
+      const result = await AddDevicesummary(newId, mutatedDataArray, body, authData);     
 
        
 
       return Response.json({
         status: 'success',
         message: result.message,
-        sites_uptoken: result.record_id
+        device_list_uptoken: result.record_id
       });
       
     }
     
-    if (RegisteredsitesFormAction === "update_sites") {
+    if (DevicesummaryFormAction === "update_device_list") {
       
-      // update table Registeredsites
-      const result = await UpdateRegisteredsites(newId, mutatedDataArray, body, authData, `primkey='${sites_uptoken_value}'`)
+      // update table Devicesummary
+      const result = await UpdateDevicesummary(newId, mutatedDataArray, body, authData, `primkey='${device_list_uptoken_value}'`)
 
       
 
       return Response.json({
         status: 'success',
         message: result.message,
-        sites_uptoken: sites_uptoken_value
+        device_list_uptoken: device_list_uptoken_value
       });
     }    
 
     // Optional: catch unrecognized actions
     return Response.json({
       status: 'error',
-      message: `Invalid action: ${RegisteredsitesFormAction}`
+      message: `Invalid action: ${DevicesummaryFormAction}`
     }, { status: 400 });
 
   } catch (err) {

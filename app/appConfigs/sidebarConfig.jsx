@@ -23,8 +23,8 @@ export const sidebarConfig = [
     roles: [],
     items: [
       { label: "Tracker map", href: (routes) => `${routes.cms}/maps/tracker`, roles: [] },
-      { label: "All Trackers", href: (routes) => `${routes.cms}/devices/list`, roles: [] },
       { label: "Register Tracker", href: (routes) => `${routes.cms}/devices/profile`, roles: [] },
+      { label: "Tracker summary", href: (routes) => `${routes.cms}/devicesummary/list`, roles: [] },      
     ],
   },
 

@@ -13,7 +13,7 @@ import { MosyAlertCard, MosyNotify ,closeMosyModal } from  '../../../MosyUtils/A
 import MosySnackWidget from '../../../MosyUtils/MosySnackWidget';
 
 //basic utils
-import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam  } from '../../../MosyUtils/hiveUtils';
+import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam, disableFormInputs  } from '../../../MosyUtils/hiveUtils';
 
 //data control and processors
 import { inteprateRegisteredsitesFormAction, registeredsitesProfileData , popDeleteDialog, InteprateRegisteredsitesEvent } from '../dataControl/RegisteredsitesRequestHandler';
@@ -60,7 +60,7 @@ import { loadSitePage } from "../../AppCore/coreUtils";
 // export profile
 
 
-export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
+export default function RegisteredsitesDetails({ dataIn = {}, dataOut = {} }) {
   
   //initiate data exchange manifest
   //incoming data from parent
@@ -127,7 +127,7 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
       
       //focus on this form on submission
       stateItemSetters.setActiveScrollId("RegisteredsitesProfileTray")
-      mosyScrollTo(activeScrollId)
+      //mosyScrollTo(activeScrollId)
       
       closeMosyModal()
       
@@ -139,7 +139,7 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
     
     registeredsitesProfileData(customQueryStr, stateItemSetters, router, customProfileData)
     
-    mosyScrollTo(activeScrollId)
+    //mosyScrollTo(activeScrollId)
     
   }, [localEventSignature]);
   
@@ -147,6 +147,7 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
   
   //child queries use effect
   
+  disableFormInputs("sites_profile_form")
   
   
   return (
@@ -494,15 +495,7 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
                     <input className="form-control" id="txt_created_at" name="txt_created_at" value={sitesNode?.created_at || ""} placeholder="Date Created" type="hidden"/>
                     
                   </div>
-                  
-                  <div className="col-md-12 text-center">
-                    <SubmitButtons
-                    src="RegisteredsitesMainProfilePage"
-                    tblName="sites"
-                    extraClass="optional-custom-class"
-                    
-                    />
-                  </div>
+
                 </div></div>
                 {/*    Input cells section isle      */}
               </div>

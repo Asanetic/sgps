@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { mosyGetData , mosyBtoa} from "../../../MosyUtils/hiveUtils";
+import { mosyGetData , mosyBtoa, mosyUrlParam, mosyAtob} from "../../../MosyUtils/hiveUtils";
 import { getApiRoutes } from "../../AppRoutes/apiRoutesHandler";
 import Tracker from "./tracker";
 import { refactorDeviceData } from "../../AppCore/coreUtils";
@@ -10,12 +10,21 @@ const apiRoutes = getApiRoutes();
 export default function TrackerMapData({device_id=""}) {
   const [pointsData, setPointsData] = useState([]); // ✅ more descriptive name
 
-  let qparams ={fullQ :false}
+  let qparams = { fullQ: false };
 
-  if(device_id!=''){
+  // Get device key from URL param
+  const deviceKey = mosyUrlParam("device_key");
 
-    qparams = { q: mosyBtoa(`where primkey ='${device_id}'`), fullQ:true};
+  // Determine which key to use (prop takes priority)
+  const validKey = device_id || (deviceKey && mosyAtob(deviceKey));
 
+  if (validKey) {
+    qparams = {
+      q: mosyBtoa(`WHERE primkey='${validKey}'`),
+      fullQ: true,
+    };
+  } else {
+    console.warn("No valid device key provided — query will be empty.");
   }
 
 
@@ -41,7 +50,7 @@ export default function TrackerMapData({device_id=""}) {
     fetchData();
   
     // poll every 3 seconds
-    intervalId = setInterval(fetchData, 3000);
+    //intervalId = setInterval(fetchData, 3000);
   
     // cleanup on unmount
     return () => clearInterval(intervalId);
@@ -54,7 +63,7 @@ export default function TrackerMapData({device_id=""}) {
       {deviceData.length > 0 ? (
         <Tracker devices={deviceData} />
       ) : (
-        <div className="col-md-12 p-5 text-center h3">Loading map...</div>
+        <div className="col-md-12 p-5 text-center h3">Loading device map...</div>
       )}
     </div>
   );

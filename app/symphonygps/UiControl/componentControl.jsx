@@ -21,14 +21,16 @@ import { useDropdownNavigation } from '../AppCore/appGlobalUtils';
 const DEFAULT_BASE = hiveRoutes.hiveBaseRoute; // default root if none passed
 
 function isComponentEnabled(tblName, actionType = 'cu') {
-  const disabledDeleteTables = ["sales_order_items","FuelsaleshistoryList","system_role_bundles", "system_users", "client_list", "DrystocksaleshistoryList", "services"];
+  console.log(`isComponet enabledddddddddd ${tblName} --- ${actionType}`)
+  const disabledDeleteTables = ["device_list","system_role_bundles", "system_users"];
+  
   const [action, table] = tblName.includes(':') ? tblName.split(':') : [actionType, tblName];
 
   if (action === "delete" && disabledDeleteTables.includes(table)) {
     return false;
   }
 
-  if (action === "delete" && disabledDeleteTables.includes(table)) {
+  if (actionType === "delete" && disabledDeleteTables.includes(tblName)) {
     return false;
   }
 
@@ -44,8 +46,8 @@ function isComponentEnabled(tblName, actionType = 'cu') {
     return false;
   }
   
-  //disable edit and delete for sale_order_payments table
-  if(tblName=="sales_order_payments" && action!="DDedit"){return false}
+  //disable edit and delete for DevicelistMainProfilePage table
+  if(tblName=="DevicelistMainProfilePage" && actionType=="delete"){return false}
   if(tblName=="sales_order_payments" && action!="DDdelete"){return false}
 
   //disable edit and delete for sale_order_payments table
@@ -66,17 +68,6 @@ function isComponentEnabled(tblName, actionType = 'cu') {
   {
     return false
   }
-
-  if(tblName=="FarmersList" && action==="add_new"){return false}  
-  if(tblName=="FarmerscollectionhistoryList" && action==="add_new"){return false}  
-  if(tblName=="FarmerscollectionhistoryList" && action==="DDedit"){return false}  
-  
-  if(tblName=="MilkcollectionsMainProfilePage" && (action==="clone" || action==="delete"))
-  {
-    return false
-  }
-
-  if(tblName=="milk_collections" && action==="DDdelete"){return false}
 
   return true;
 }

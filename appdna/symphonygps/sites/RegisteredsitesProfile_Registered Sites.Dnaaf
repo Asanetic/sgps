@@ -9,7 +9,8 @@
  *   Assembly DNA file (*.Dnaaf)
  ****************************************************/
 
-//sites //"primkey" , "record_id" , "site_name" , "country" , "city" , "county" , "town" , "building" , "latitude" , "longitude" , "location_address" , "remark" , "created_at" ,
+//sites //"primkey" , "record_id" , "site_name" , "site_code" , "country" , "city" , "county" , "town" , "building" , "latitude" , "longitude" , "location_address" , "remark" , "created_at" , "hive_site_id" , "hive_site_name" , "manager" , "manager_mobile" , "manager_email" , "contact_person" , "contact_person_mobile" , "contact_person_email" ,
+
 
 /* =========================
    1. DNA Options

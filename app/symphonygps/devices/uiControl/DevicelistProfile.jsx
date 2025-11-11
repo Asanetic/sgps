@@ -459,14 +459,6 @@ export default function DevicelistProfile({ dataIn = {}, dataOut = {} }) {
       </style>
       {device_listNode?.primkey && (
         <section className="col-md-12 m-0 bg-white pt-5 p-0 ">
-
-            {device_listNode?.device_logs?.length >0 &&(<>
-            <h5 className="col-md-12 text-left  border-bottom pl-lg-1 text-muted mb-3"> {`Latest device location`} </h5>
-            
-            <TrackerMapData 
-            className="col-md-12 mb-4"
-             device_id={device_listNode.primkey}/>
-            </>)}
             
             <h5 className="col-md-12 text-left  border-bottom pl-lg-1 text-muted mb-3 mt-5"> {`GPS Logs History`} </h5>
                       

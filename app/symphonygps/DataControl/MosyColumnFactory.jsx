@@ -4,7 +4,7 @@ const MosyColumnFactory = {
   alarms: ["record_id", "device_id", "alarm_type", "alarm_message", "triggered_at", "remark", "acknowledged", "created_at", "hive_site_id", "hive_site_name"],
 
    //-- device_list cols--//
-  device_list: ["record_id", "device_name", "date_installed", "manufacture_date", "serial_number", "remark", "site_id", "site_name", "reg_date", "hive_site_id", "hive_site_name", "geofence"],
+  device_list: ["record_id", "device_name", "date_installed", "serial_number", "remark", "site_id", "site_name", "reg_date", "hive_site_id", "hive_site_name", "geofence"],
 
    //-- device_pings cols--//
   device_pings: ["record_id", "device_id", "ping_time", "signal_strength", "battery_level", "remark", "status", "created_at", "hive_site_id", "hive_site_name"],
@@ -16,7 +16,7 @@ const MosyColumnFactory = {
   page_manifest_: ["manikey", "page_group", "site_id", "page_url", "hive_site_id", "hive_site_name", "project_id", "project_name"],
 
    //-- sites cols--//
-  sites: ["record_id", "site_name", "country", "city", "county", "town", "building", "latitude", "longitude", "location_address", "remark", "created_at", "hive_site_id", "hive_site_name", "manager", "contact_person"],
+  sites: ["record_id", "site_name", "site_code", "country", "city", "county", "town", "latitude", "longitude", "location_address", "remark", "created_at", "hive_site_id", "hive_site_name", "manager", "manager_mobile", "manager_email", "contact_person", "contact_person_mobile", "contact_person_email"],
 
    //-- system_role_bundles cols--//
   system_role_bundles: ["record_id", "bundle_id", "bundle_name", "remark", "hive_site_id", "hive_site_name"],

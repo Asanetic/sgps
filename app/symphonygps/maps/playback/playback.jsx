@@ -1,8 +1,11 @@
-'use client';
+"use client";
 import { GoogleMap, Marker, Polyline, InfoWindow, useLoadScript } from "@react-google-maps/api";
 import { useEffect, useState } from "react";
 import { hiveRoutes } from "../../../appConfigs/hiveRoutes";
 import { loadSiteData } from "../loadSite";
+import { MosyTitleTag } from "../../UiControl/componentControl";
+import { FloatingSearchBar, loadTrackerPlayBack } from "../../AppCore/coreUtils";
+import { mosyBtoa } from "../../../MosyUtils/hiveUtils";
 
 export default function PlayBack({ devices = [] }) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -11,28 +14,21 @@ export default function PlayBack({ devices = [] }) {
   const [selected, setSelected] = useState(null);
   const [progress, setProgress] = useState(1);
   const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(2000); // ms between points
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Flatten all device_logs into a single array of logs
   const allPoints = devices.flatMap(d => d.device_logs || []);
-
-  // Now each 'p' in routePath is a single log object
   const routePath = allPoints.map(p => ({ lat: Number(p.y), lng: Number(p.x) }));
 
+  const center = routePath.length ? routePath[0] : { lat: -1.2921, lng: 36.8219 };
 
-  const center = routePath.length
-    ? routePath[0]
-    : { lat: -1.2921, lng: 36.8219 };
+  const handleMarkerClick = (point) => setSelected(point);
 
-  const handleMarkerClick = (point) => {
-    setSelected(point);
-    loadSiteData(point);
-  };
-
-  // 🎬 Gradual line animation
   useEffect(() => {
     if (!playing || routePath.length < 2) return;
     let index = 1;
-
     const interval = setInterval(() => {
       setProgress(prev => {
         if (index >= routePath.length) {
@@ -42,10 +38,10 @@ export default function PlayBack({ devices = [] }) {
         index++;
         return index;
       });
-    }, 2000); // speed — smaller = faster
+    }, speed);
 
     return () => clearInterval(interval);
-  }, [playing, routePath.length]);
+  }, [playing, routePath.length, speed]);
 
   const togglePlayback = () => {
     if (!playing) setProgress(1);
@@ -54,19 +50,27 @@ export default function PlayBack({ devices = [] }) {
 
   const visiblePath = routePath.slice(0, progress);
 
-  console.log("Playback route path:", allPoints, `act points `, devices);
+  function switchDevice(device)
+  {
+    const deviceKey = device[0].device_data.primkey;
+
+    console.log(`switc deviceeeeee `, deviceKey)
+    window.location=`${hiveRoutes.cms}/maps/playback?device=${mosyBtoa(deviceKey)}`
+  }
 
   return (
     <div style={{ position: "relative" }}>
       {!isLoaded ? (
         <div style={{ padding: "2rem", textAlign: "center" }}>Loading Google Maps...</div>
       ) : (
+        <>
+        <MosyTitleTag title="Tracker Playback"/>
+        <FloatingSearchBar showSiteSearch={false} showTrakerSearch={true} onDeviceSelectFull={switchDevice}/>
         <GoogleMap
           mapContainerStyle={{ height: "100vh", width: "100%" }}
           center={visiblePath[visiblePath.length - 1] || center}
           zoom={13}
         >
-          {/* 🧭 Gradual line draw */}
           {visiblePath.length > 1 && (
             <Polyline
               path={visiblePath}
@@ -89,7 +93,6 @@ export default function PlayBack({ devices = [] }) {
             />
           )}
 
-          {/* Device markers */}
           {allPoints.map((p, i) => (
             <Marker
               key={`marker-${i}`}
@@ -102,7 +105,6 @@ export default function PlayBack({ devices = [] }) {
             />
           ))}
 
-          {/* Info window */}
           {selected && (
             <InfoWindow
               position={{ lat: Number(selected.y), lng: Number(selected.x) }}
@@ -118,28 +120,88 @@ export default function PlayBack({ devices = [] }) {
             </InfoWindow>
           )}
         </GoogleMap>
+        </>
       )}
 
-      {/* Playback button */}
-      <button
-        onClick={togglePlayback}
+      {/* 🧭 Floating Control Panel */}
+      <div
         style={{
           position: "absolute",
-          top: "40%",
+          top: "30%",
           left: 20,
-          zIndex: 999,
-          background: playing ? "#dc3545" : "#28a745",
-          color: "#fff",
-          padding: "10px 20px",
-          border: "none",
-          borderRadius: "8px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          boxShadow: "0px 2px 6px rgba(0,0,0,0.3)",
+          background: "rgba(255, 255, 255, 0.95)",
+          borderRadius: "10px",
+          padding: "12px 16px",
+          boxShadow: "0 3px 8px rgba(0,0,0,0.25)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          width: "220px",
+          fontSize: "14px"
         }}
       >
-        {playing ? "⏸ Pause" : "▶ Play"}
-      </button>
+        <label>
+          Start Date:
+          <input
+            type="date"
+            value={startDate}
+            onChange={e => setStartDate(e.target.value)}
+            style={{
+              width: "100%",
+              marginTop: 4,
+              padding: "5px 6px",
+              borderRadius: 6,
+              border: "1px solid #ccc"
+            }}
+          />
+        </label>
+
+        <label>
+          End Date:
+          <input
+            type="date"
+            value={endDate}
+            onChange={e => setEndDate(e.target.value)}
+            style={{
+              width: "100%",
+              marginTop: 4,
+              padding: "5px 6px",
+              borderRadius: 6,
+              border: "1px solid #ccc"
+            }}
+          />
+        </label>
+
+        <label>
+          Speed: {Math.round(2000 / speed * 100)}%
+          <input
+            type="range"
+            min="200"
+            max="3000"
+            step="100"
+            value={speed}
+            onChange={e => setSpeed(Number(e.target.value))}
+            style={{ width: "100%" }}
+          />
+        </label>
+
+        <button
+          onClick={togglePlayback}
+          style={{
+            background: playing ? "#dc3545" : "#28a745",
+            color: "#fff",
+            padding: "10px 15px",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "0px 2px 6px rgba(0,0,0,0.3)"
+          }}
+        >
+          {playing ? "⏸ Pause" : "▶ Play"}
+        </button>
+      </div>
     </div>
+    
   );
 }

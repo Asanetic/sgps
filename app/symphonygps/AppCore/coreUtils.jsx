@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-import { mosy_push_data, mosyBtoa, mosyGetElemVal, mosyPostData, mosyPostFormData, mosyUpdateUrlParam } from "../../MosyUtils/hiveUtils";
+import { mosy_push_data, mosyBtoa, mosyGetData, mosyGetElemVal, mosyPostData, mosyPostFormData, mosyUpdateUrlParam } from "../../MosyUtils/hiveUtils";
 import { MosyAlertCard, MosyNotify } from "../../MosyUtils/ActionModals";
 
 import { getApiRoutes } from '../AppRoutes/apiRoutesHandler';
 import {LiveSearchDropdown} from "../UiControl/componentControl"
 import DevicelistProfile from "../devices/uiControl/DevicelistProfile";
-import { MosyCard } from "../../components/MosyCard";
+import { closeMosyCard, MosyCard } from "../../components/MosyCard";
 import { PlayBackMapData } from "../maps/playback/playbackdata";
 import {loadSiteData} from "../maps/loadSite";
+import { hiveRoutes } from "../../appConfigs/hiveRoutes";
 
 const apiRoutes = getApiRoutes(); // Use the imported JSON directly
 
@@ -42,7 +43,7 @@ export function parseGeofence(geofenceStr) {
     return { y: y, x: x };
   }).filter(Boolean); // remove nulls
 
-  console.log(`Parsed geofence coords:  ${geofenceStr} `, coords);
+  //console.log(`Parsed geofence coords:  ${geofenceStr} `, coords);
   return coords;
 }
 
@@ -153,9 +154,57 @@ export  function loadTackerProfile(sitedata)
     
 }
 
-export function GeofenceAlerts({ alerts=[], title = "Alarms" }) {
 
-  console.log("Rendering GeofenceAlerts with alerts:", alerts);
+export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
+  const audioRef = useRef(null);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
+
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio("/alarm.mp3");
+      audioRef.current.loop = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audioReady) return; // Wait until user enables sound
+
+    if (soundEnabled && alerts.length > 0) {
+      audio.play().catch((err) =>
+        console.warn("Audio play failed:", err.message)
+      );
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, [alerts, soundEnabled, audioReady]);
+
+  // Handles first-time permission grant
+  function handleSoundToggle() {
+    if (!audioReady) {
+      audioRef.current
+        .play()
+        .then(() => {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+          setAudioReady(true);
+          setSoundEnabled(true);
+        })
+        .catch((err) => {
+          console.warn("User interaction needed:", err.message);
+        });
+    } else {
+      setSoundEnabled((prev) => !prev);
+    }
+  }
+
   return (
     <div
       className="position-fixed bottom-50 end-0 translate-middle-y p-3"
@@ -164,25 +213,56 @@ export function GeofenceAlerts({ alerts=[], title = "Alarms" }) {
         maxHeight: "70vh",
         overflowY: "auto",
         bottom: "20px",
-        right: "20px"
+        right: "20px",
+        zIndex: 9999,
       }}
     >
       <div className="card shadow-sm border rounded">
-        <div className="card-header bg-danger text-white">
+        <div className="card-header bg-danger text-white d-flex justify-content-between align-items-center">
           <strong>{title}</strong>
+          <button type="button"
+            className={`btn btn-sm ${
+              soundEnabled ? "btn-light" : "btn-outline-light"
+            }`}
+            onClick={handleSoundToggle}
+          >
+            {soundEnabled ? "🔊 Mute" : "🔇 Unmute"}
+          </button>
         </div>
-        <div className="card-body p-2">
+
+        <div className="card-body p-3">
           {alerts.length > 0 ? (
             <ul className="list-group list-group-flush">
-              {alerts.map((device, i) => (
+              {alerts.map((data, i) => (
                 <li
-                  onClick={()=>{loadTackerProfile(device)}}
-                  key={`alert-${i}`}
-                  className="cpointer list-group-item list-group-item-danger d-flex justify-content-between align-items-center"
+                  key={`device-${i}`}
+                  onClick={() => loadTackerProfile(data.device)}
+                  className="cpointer bg-light text-dark mb-3 p-2 row justify-content-center rounded"
                 >
-                  <div className="colmd-12 badge bg-light rounded-pill p-3 ">
-                  Device : {device.device_name}
+                  <div className="col-md-12 text-dark border-bottom border-white">
+                    <b>{data.device.device_name}</b> <br />
+                    Site: {data.device_data._sites_site_name_site_id}
                   </div>
+                  <div className="col-md-12 row justify-content-start pl-3 m-2">
+                    <span className="badge p-1 bg-danger text-white mr-1">
+                      Offline
+                    </span>
+                    <span className="badge p-1 bg-warning text-dark">
+                      Not moving
+                    </span>
+                  </div>
+                  <div className="col-md-12 text-dark">
+                    <small className="smal_text">
+                      Serial: {data.device_data.serial_number}
+                    </small>
+                  </div>
+                  {data.device_data.gps_logs?.length > 0 && (
+                    <div className="col-md-12 mt-2">
+                      <small className="text-muted">
+                        GPS Logs: {data.device_data.gps_logs.length}
+                      </small>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -194,6 +274,7 @@ export function GeofenceAlerts({ alerts=[], title = "Alarms" }) {
     </div>
   );
 }
+
 
 export function flattenMapData(data)
 {
@@ -301,6 +382,8 @@ export function DashSiteInfoData({ alerts = {}, title = "Devices" }) {
   );
 }
 
+
+
 export function loadTrackerDataCard(tracker)
 {
   console.log(`loadsitedatacard __ `,tracker)
@@ -326,10 +409,10 @@ export function loadTrackerDataCard(tracker)
       
       <div className="pt-3 col-md-12 "></div>
       <div className="col-md-12 row justify-content-center border-top border-info mt-3 p-0 m-0 pt-2 text-info ">
-      <div title ="Device info" onClick={() => { loadTackerProfile(tracker); }} className="col-3 cpointer "><i className="fa fa-microchip"></i><small className=""> Device</small></div>
-      <div title="Site info" onClick={() => { loadSiteData(tracker.site_data); }} className="col-3 cpointer "><i className="fa fa-info-circle"></i> <small className=""> Site</small></div>
-      <div title="Playback" onClick={() => { viewLastGPS(tracker.device_id); }} className="col-3 cpointer "><i className="fa fa-play"></i> <small className=""> Playback</small></div>
-      <div title="track" onClick={() => { loadSiteData(tracker.site_data); }} className="col-3 cpointer "><i className="fa fa-map-marker"></i> <small className=""> Track</small></div>
+      <div title ="Alarms" onClick={() => { loadDeviceAlarms(tracker.record_id); }} className="col-3 cpointer "><i className="fa fa-bell"></i><small className=""> Alarms</small></div>
+      <div title="Logs" onClick={() => { loadDeviceAlarms(tracker.record_id, 'gpslogs'); }} className="col-3 cpointer "><i className="fa fa-list"></i> <small className=""> Logs </small></div>
+      <div title="Playback" onClick={() => { loadTrackerPlayBack(tracker); }} className="col-3 cpointer "><i className="fa fa-play"></i> <small className=""> Playback</small></div>
+      <div title="Track" onClick={() => { loadTrackerPlayBack(tracker, "realtime"); }} className="col-3 cpointer "><i className="fa fa-map-marker"></i> <small className=""> Track</small></div>
       <button
           className="btn btn-primary mt-2 d-none"
           onClick={() => { loadSiteData(tracker.site_data); }}
@@ -340,9 +423,29 @@ export function loadTrackerDataCard(tracker)
     </div>
   );
 
-  MosyCard("", cardBody)
+  return cardBody
+
+  //MosyCard("", cardBody)
 }
 
+//loadDeviceAlarms
+export function loadDeviceAlarms(deviceId, module="devicealarms")
+{
+
+  window.location = `${hiveRoutes.cms}/${module}/list?gps_logs_mosyfilter=${mosyBtoa(` device_id='${deviceId}' `)}`
+
+}
+
+///loadTrackerPlayBack
+export function loadTrackerPlayBack(tracker, module="playback")
+{
+  //console.log(`load tracker inccc`, tracker)
+  const deviceId = tracker.token
+  window.location = `${hiveRoutes.cms}/maps/${module}?device=${mosyBtoa(deviceId)}`
+
+}
+
+///confusinf
 export function loadSiteinfoDataCard(site) 
 {
   console.log(`loadsitedatacard __ `, site);
@@ -408,7 +511,101 @@ export function loadSiteinfoDataCard(site)
   MosyCard("", cardBody);
 }
 
+// Modify loadSiteinfoDataCard to return JSX
+export function loadSiteInfoWindowCard({site, showSiteDetails=true,newPage=false}) {
+  const sites = [site];
 
+  console.log(`loadSiteInfoWindowCard`, site)
+
+  const allDevices = sites.flatMap(site =>
+    (site.device_list || []).map(device => {
+      const firstLog = device.gps_logs?.length > 0 ? device.gps_logs[0] : null;
+      return {
+        ...device,
+        first_log: firstLog,
+        site_data: site
+      };
+    })
+  );
+
+  return (
+    <div className="col-md-12 p-2 m-0 text-left row justify-content-center p-0 m-0">
+      <div className="col-md-12 row justify-content-start p-2 m-0">
+        <div className="p-2 h5">Site : {site.site_name || site.name} ({site.site_code || "_"})</div>
+        <span className="p-2 h6"> | Devices : ({site.total_devices})</span>
+      </div>
+
+      <div className="col-md-12 p-2 border-top border-info"></div>
+
+      <div className="col-md-12 row justify-content-center p-2 m-0">
+        {allDevices.map((device, i) => (
+          <div key={`device-${i}`} className="col-md-6 mb-3 p-2">
+            <p className="pb-2">
+              <u><strong>Device</strong> ({i + 1})</u>
+            </p>
+            <p><strong>Name:</strong> {device.device_name}</p>
+            <p><strong>Serial:</strong> {device.serial_number}</p>
+
+            {device.first_log ? (
+              <>
+                <p><strong>Battery:</strong> {device.first_log.battery}</p>
+                <p className="d-none"><strong>Longitude:</strong> {device.first_log.longitude}</p>
+                <p className="d-none"><strong>Latitude:</strong> {device.first_log.latitude}</p>
+              </>
+            ) : (
+              <p className="text-muted"><em>No GPS logs available</em></p>
+            )}
+
+            <p className="pt-3 text-info" onClick={()=>{loadDeviceKey(device, newPage)}}>
+              <span className="badge cpointer text-info">
+                <i className="fa fa-arrow-right"></i> View device
+              </span>
+            </p>
+          </div>
+        ))}
+        {showSiteDetails && (
+            <p className=" text-right border-top border-info p-3 text-info col-md-12 " onClick={() => loadSitePage(site)}>
+              <b className=" cpointer text-info">
+                <i className="fa fa-arrow-right"></i> View site
+              </b>
+            </p>
+        )}        
+      </div>
+    </div>
+  );
+}
+
+//go to site 
+export function loadSitePage(site)
+{
+  const sitetoken = site.record_id 
+  window.location = `${hiveRoutes.cms}/maps/sitemap?sitetoken=${sitetoken}`
+
+}
+
+/// load device key 
+export function loadDeviceKey(device, newPage=false) {
+  const key = device?.primkey || device?.token;
+  if (!key) return;
+
+  if(newPage)
+  {
+    window.location = `${hiveRoutes.cms}/maps/tracker?device_key=${mosyBtoa(key)}&device_list_uptoken=${mosyBtoa(key)}`
+  }
+  // Update URL param
+  mosyUpdateUrlParam("device_key", key);
+  mosyUpdateUrlParam("device_list_uptoken", mosyBtoa(key));
+
+  // Dispatch a custom event so MapSwitcher can listen
+  window.dispatchEvent(
+    new CustomEvent("deviceKeyChanged", { detail: { deviceKey: key } })
+  );
+
+}
+
+
+
+//load site card modal
 export function loadSiteDataCard(site)
 {
   console.log(`loadsitedatacard __ `,site)
@@ -436,7 +633,10 @@ export function loadSiteDataCard(site)
   MosyCard("", cardBody)
 }
 
-export function FloatingSearchBar({ onSearch }) {
+
+//home bar search bar 
+
+export function FloatingSearchBar({ onSearch, onSiteSelectFull, showSiteSearch=true , showTrakerSearch=true, onDeviceSelectFull }) {
   const [filter, setFilter] = useState("sites");
   const [query, setQuery] = useState("");
 
@@ -448,14 +648,11 @@ export function FloatingSearchBar({ onSearch }) {
   return (
     <div
       className="floating-search-bar top-0 start-50 translate-middle-x p-2 bg-white"
-      style={{
-        zIndex: 1050,
-        width: "90%",
-        maxWidth: "60%",
-      }}
+      style={{ zIndex: 1050, width: "90%", maxWidth: "60%" }}
     >
-      <div className="row justify-content-center p-0 m-0 ">
-       <LiveSearchDropdown       
+      <div className="row justify-content-start p-0 m-0">
+        {showSiteSearch && (
+        <LiveSearchDropdown       
           apiEndpoint={apiRoutes.registeredsites.base}       
           tblName="sites"       
           parentTable="device_list"       
@@ -463,32 +660,43 @@ export function FloatingSearchBar({ onSearch }) {
           hiddenInputName="txt_site_id"       
           valueField="record_id"       
           displayField="site_name"       
-          label="Location site"       
+          label="Site list"       
           onSelect={(id) => console.log("Just the ID:", id)}       
-          onSelectFull={(dataRes) => { loadSiteinfoDataCard((dataRes)); console.log("Data seleted")}}       
-          defaultColSize="col-md-6 hive_data_cell "       
-          context={{hostParent : "FloatingSearchBar"}}          
-       />
+          onSelectFull={(dataRes) => {
+           // console.log("Site selected:", dataRes);
+            if (onSiteSelectFull) onSiteSelectFull(dataRes); // Pass up to parent
+          }}       
+          defaultColSize="col-md-10 hive_data_cell"       
+          context={{ hostParent: "FloatingSearchBar" }}          
+        />
+        )}
 
-      <LiveSearchDropdown      
-      apiEndpoint={apiRoutes.devicelist.base}      
-      tblName="device_list"      
-      parentTable="gps_logs"      
-      inputName="txt__device_list_device_name_device_id"      
-      hiddenInputName="txt_device_id"      
-      valueField="record_id"      
-      displayField="device_name"      
-      label="Trackers"          
-      onSelect={(id) => console.log("Just the ID:", id)}      
-      onSelectFull={(dataRes) => {loadTackerProfile(dataRes); console.log("Data seleted")}}      
-      defaultColSize="col-md-6 hive_data_cell"      
-      context={{hostParent : "FloatingSearchBar"}}
-      
-      /> 
-       </div>    
+        {showTrakerSearch &&(
+        <LiveSearchDropdown      
+          apiEndpoint={apiRoutes.devicelist.base}      
+          tblName="device_list"      
+          parentTable="gps_logs"      
+          inputName="txt__device_list_device_name_device_id"      
+          hiddenInputName="txt_device_id"      
+          valueField="record_id"      
+          displayField="device_name"      
+          label="Trackers"          
+          onSelect={(id) => console.log("Just the ID:", id)}      
+          onSelectFull={(dataRes) => {
+            console.log("Device selected:", dataRes);
+            if (onDeviceSelectFull) onDeviceSelectFull(refactorDeviceData({data:[dataRes]}));
+            //loadTackerProfile(dataRes)
+            //loadTrackerDataCard(dataRes)
+          }}      
+          defaultColSize="col-md-6 hive_data_cell "      
+          context={{ hostParent: "FloatingSearchBar" }}
+        /> 
+        )}
+      </div>    
     </div>
   );
 }
+
 
 
 export async function sendDeviceLocationLog(device) {
@@ -578,10 +786,87 @@ export function refactorDeviceData(apiResponse) {
       latestPoint,
       device_logs: logsWithXY,
       geofences,
+      device_data : device
     };
   });
 }
 
+
+/**
+ * Fully independent geofence monitoring component
+ * - Polls device data
+ * - Computes geofence breaches
+ * - Shows floating alerts card
+ */
+export default function GeofenceMonitor({ device_id = "", title ="Device alarms", pollInterval = 3000 }) {
+  const [devices, setDevices] = useState([]);
+  const [alerts, setAlerts] = useState([]);
+  const [showModal, setShowModal] = useState(true);
+
+  // Fetch device data periodically
+  useEffect(() => {
+    let intervalId;
+
+    async function fetchData() {
+      try {
+        let qparams = { fullQ: false };
+        if (device_id) {
+          qparams = { q: mosyBtoa(`where primkey ='${device_id}'`), fullQ: true };
+        }
+
+        const res = await mosyGetData({
+          endpoint: apiRoutes.devicelist.map,
+          params: qparams
+        });
+
+        if (res?.data) setDevices(refactorDeviceData(res));
+      } catch (err) {
+        console.error("Geofence fetch error:", err);
+      }
+    }
+
+    fetchData();
+    intervalId = setInterval(fetchData, pollInterval);
+    return () => clearInterval(intervalId);
+  }, [device_id, pollInterval]);
+
+  //console.log(`geofence monitorrrrr`, devices)
+
+
+  // Compute alerts
+  useEffect(() => {
+    const newAlerts = [];
+
+    devices.forEach(({ latestPoint, geofences = [] , device_data ={} }) => {
+      if (!latestPoint) return;
+
+      geofences.forEach(fence => {
+        const inside = computeGeofence(latestPoint, fence.coords)?.[0]?.inside;
+        if (inside === false) {
+          newAlerts.push({ device: latestPoint, fence, device_data });
+        }
+      });
+    });
+
+    if(newAlerts.length > 0 && showModal){
+      MosyAlertCard({icon: "warning",
+        iconColor:"text-danger",
+        message: `⚠️ ${title}`,
+        yesLabel:"Noted",
+        noLabel : "Close",
+        onYes : ()=>{closeMosyCard("modal2"); setShowModal(false)},
+        onNo : () =>{},
+        id : "modal2"
+      })
+
+  }
+
+    setAlerts(newAlerts);
+  }, [devices]);
+
+  return <GeofenceAlerts alerts={alerts} title={title} />;
+
+}
 
 
 

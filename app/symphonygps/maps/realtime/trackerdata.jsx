@@ -2,35 +2,31 @@
 import { useEffect, useState } from "react";
 import { mosyGetData , mosyBtoa, mosyUrlParam, mosyAtob} from "../../../MosyUtils/hiveUtils";
 import { getApiRoutes } from "../../AppRoutes/apiRoutesHandler";
+import Tracker from "./tracker";
 import { refactorDeviceData } from "../../AppCore/coreUtils";
-import { MosyNotify } from "../../../MosyUtils/ActionModals";
-import PlayBack from "./playback";
 
 const apiRoutes = getApiRoutes();
 
-export function PlayBackMapData({device_id=""}) {
+export default function TrackerMapData({device_id=""}) {
   const [pointsData, setPointsData] = useState([]); // ✅ more descriptive name
 
-  let requestedDeviceId = device_id
-  const reqDeviceUrl = mosyUrlParam("device")
+  let qparams = { fullQ: false };
 
-  if(reqDeviceUrl!="")
-  {
-    requestedDeviceId=mosyAtob(reqDeviceUrl)
+  // Get device key from URL param
+  const deviceKey = mosyUrlParam("device");
+
+  // Determine which key to use (prop takes priority)
+  const validKey = device_id || (deviceKey && mosyAtob(deviceKey));
+
+  if (validKey) {
+    qparams = {
+      q: mosyBtoa(`WHERE primkey='${validKey}'`),
+      fullQ: true,
+    };
+  } else {
+    console.warn("No valid device key provided — query will be empty.");
   }
 
-  if(requestedDeviceId==''){
-    MosyNotify({icon:'info',message:'No device selected for playback',addTimer:true});
-    return;
-  }
-
-  let qparams ={fullQ :false}
-
-  if(requestedDeviceId!=''){
-
-    qparams = { q: mosyBtoa(`where primkey ='${requestedDeviceId}'`), fullQ:true};
-
-  }
 
   useEffect(() => {
     let intervalId;
@@ -54,7 +50,7 @@ export function PlayBackMapData({device_id=""}) {
     fetchData();
   
     // poll every 3 seconds
-    intervalId = setInterval(fetchData, 30000000);
+    intervalId = setInterval(fetchData, 3000);
   
     // cleanup on unmount
     return () => clearInterval(intervalId);
@@ -65,9 +61,9 @@ export function PlayBackMapData({device_id=""}) {
   return (
     <div className="col-md-12 p-0 m-0">
       {deviceData.length > 0 ? (
-        <PlayBack devices={deviceData} />
+        <Tracker devices={deviceData} />
       ) : (
-        <div className="col-md-12 p-5 text-center h3">Loading map...</div>
+        <div className="col-md-12 p-5 text-center h3">Loading device map...</div>
       )}
     </div>
   );

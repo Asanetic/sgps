@@ -1,0 +1,12 @@
+//dna options== Digital Nexus Architecture (DNA)
+
+$dna_file_name="sites colss"; 
+$create_dna="yes"; //yes | no; 
+$overwrite_dna_file="yes"; //yes | no 
+//dna options==
+
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `site_code` varchar(500) not null');
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `contact_person_mobile` varchar(500) not null');
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `contact_person_email` varchar(500) not null');
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `manager_email` varchar(500) not null');
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `manager_mobile` varchar(500) not null');

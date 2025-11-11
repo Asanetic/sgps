@@ -41,7 +41,7 @@ export async function GET(request) {
     // ✅ Provide default fallbacks
     const enhancedParams = {
       tbl: 'sites',
-      colstr: queryParams.colstr || base64Encode(`record_id , primkey as token , site_name as name, longitude as x, latitude as y`), // default to *
+      colstr: queryParams.colstr || base64Encode(`record_id , primkey as token , site_name as name, longitude as x, latitude as y, site_code`), // default to *
       ...queryParams 
     };
 

@@ -1,8 +1,8 @@
 <?php
-////1. sites
 
-//"primkey" , "record_id" , "site_name" , "latitude" , "longitude" , "location_address" , "remark" , "created_at" , <br><br>
-
+  //sites //"primkey" , "record_id" , "site_name" , "site_code" , "country" , "city" , "county" , "town" , "building" , "latitude" , "longitude" , "location_address" , "remark" , "created_at" , "hive_site_id" , "hive_site_name" , "manager" , "manager_mobile" , "manager_email" , "contact_person" , "contact_person_mobile" , "contact_person_email" ,
+  
+  
 //{{table_cols_head}}
 
 /// A.I. NOTES :  please dont omit any keys or variables rewrite new values with code leave keys intact, dont delete commented code , where possible replace it with new commented values if you are capable 
@@ -77,15 +77,16 @@
 
         // Column order
         "desired_column_order" => [
-            "sites" => ["primkey","record_id","site_name","manager",
-"contact_person","latitude","longitude","location_address","remark","created_at"]
+            "sites" => ["primkey","record_id","site_name","site_code","manager",
+"contact_person","total_devices","latitude","longitude","location_address","remark","created_at"]
         ],
 
         // Grouped inputs
         "form_input_segmentation_arr" => [
             "sites" => [
-                "Site Details" => ["site_name","remark","manager","contact_person"],
-                "Location Details" => [ "country" , "city" , "county" , "town" , "building","latitude","longitude","location_address","remark","created_at"]
+                "Site Details" => ["site_name","site_code"],
+                "Manager and contact person" => ["manager","manager_mobile","manager_email","contact_person","contact_person_mobile","contact_person_email"],
+                "Location Details" => [ "country" , "county" , "town" , "location_address","latitude","longitude","total_devices","remark","created_at"]
               
             ]
         ],
@@ -94,8 +95,8 @@
         "default_col_class" => "col-md-6",
         "hidden_inputs" => ["created_at"], 
         "print_tables" => ["sites"], 
-        "skip_cols_profile" => ["hive_site_id","hive_site_name", "device_list"], 
-        "skip_cols_list" => ["hive_site_id","hive_site_name", "device_list"], 
+        "skip_cols_profile" => ["hive_site_id","hive_site_name", "device_list","city"], 
+        "skip_cols_list" => ["hive_site_id","hive_site_name", "device_list","remark","city","manager_email","manager_mobile","contact_person_email","contact_person_mobile","created_at"], 
         "running_bal_col_tbl" => [], 
         "grid_tbl" => [], 
         "view_tbl_only" => [], 
@@ -109,15 +110,16 @@
 
         "dynamic_drop_down_array" => ["building","town","county","country","city"], 
         "password_columns" => [], 
-        "title_columns" => ["site_name"], 
+        "title_columns" => ["location_address"], 
         "date_columns" => ["created_at"],
         "datetime_columns" => [],
 
         "rename_cols_array" => [ 
-            "site_name" => "Site Name",
+            "site_name" => "Site Name:col-md-6",
+            "site_code" => "Site Code:col-md-6",
             "latitude" => "Latitude (Y)",
             "longitude" => "Longitude (X)",
-            "location_address" => "Address description:col-md-8",
+            "location_address" => "Address description:col-md-12",
             "remark" => "Remark / Notes",
             "created_at" => "Date Created"
         ],
@@ -147,7 +149,7 @@
              "columns"=>["device_name","device_id","status","last_ping"],
           ]*/
         ], 
-        "custom_profile_col_data" => [], 
+        "custom_profile_col_data" => ["total_devices"=>"?"], 
         "custom_profile_default_data" => [],
         "connection_cols" => [ 
            //"device_id" => "devices:device_id:device_name:apiRoutes.devices.base"
@@ -170,7 +172,7 @@
   $profile_btn_table_array=[
 
     $primary_table__=>[
-       //"map: View Devices"=>"viewSiteDevices()"
+       "map: View on map"=>"loadSitePage({record_id:sitesNode?.record_id})"
     ],
 
   ];
@@ -190,13 +192,13 @@
   $interlink_lists=[
    "relatedDevices"=>[ 
      "filter_str"=>"site_id='\${sitesNode?.record_id}'",
-     "module_name"=>"Devicelist",
+     "module_name"=>"Devicesummary",
      "list_title"=>"Devices at this Site",
-     "event_name"=>"InteprateDevicelistEvent",
-     "event_path"=>"../../devices/dataControl/DevicelistRequestHandler",     
-     "module_path"=>"../../devices/uiControl/DevicelistList",     
+     "event_name"=>"InteprateDevicesummaryEvent",
+     "event_path"=>"../../devicesummary/dataControl/DevicesummaryRequestHandler",     
+     "module_path"=>"../../devicesummary/uiControl/DevicesummaryList",     
      "list_url"=>"",
-     "profile_url"=>"../devices/profile",
+     "profile_url"=>"",
    ]
   ];
    

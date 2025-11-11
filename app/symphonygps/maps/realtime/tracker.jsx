@@ -67,7 +67,7 @@ export default function Tracker({ devices = [] }) {
     let title = "Device locations";
   
     if (devices.length === 1 && deviceData) {
-      title = `Tracker : ${deviceData.device_name}`;
+      title = `Realtime device tracker : ${deviceData.device_name}`;
     }
 
     const deviceListUpToken = mosyUrlParam("device_list_uptoken");

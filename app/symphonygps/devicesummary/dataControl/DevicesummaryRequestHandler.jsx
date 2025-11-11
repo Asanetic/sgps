@@ -1,6 +1,6 @@
 'use client';
 //hive / data utils
-import { mosyPostFormData, mosyGetData, mosyUrlParam, mosyUpdateUrlParam , deleteUrlParam, magicRandomStr, mosyGetLSData, mosyFileUrl  } from '../../../MosyUtils/hiveUtils';
+import { mosyPostFormData, mosyGetData, mosyUrlParam, mosyUpdateUrlParam , deleteUrlParam, magicRandomStr, mosyGetLSData  } from '../../../MosyUtils/hiveUtils';
 
 //action modals 
 import { MosyNotify , closeMosyModal, MosyAlertCard } from '../../../MosyUtils/ActionModals';
@@ -14,32 +14,30 @@ import { customEventHandler } from '../../DataControl/customDataFunction';
 //routes manager
 ///handle routes 
 import { getApiRoutes } from '../../AppRoutes/apiRoutesHandler';
-import { MosyCard } from '../../../components/MosyCard';
-import DevicelistProfile from '../uiControl/DevicelistProfile';
 
 // Use default base root (/)
 const apiRoutes = getApiRoutes();
 
 //insert data
-export async function insertDevicelist() {
+export async function insertDevicesummary() {
  //console.log(`Form device_list insert sent `)
 
   return await mosyPostFormData({
     formId: 'device_list_profile_form',
-    url: apiRoutes.devicelist.base,
+    url: apiRoutes.devicesummary.base,
     method: 'POST',
     isMultipart: true,
   });
 }
 
 //update record 
-export async function updateDevicelist() {
+export async function updateDevicesummary() {
 
   //console.log(`Form device_list update sent `)
 
   return await mosyPostFormData({
     formId: 'device_list_profile_form',
-    url: apiRoutes.devicelist.base,
+    url: apiRoutes.devicesummary.base,
     method: 'POST',
     isMultipart: true,
   });
@@ -47,7 +45,7 @@ export async function updateDevicelist() {
 
 
 ///receive form actions from profile page  
-export async function inteprateDevicelistFormAction(e, setters) {
+export async function inteprateDevicesummaryFormAction(e, setters) {
   e.preventDefault();
 
   const form = e.target;
@@ -64,14 +62,14 @@ export async function inteprateDevicelistFormAction(e, setters) {
 
       actionMessage ='Record added succesfully!';
 
-      result = await insertDevicelist();
+      result = await insertDevicesummary();
     }
 
     if (actionType === 'update_device_list') {
 
       actionMessage ='Record updated succesfully!';
 
-      result = await updateDevicelist();
+      result = await updateDevicesummary();
     }
 
     if (result?.status === 'success') {
@@ -79,12 +77,12 @@ export async function inteprateDevicelistFormAction(e, setters) {
       const device_listUptoken = btoa(result.device_list_uptoken || '');
 
       //set id key
-      setters.setDevicelistUptoken(device_listUptoken);
+      setters.setDevicesummaryUptoken(device_listUptoken);
       
       //update url with new device_listUptoken
       mosyUpdateUrlParam('device_list_uptoken', device_listUptoken)
 
-      setters.setDevicelistActionStatus('update_device_list')
+      setters.setDevicesummaryActionStatus('update_device_list')
     
       setters.setSnackMessage(actionMessage);
 
@@ -125,38 +123,42 @@ export async function inteprateDevicelistFormAction(e, setters) {
 }
 
 
-export async function initDevicelistProfileData(rawQstr) {
+export async function initDevicesummaryProfileData(rawQstr) {
 
   //add the following data in response
   const rawMutations = {
                
     _sites_site_name_site_id : [],
     
-    device_logs : [],
+    site_code : [],
+    
+    installation_longitude : [],
+    
+    installation_latitude : [],
 
   }
   
 
-  MosyNotify({message : 'Refreshing Device List' , icon:'refresh', addTimer:false})
+  MosyNotify({message : 'Refreshing Device summary' , icon:'refresh', addTimer:false})
 
   const encodedMutations = btoa(JSON.stringify(rawMutations));
 
   try {
     // Fetch the  data with the given key
     const response = await mosyGetData({
-      endpoint: apiRoutes.devicelist.base,
+      endpoint: apiRoutes.devicesummary.base,
       params: { 
       q: btoa(rawQstr),         
       mutations: encodedMutations,
       fullQ : true,
       aw : btoa(``),
-      src : btoa(`initDevicelistProfileData`)
+      src : btoa(`initDevicesummaryProfileData`)
       },
     });
 
     // Handle the successful response
     if (response.status === 'success') {
-      //console.log('devices Data:', response.data);  // Process the data
+      //console.log('devicesummary Data:', response.data);  // Process the data
 
        closeMosyModal()
 
@@ -164,7 +166,7 @@ export async function initDevicelistProfileData(rawQstr) {
 
     } else {
           
-      console.log('Error fetching devices data:', response.message);  // Handle error
+      console.log('Error fetching devicesummary data:', response.message);  // Handle error
 
       closeMosyModal()
 
@@ -180,19 +182,19 @@ export async function initDevicelistProfileData(rawQstr) {
 }
 
 
-export async function DeleteDevicelist(token = '') {
+export async function DeleteDevicesummary(token = '') {
 
     try {
       MosyNotify({message:"Sending delete request",icon:"send", addTimer : false})
     
       const response = await mosyGetData({
-        endpoint: apiRoutes.devicelist.delete,
+        endpoint: apiRoutes.devicesummary.delete,
         params: { 
           _device_list_delete_record: (token), 
           },
       });
 
-      console.log('Token DeleteDevicelist '+token)
+      console.log('Token DeleteDevicesummary '+token)
       if (response.status === 'success') {
 
         closeMosyModal();
@@ -214,7 +216,7 @@ export async function DeleteDevicelist(token = '') {
 }
 
 
-export async function getDevicelistListData(qstr = "") {
+export async function getDevicesummaryListData(qstr = "") {
    let fullWhere = true
   if(qstr=='')
   {
@@ -227,7 +229,11 @@ export async function getDevicelistListData(qstr = "") {
                
     _sites_site_name_site_id : [],
     
-    device_logs : [],
+    site_code : [],
+    
+    installation_longitude : [],
+    
+    installation_latitude : [],
 
   }
   
@@ -239,22 +245,22 @@ export async function getDevicelistListData(qstr = "") {
 
   try {
     const response = await mosyGetData({
-      endpoint: apiRoutes.devicelist.base,
+      endpoint: apiRoutes.devicesummary.base,
       params: { 
         q: qstr, 
         mutations: encodedMutations,
         fullQ : fullWhere,
         pagination : `l:qdevice_list_page:${recordsPerPage}:${pageNo}`,
         aw : btoa(`order by primkey desc`),
-        src : btoa(`getDevicelistListData`)
+        src : btoa(`getDevicesummaryListData`)
         },
     });
 
     if (response.status === 'success') {
-      //console.log('devices Data:', response.data);
+      //console.log('devicesummary Data:', response.data);
       return response; // ✅ Return the data
     } else {
-      console.log('Error fetching devices data:', response);
+      console.log('Error fetching devicesummary data:', response);
       return []; // Safe fallback
     }
   } catch (err) {
@@ -264,61 +270,61 @@ export async function getDevicelistListData(qstr = "") {
 }
 
 
-export async function loadDevicelistListData(customQueryStr, setters) {
+export async function loadDevicesummaryListData(customQueryStr, setters) {
 
-    const gftDevicelist = MosyFilterEngine('device_list', true);
-    let finalFilterStr = btoa(gftDevicelist);    
+    const gftDevicesummary = MosyFilterEngine('device_list', true);
+    let finalFilterStr = btoa(gftDevicesummary);    
 
     if(customQueryStr!='')
     {
       finalFilterStr = customQueryStr;
     }
 
-    setters.setDevicelistLoading(true);
+    setters.setDevicesummaryLoading(true);
     
-    const devicelistListData = await getDevicelistListData(finalFilterStr);
+    const devicesummaryListData = await getDevicesummaryListData(finalFilterStr);
     
-    setters.setDevicelistLoading(false)
-    setters.setDevicelistListData(devicelistListData?.data)
+    setters.setDevicesummaryLoading(false)
+    setters.setDevicesummaryListData(devicesummaryListData?.data)
 
-    setters.setDevicelistListPageCount(devicelistListData?.page_count)
+    setters.setDevicesummaryListPageCount(devicesummaryListData?.page_count)
 
 
-    return devicelistListData
+    return devicesummaryListData
 
 }
   
   
-export async function devicelistProfileData(customQueryStr, setters, router, customProfileData={}) {
+export async function devicesummaryProfileData(customQueryStr, setters, router, customProfileData={}) {
 
-    const devicelistTokenId = mosyUrlParam('device_list_uptoken');
+    const devicesummaryTokenId = mosyUrlParam('device_list_uptoken');
     
     const deleteParam = mosyUrlParam('device_list_delete');
 
     //manage  the staff_uptoken value  basically detect primkey
-    let decodedDevicelistToken = '0';
-    if (devicelistTokenId) {
+    let decodedDevicesummaryToken = '0';
+    if (devicesummaryTokenId) {
       
-      decodedDevicelistToken = atob(devicelistTokenId); // Decode the record_id
-      setters.setDevicelistUptoken(devicelistTokenId);
-      setters.setDevicelistActionStatus('update_device_list');
+      decodedDevicesummaryToken = atob(devicesummaryTokenId); // Decode the record_id
+      setters.setDevicesummaryUptoken(devicesummaryTokenId);
+      setters.setDevicesummaryActionStatus('update_device_list');
       
     }
     
     //override customQueryStr if there is an active staff_uptoken else use customQueryStr if any
-    let rawDevicelistQueryStr =`where primkey ='${decodedDevicelistToken}'`
+    let rawDevicesummaryQueryStr =`where primkey ='${decodedDevicesummaryToken}'`
     if(customQueryStr!='')
     {
       // if no device_list_uptoken set , use customQueryStr
-      if (!devicelistTokenId) {
-       rawDevicelistQueryStr = customQueryStr
+      if (!devicesummaryTokenId) {
+       rawDevicesummaryQueryStr = customQueryStr
       }
     }
 
-    const profileDataRecord = await initDevicelistProfileData(rawDevicelistQueryStr)
+    const profileDataRecord = await initDevicesummaryProfileData(rawDevicesummaryQueryStr)
 
     if(deleteParam){
-      popDeleteDialog(devicelistTokenId, setters, router)
+      popDeleteDialog(devicesummaryTokenId, setters, router)
     }
     
     // Merge with custom injected values (custom wins)
@@ -328,32 +334,16 @@ export async function devicelistProfileData(customQueryStr, setters, router, cus
     };
       
 
-    setters.setDevicelistNode(finalProfileData)
+    setters.setDevicesummaryNode(finalProfileData)
     
     
 }
   
   
 
-export function InteprateDevicelistEvent(data) {
+export function InteprateDevicesummaryEvent(data) {
      
-  //console.log('🎯 Devicelist Child gave us:', data);
-  const currpg = mosyFileUrl()
-
-  if(currpg=="home"  || currpg=="tracker" || currpg=="playback")
-  {
-    closeMosyModal("modal1")
-    mosyUpdateUrlParam('device_list_uptoken', btoa(data?.token))
-    
-    const parentSetter = data?.setters.parentStateSetters 
-
-    parentSetter?.setLocalEventSignature(magicRandomStr())
-    parentSetter?.setActiveScrollId('DevicelistProfileTray')
-
-
-    MosyCard(`${currpg}`,<DevicelistProfile dataIn={{showNavigationIsle:false}} />,true, "modal1","mosycard_wide")
-    return;
-  }
+  //console.log('🎯 Devicesummary Child gave us:', data);
 
   const actionName = data?.actionName
 
@@ -375,11 +365,11 @@ export function InteprateDevicelistEvent(data) {
 
     const parentSetter = data?.setters.parentStateSetters 
 
-    parentSetter?.setDevicelistCustomProfileQuery(data?.qstr)
+    parentSetter?.setDevicesummaryCustomProfileQuery(data?.qstr)
 
     parentSetter?.setLocalEventSignature(magicRandomStr())
     parentSetter?.setParentUseEffectKey(magicRandomStr())
-    parentSetter?.setActiveScrollId('DevicelistProfileTray')
+    parentSetter?.setActiveScrollId('DevicesummaryProfileTray')
 
     
     mosyUpdateUrlParam('device_list_uptoken', btoa(data?.token))
@@ -401,7 +391,7 @@ export function InteprateDevicelistEvent(data) {
     if(parentStateSetter){
       if(parentStateSetter.setLocalEventSignature){
         parentStateSetter?.setLocalEventSignature(magicRandomStr())
-        parentStateSetter?.setActiveScrollId('DevicelistProfileTray')
+        parentStateSetter?.setActiveScrollId('DevicesummaryProfileTray')
       }
     }
      
@@ -420,7 +410,7 @@ export function InteprateDevicelistEvent(data) {
     if(parentStateSetter){
       if(parentStateSetter.setLocalEventSignature){
         parentStateSetter?.setLocalEventSignature(magicRandomStr())
-        parentStateSetter?.setActiveScrollId('DevicelistProfileTray')
+        parentStateSetter?.setActiveScrollId('DevicesummaryProfileTray')
         
       }
     }
@@ -436,7 +426,7 @@ export function InteprateDevicelistEvent(data) {
 }
 
 
-export function popDeleteDialog(deleteToken, setters, router, afterDeleteUrl='../devices/list')
+export function popDeleteDialog(deleteToken, setters, router, afterDeleteUrl='../devicesummary/list')
 {     
 
   //console.log(`popDeleteDialog`, setters)
@@ -452,7 +442,7 @@ export function popDeleteDialog(deleteToken, setters, router, afterDeleteUrl='..
   
     onYes: () => {
   
-      DeleteDevicelist(deleteToken).then(data=>{
+      DeleteDevicesummary(deleteToken).then(data=>{
   
         childSetters?.setSnackMessage("Record deleted succesfully!")
         childSetters?.setParentUseEffectKey(magicRandomStr());

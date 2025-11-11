@@ -505,6 +505,24 @@ export function mosyFormInputHandler(setterFunction, options = {}) {
 }
 
 
+// utils/disableFormInputs.js
+export function disableFormInputs(formId) {
+  if (typeof document === "undefined") return; // Prevent SSR errors
+
+  const form = document.getElementById(formId);
+  if (!form) {
+    console.warn(`Form with id "${formId}" not found.`);
+    return;
+  }
+
+  const inputs = form.querySelectorAll("input, textarea, select, button");
+  inputs.forEach(el => {
+    el.disabled = true;
+    el.classList.add("opacity-50", "cursor-not-allowed"); // optional styling
+  });
+}
+
+
 // utils/printElem.js
 export function printElem(printDivId, docTitle = "", headerLayout = "", printFooter = "") {
   // Hide dropdowns before print
