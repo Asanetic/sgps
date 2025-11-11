@@ -5,7 +5,7 @@ import { MosyNotify } from "../../../MosyUtils/ActionModals";
 import GeofenceMonitor, { computeGeofence, FloatingSearchBar, GeofenceAlerts, loadTackerProfile, loadTrackerDataCard, useGeofenceAlerts } from "../../AppCore/coreUtils";
 import { hiveRoutes } from "../../../appConfigs/hiveRoutes";
 import { MosyTitleTag } from "../../UiControl/componentControl";
-import DeviceSummaryDetails from "../../devicesummary/uiControl/DevicesummaryDetails";
+//import DeviceSummaryDetails from "../../devicesummary/uiControl/DevicesummaryDetails";
 import { mosyUrlParam } from "../../../MosyUtils/hiveUtils";
 
 export default function Tracker({ devices = [] }) {
@@ -138,14 +138,14 @@ export default function Tracker({ devices = [] }) {
 
     </GoogleMap>
 
-      {deviceListUpToken && deviceListUpToken.trim() !== "" && (
+      {/* {deviceListUpToken && deviceListUpToken.trim() !== "" && (
         <DeviceSummaryDetails
           dataIn={{
             showNavigationIsle: false,
             customQueryStr: `WHERE record_id='${deviceData.record_id}'`,
           }}
         />
-      )}
+      )} */}
 
     </>
   );
