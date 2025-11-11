@@ -6,7 +6,7 @@ import GeofenceMonitor, { computeGeofence, FloatingSearchBar, GeofenceAlerts, lo
 import { hiveRoutes } from "../../../appConfigs/hiveRoutes";
 import { MosyTitleTag } from "../../UiControl/componentControl";
 import { mosyUrlParam } from "../../../MosyUtils/hiveUtils";
-import DeviceSummaryDetails from "../../devicesummary/uiControl/DevicesummaryDetails";
+// import DeviceSummaryDetails from "../../devicesummary/uiControl/DevicesummaryDetails";
 
 export default function Tracker({ devices = [] }) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -137,14 +137,14 @@ export default function Tracker({ devices = [] }) {
 
     </GoogleMap>
 
-      {deviceListUpToken && deviceListUpToken.trim() !== "" && (
+      {/* {deviceListUpToken && deviceListUpToken.trim() !== "" && (
         <DeviceSummaryDetails
           dataIn={{
             showNavigationIsle: false,
             customQueryStr: `WHERE record_id='${deviceData.record_id}'`,
           }}
         />
-      )}
+      )} */}
 
     </>
   );
