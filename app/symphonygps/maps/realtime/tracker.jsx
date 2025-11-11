@@ -72,6 +72,7 @@ export default function Tracker({ devices = [] }) {
 
     const deviceListUpToken = mosyUrlParam("device_list_uptoken");
 
+    //
   return (
     <><MosyTitleTag title={title}/>
     {devices.length > 1 && (
