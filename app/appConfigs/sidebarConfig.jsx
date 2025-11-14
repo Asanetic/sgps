@@ -10,7 +10,7 @@ export const sidebarConfig = [
     roles: [],
     items: [
       { label: "Site map", href: (routes) => `${routes.cms}/maps/home`, roles: [] },
-      { label: "All Sites", href: (routes) => `${routes.cms}/gpssites/list`, roles: [] },
+      { label: "Site list", href: (routes) => `${routes.cms}/gpssites/list`, roles: [] },
       { label: "Add Site", href: (routes) => `${routes.cms}/gpssites/profile`, roles: [] },
     ],
   },
@@ -24,7 +24,7 @@ export const sidebarConfig = [
     items: [
       { label: "Tracker map", href: (routes) => `${routes.cms}/maps/tracker`, roles: [] },
       { label: "Register Tracker", href: (routes) => `${routes.cms}/devices/profile`, roles: [] },
-      { label: "Tracker summary", href: (routes) => `${routes.cms}/devicesummary/list`, roles: [] },      
+      { label: "Tracker list", href: (routes) => `${routes.cms}/devicesummary/list`, roles: [] },      
     ],
   },
 

@@ -3,9 +3,6 @@ import path from 'path';
 import { writeFile, mkdir, unlink } from 'fs/promises';
 import fs from 'fs';
 
-
-
-
 export async function mosySqlInsert(tbl, fieldsAndValuesJson, formBody) {
   const conn = await connectDB();
   
@@ -33,8 +30,11 @@ export async function mosySqlInsert(tbl, fieldsAndValuesJson, formBody) {
   const placeholders = magicValues.map(() => '?').join(", ");
   const query = `INSERT INTO \`${activeDB}\`.\`${tbl}\` (${preparedCols}) VALUES (${placeholders})`;
 
+  console.log(query, magicValues, tbl, fieldsAndValuesJson, formBody);
+
   try {
     const [result] = await conn.execute(query, magicValues);
+
     return { message: 'Data inserted successfully', record_id: result.insertId };
   } catch (err) {
     throw new Error(`Insert failed: ${err.message}`);

@@ -54,29 +54,30 @@ export function mosyMutateQuery(tblName, searchParams, authData, tablePrimKey)
     }
 
     //load quotations
-    if(qsrc=="getQuotationlistListData")
+    if(qsrc=="getDevicealarmsListData")
     {
       if(afterwhereStr=="")
       {
  
-        additionalQ=" Where invoice_type='Quotation' "
+        additionalQ=" Where log_type !='GPS' "
 
       }else{
-        additionalQ =" and  invoice_type='Quotation'"
+        additionalQ =" and  log_type !='GPS'"
       } 
         
     }
 
+
     //load invoices
-    if(qsrc=="getInvoicelistListData")
+    if(qsrc=="getDevicegpslogsListData")
     {
         if(afterwhereStr=="")
         {
    
-          additionalQ=" Where invoice_type='Invoice' "
+          additionalQ=" Where log_type ='GPS' "
   
         }else{
-          additionalQ =" and  invoice_type='Invoice'"
+          additionalQ =" and  log_type ='GPS'"
         } 
           
     }
@@ -89,7 +90,7 @@ export function mosyMutateQuery(tblName, searchParams, authData, tablePrimKey)
     
     const combinedParam = base64Encode(`${whereStr}${gftFilterType} ${mutatedFilterStr}  ${additionalQ} ${finalAfterwhereStr}`)
 
-    console.log(`combinedParam ${base64Decode(combinedParam)} ${filterFull}`)
+   // console.log(`combinedParam ${base64Decode(combinedParam)} ${filterFull}`)
 
     return combinedParam
 
@@ -97,7 +98,6 @@ export function mosyMutateQuery(tblName, searchParams, authData, tablePrimKey)
 
 export function mutateInputArray(src, inputArray, postRequest, newrecordId, authData) {
     const mutated = { ...inputArray };
-    const appendGraderId  = ["milk_collections"]
 
     // Replace or inject values based on rules
     if (authData.hive_site_id) {
@@ -108,18 +108,7 @@ export function mutateInputArray(src, inputArray, postRequest, newrecordId, auth
       mutated.hive_site_name = authData.hive_site_name;
     }
 
-    // Append grader_id for specific tables
-    if(appendGraderId.includes(src)){
-
-      if (authData.grader_id) {
-        mutated.grader_id = authData.grader_id;
-      }
-
-      if (authData.grader_id) {
-        mutated.grader_id = authData.grader_id;
-      }
-    }
-    console.log(`mutateInputArraymutateInputArray`, mutated)
+    console.log(`mutateInputArraymutateInputArray`, mutated , newrecordId)
     return mutated;
   }
   

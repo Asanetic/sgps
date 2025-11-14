@@ -43,5 +43,11 @@
     "devicesummary": {
         "base": "/api/symphonygps/devicesummary/devicesummary",
         "delete": "/api/symphonygps/devicesummary/delete"
+    },
+    "tcp": {
+        "logs": "/api/symphonygps/tunnel/logs",
+        "start": "/api/symphonygps/tunnel/start",
+        "stop": "/api/symphonygps/tunnel/stop",
+        "send": "/api/symphonygps/tunnel/receive"
     }
 }

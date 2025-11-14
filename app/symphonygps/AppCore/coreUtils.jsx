@@ -409,8 +409,8 @@ export function loadTrackerDataCard(tracker)
       
       <div className="pt-3 col-md-12 "></div>
       <div className="col-md-12 row justify-content-center border-top border-info mt-3 p-0 m-0 pt-2 text-info ">
-      <div title ="Alarms" onClick={() => { loadDeviceAlarms(tracker.record_id); }} className="col-3 cpointer "><i className="fa fa-bell"></i><small className=""> Alarms</small></div>
-      <div title="Logs" onClick={() => { loadDeviceAlarms(tracker.record_id, 'gpslogs'); }} className="col-3 cpointer "><i className="fa fa-list"></i> <small className=""> Logs </small></div>
+      <div title ="Alarms" onClick={() => { loadTrackerProfile(tracker, "tracker"); }} className="col-3 cpointer "><i className="fa fa-bolt"></i><small className=""> Device </small></div>
+      <div title="Logs" onClick={() => { loadDeviceAlarms(tracker.record_id); }} className="col-3 cpointer "><i className="fa fa-list"></i> <small className=""> Alarms </small></div>
       <div title="Playback" onClick={() => { loadTrackerPlayBack(tracker); }} className="col-3 cpointer "><i className="fa fa-play"></i> <small className=""> Playback</small></div>
       <div title="Track" onClick={() => { loadTrackerPlayBack(tracker, "realtime"); }} className="col-3 cpointer "><i className="fa fa-map-marker"></i> <small className=""> Track</small></div>
       <button
@@ -442,6 +442,14 @@ export function loadTrackerPlayBack(tracker, module="playback")
   //console.log(`load tracker inccc`, tracker)
   const deviceId = tracker.token
   window.location = `${hiveRoutes.cms}/maps/${module}?device=${mosyBtoa(deviceId)}`
+
+}
+
+export function loadTrackerProfile(tracker, module="tracker")
+{
+  //console.log(`load tracker inccc`, tracker)
+  const deviceId = tracker.token
+  window.location = `${hiveRoutes.cms}/maps/${module}?device_key=${mosyBtoa(deviceId)}&device_list_uptoken=${mosyBtoa(deviceId)}`
 
 }
 

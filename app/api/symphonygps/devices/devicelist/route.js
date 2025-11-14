@@ -127,9 +127,7 @@ export async function POST(DevicelistRequest) {
     const DevicelistFormAction = body.device_list_mosy_action;
     const device_list_uptoken_value = base64Decode(body.device_list_uptoken);
     
-    const newId = magicRandomStr(7);
-
-
+    const newId = body.txt_serial_number;//magicRandomStr(7);
 		
   
   //--- Begin  device_list inputs array ---// 
@@ -152,7 +150,7 @@ export async function POST(DevicelistRequest) {
   //--- End device_list inputs array --//
 
     //mutate requested values
-    const mutatedDataArray =mutateInputArray('device_list',DevicelistInputsArr, DevicelistRequest, newId, authData)
+    const mutatedDataArray =mutateInputArray('device_list', DevicelistInputsArr, DevicelistRequest, newId, authData)
 
     if (DevicelistFormAction === "add_device_list") 
     {
@@ -174,6 +172,8 @@ export async function POST(DevicelistRequest) {
     
     if (DevicelistFormAction === "update_device_list") {
       
+      mutatedDataArray.record_id = newId;
+
       // update table Devicelist
       const result = await UpdateDevicelist(newId, mutatedDataArray, body, authData, `primkey='${device_list_uptoken_value}'`)
 

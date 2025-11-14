@@ -127,10 +127,7 @@ export async function POST(DevicesummaryRequest) {
     const DevicesummaryFormAction = body.device_list_mosy_action;
     const device_list_uptoken_value = base64Decode(body.device_list_uptoken);
     
-    const newId = magicRandomStr(7);
-
-
-		
+    const newId = body.txt_serial_number;//magicRandomStr(7);
   
   //--- Begin  device_list inputs array ---// 
   const DevicesummaryInputsArr = {
@@ -161,8 +158,6 @@ export async function POST(DevicesummaryRequest) {
       // Insert into table Devicesummary
       const result = await AddDevicesummary(newId, mutatedDataArray, body, authData);     
 
-       
-
       return Response.json({
         status: 'success',
         message: result.message,
@@ -173,6 +168,8 @@ export async function POST(DevicesummaryRequest) {
     
     if (DevicesummaryFormAction === "update_device_list") {
       
+      mutatedDataArray.record_id = newId;
+
       // update table Devicesummary
       const result = await UpdateDevicesummary(newId, mutatedDataArray, body, authData, `primkey='${device_list_uptoken_value}'`)
 

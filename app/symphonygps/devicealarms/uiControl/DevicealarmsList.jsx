@@ -153,9 +153,6 @@ export default function DevicealarmsList({ dataIn = {}, dataOut = {} }) {
             <th scope="col"><b>Site Name</b></th>
             <th scope="col"><b>Device ID</b></th>
             <th scope="col"><b>Battery Level</b></th>
-            <th scope="col"><b>Latitude (Y)</b></th>
-            <th scope="col"><b>Longitude (X)</b></th>
-            <th scope="col"><b>Speed (km/h)</b></th>
             <th scope="col"><b>Alarm Time</b></th>
             <th scope="col"><b>Log Details</b></th>
             
@@ -212,9 +209,6 @@ export default function DevicealarmsList({ dataIn = {}, dataOut = {} }) {
                     <td scope="col"><span title={listgps_logs_result.site_name}>{magicTrimText(listgps_logs_result._sites_site_name_site_name, 70)}</span></td>
                     <td scope="col"><span title={listgps_logs_result.device_id}>{magicTrimText(listgps_logs_result._device_list_device_name_device_id, 70)}</span></td>
                     <td scope="col"><span title={listgps_logs_result.battery}>{magicTrimText(listgps_logs_result.battery, 70)}</span></td>
-                    <td scope="col"><span title={listgps_logs_result.latitude}>{magicTrimText(listgps_logs_result.latitude, 70)}</span></td>
-                    <td scope="col"><span title={listgps_logs_result.longitude}>{magicTrimText(listgps_logs_result.longitude, 70)}</span></td>
-                    <td scope="col"><span title={listgps_logs_result.speed}>{magicTrimText(listgps_logs_result.speed, 70)}</span></td>
                     <td scope="col"><span title={listgps_logs_result.timestamp}>{magicTrimText(listgps_logs_result.timestamp, 70)}</span></td>
                     <td scope="col"><span>
                       <ReactMarkdown>
@@ -249,9 +243,6 @@ export default function DevicealarmsList({ dataIn = {}, dataOut = {} }) {
             <tr className="bg-light">
               <th></th>
               
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
               <th scope="col"><b></b></th>
               <th scope="col"><b></b></th>
               <th scope="col"><b></b></th>

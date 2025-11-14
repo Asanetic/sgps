@@ -6,7 +6,7 @@ import GeofenceMonitor, { computeGeofence, FloatingSearchBar, GeofenceAlerts, lo
 import { hiveRoutes } from "../../../appConfigs/hiveRoutes";
 import { MosyTitleTag } from "../../UiControl/componentControl";
 import { mosyUrlParam } from "../../../MosyUtils/hiveUtils";
-// import DeviceSummaryDetails from "../../devicesummary/uiControl/DevicesummaryDetails";
+import DeviceSummaryDetails from "../../devicesummary/uiControl/DevicesummaryDetails";
 
 export default function Tracker({ devices = [] }) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -56,7 +56,6 @@ export default function Tracker({ devices = [] }) {
     setSelected(markerPoint);
   }
   
-
   // Default center to first available latestPoint or fallback to Nairobi
   const allPoints = devices.map(d => d.latestPoint).filter(Boolean);
   const center = allPoints.length
@@ -67,7 +66,7 @@ export default function Tracker({ devices = [] }) {
     let title = "Device locations";
   
     if (devices.length === 1 && deviceData) {
-      title = `Tracker : ${deviceData.device_name}`;
+      title = `Tracker profile: ${deviceData.device_name}`;
     }
 
     const deviceListUpToken = mosyUrlParam("device_list_uptoken");
@@ -105,20 +104,23 @@ export default function Tracker({ devices = [] }) {
         />
       ))}
 
-      {devices.flatMap(d => d.geofences || []).map((fence, idx) => (
-        <Polygon
-          key={`fence-${idx}`}
-          paths={fence.coords.map(c => ({ lat: c.y, lng: c.x }))}
-          options={{
-            strokeColor: "#28a745",
-            strokeOpacity: 0.9,
-            strokeWeight: 2,
-            fillColor: "#28a745",
-            fillOpacity: 0.15,
-          }}
-        />
-    
-    ))}
+       {(deviceListUpToken) && (
+
+        devices.flatMap(d => d.geofences || []).map((fence, idx) => (
+          <Polygon
+            key={`fence-${idx}`}
+            paths={fence.coords.map(c => ({ lat: c.y, lng: c.x }))}
+            options={{
+              strokeColor: "#28a745",
+              strokeOpacity: 0.9,
+              strokeWeight: 2,
+              fillColor: "#28a745",
+              fillOpacity: 0.15,
+            }}
+          />
+        ))  
+       )
+       }
 
     {/* Render floating alerts card */}     
     <GeofenceMonitor title="Asset alerts"/>
@@ -137,14 +139,14 @@ export default function Tracker({ devices = [] }) {
 
     </GoogleMap>
 
-      {/* {deviceListUpToken && deviceListUpToken.trim() !== "" && (
+      {deviceListUpToken && deviceListUpToken.trim() !== "" && (
         <DeviceSummaryDetails
           dataIn={{
             showNavigationIsle: false,
             customQueryStr: `WHERE record_id='${deviceData.record_id}'`,
           }}
         />
-      )} */}
+      )}
 
     </>
   );

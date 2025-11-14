@@ -5,7 +5,7 @@ import { MosyNotify } from "../../../MosyUtils/ActionModals";
 import GeofenceMonitor, { computeGeofence, FloatingSearchBar, GeofenceAlerts, loadTackerProfile, loadTrackerDataCard, useGeofenceAlerts } from "../../AppCore/coreUtils";
 import { hiveRoutes } from "../../../appConfigs/hiveRoutes";
 import { MosyTitleTag } from "../../UiControl/componentControl";
-//import DeviceSummaryDetails from "../../devicesummary/uiControl/DevicesummaryDetails";
+import DeviceSummaryDetails from "../../devicesummary/uiControl/DevicesummaryDetails";
 import { mosyUrlParam } from "../../../MosyUtils/hiveUtils";
 
 export default function Tracker({ devices = [] }) {
@@ -55,7 +55,6 @@ export default function Tracker({ devices = [] }) {
   
     setSelected(markerPoint);
   }
-  
 
   // Default center to first available latestPoint or fallback to Nairobi
   const allPoints = devices.map(d => d.latestPoint).filter(Boolean);
@@ -71,7 +70,6 @@ export default function Tracker({ devices = [] }) {
     }
 
     const deviceListUpToken = mosyUrlParam("device_list_uptoken");
-
     //
   return (
     <><MosyTitleTag title={title}/>
@@ -106,7 +104,7 @@ export default function Tracker({ devices = [] }) {
         />
       ))}
 
-      {devices.flatMap(d => d.geofences || []).map((fence, idx) => (
+      {/* {devices.flatMap(d => d.geofences || []).map((fence, idx) => (
         <Polygon
           key={`fence-${idx}`}
           paths={fence.coords.map(c => ({ lat: c.y, lng: c.x }))}
@@ -119,7 +117,8 @@ export default function Tracker({ devices = [] }) {
           }}
         />
     
-    ))}
+    ))} */}
+
 
     {/* Render floating alerts card */}     
     <GeofenceMonitor title="Asset alerts"/>
@@ -138,14 +137,14 @@ export default function Tracker({ devices = [] }) {
 
     </GoogleMap>
 
-      {/* {deviceListUpToken && deviceListUpToken.trim() !== "" && (
+      {deviceListUpToken && deviceListUpToken.trim() !== "" && (
         <DeviceSummaryDetails
           dataIn={{
             showNavigationIsle: false,
             customQueryStr: `WHERE record_id='${deviceData.record_id}'`,
           }}
         />
-      )} */}
+      )}
 
     </>
   );

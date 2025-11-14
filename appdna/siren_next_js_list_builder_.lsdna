@@ -9,8 +9,7 @@
  *   Assembly DNA file (*.Dnaaf)
  ****************************************************/
 
-//sites //"primkey" , "record_id" , "site_name" , "site_code" , "country" , "city" , "county" , "town" , "building" , "latitude" , "longitude" , "location_address" , "remark" , "created_at" , "hive_site_id" , "hive_site_name" , "manager" , "manager_mobile" , "manager_email" , "contact_person" , "contact_person_mobile" , "contact_person_email" ,
-
+//sites //"primkey" , "record_id" , "site_name" , "country" , "city" , "county" , "town" , "building" , "latitude" , "longitude" , "location_address" , "remark" , "created_at" ,
 
 /* =========================
    1. DNA Options
@@ -24,7 +23,7 @@ $overwrite_dna_file = "yes"; // yes | no
    ========================= */
 eval(find_snippet("1171"));   // camelCase converter
 
-$table_config_file__ = "../appdna/symphonygps/sites/tbl_attr/sites_config.php";
+$table_config_file__ = "../appdna/symphonygps/device_list/tbl_attr/simplified_device_list_config.php";
 
 include($table_config_file__);
 

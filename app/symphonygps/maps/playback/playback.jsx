@@ -58,13 +58,20 @@ export default function PlayBack({ devices = [] }) {
     window.location=`${hiveRoutes.cms}/maps/playback?device=${mosyBtoa(deviceKey)}`
   }
 
+  const deviceData = devices[0];
+  let title = "Tracker Playback";
+
+  if (devices.length === 1 && deviceData) {
+    title = `Tracker playback : ${deviceData.device_name}`;
+  }
+
   return (
     <div style={{ position: "relative" }}>
       {!isLoaded ? (
         <div style={{ padding: "2rem", textAlign: "center" }}>Loading Google Maps...</div>
       ) : (
         <>
-        <MosyTitleTag title="Tracker Playback"/>
+        <MosyTitleTag title={title}/>
         <FloatingSearchBar showSiteSearch={false} showTrakerSearch={true} onDeviceSelectFull={switchDevice}/>
         <GoogleMap
           mapContainerStyle={{ height: "100vh", width: "100%" }}
@@ -188,7 +195,7 @@ export default function PlayBack({ devices = [] }) {
         <button
           onClick={togglePlayback}
           style={{
-            background: playing ? "#dc3545" : "#28a745",
+            background: playing ? "#dc3545" : "#331050",
             color: "#fff",
             padding: "10px 15px",
             border: "none",
