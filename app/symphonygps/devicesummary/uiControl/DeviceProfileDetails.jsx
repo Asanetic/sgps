@@ -64,7 +64,7 @@ import DevicegpslogsList from '../../gpslogs/uiControl/DevicegpslogsList';
 // export profile
 
 
-export default function DeviceSummaryDetails({ dataIn = {}, dataOut = {} }) {
+export default function DeviceProfileDetails({ dataIn = {}, dataOut = {} }) {
   
   //initiate data exchange manifest
   //incoming data from parent
