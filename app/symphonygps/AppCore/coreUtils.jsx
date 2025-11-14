@@ -708,7 +708,7 @@ export function FloatingSearchBar({ onSearch, onSiteSelectFull, showSiteSearch=t
 
 
 export async function sendDeviceLocationLog(device) {
-  const log_type = "GPS Update";
+  const log_type = "GPS";
   const battery = "50";
   const speed =  "30";
   const remark = "Auto log from map";
