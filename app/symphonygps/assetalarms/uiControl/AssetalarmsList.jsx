@@ -95,14 +95,12 @@ export default function AssetalarmsList({ dataIn = {}, dataOut = {} }) {
     }
     
     loadAssetalarmsListData(customQueryStr, stateItemSetters);
-  
-    {(stateItem.assetalarmsListData?.length > 0) && (
-      useStatusHighlighter()
-    )}
     
   }, [localEventSignature]);
   
-
+  {(stateItem.assetalarmsListData?.length > 0) && (
+    useStatusHighlighter()
+  )}
   
   return (
     
