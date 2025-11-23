@@ -20,7 +20,8 @@
     "registeredsites": {
         "base": "/api/symphonygps/gpssites/registeredsites",
         "delete": "/api/symphonygps/gpssites/delete",
-        "map": "/api/symphonygps/gpssites/map"
+        "map": "/api/symphonygps/gpssites/map",
+        "import": "/api/symphonygps/gpssites/registeredsites/import"
     },
     "devicelist": {
         "base": "/api/symphonygps/devices/devicelist",
@@ -49,5 +50,12 @@
         "start": "/api/symphonygps/tunnel/start",
         "stop": "/api/symphonygps/tunnel/stop",
         "send": "/api/symphonygps/tunnel/receive"
+    },
+    "assetalarms": {
+        "base": "/api/symphonygps/assetalarms/assetalarms",
+        "manage": "/api/symphonygps/assetalarms/manage",
+        "logalarm": "/api/symphonygps/assetalarms/logalarm",
+        "delete": "/api/symphonygps/assetalarms/delete",
+        "import": "/api/symphonygps/assetalarms/assetalarms/import"
     }
 }

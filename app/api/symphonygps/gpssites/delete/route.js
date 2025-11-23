@@ -1,10 +1,20 @@
 
 import { mosySqlDelete , base64Decode , mosyQddata , mosyDeleteFile } from '../../../apiUtils/dataControl/dataUtils';
+import { processAuthToken } from '../../../auth/authManager';
 
 import { DeleteRegisteredsites } from '../registeredsites/RegisteredsitesDbGateway';
 
 export async function GET(request) {
 
+    // --- Validate Token ---
+    const { valid: isTokenValid, data: authData, reason: tokenError } = processAuthToken(request);
+    if (!isTokenValid) {
+      return new Response(
+        JSON.stringify({ success: false, message: tokenError }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
+      );
+    }
+    
   const { searchParams } = new URL(request.url);
 
   const deleteToken = searchParams.get('_sites_delete_record');

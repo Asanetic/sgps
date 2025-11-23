@@ -536,6 +536,10 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
             <section className="col-md-12 m-0 bg-white pt-5 p-0 ">
               <h5 className="col-md-12 text-left  border-bottom pl-lg-1 text-muted mb-3"> {`Devices at this Site`} </h5>
               
+              <div className="col-md-12 p-2 text-right ">
+                <a href={`?sites_mosyfilter=${btoa(`site_id='${sitesNode?.record_id}'`)}`} className="cpointer"> View More  <i className="fa fa-arrow-right "></i></a>
+              </div>
+              
               <DevicesummaryList
               key={`${customQueryStr}-${localEventSignature}`}
               dataIn={{
@@ -544,7 +548,7 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
                 showNavigationIsle:false,
                 showDataControlSections:false,
                 customQueryStr : btoa(`where site_id='${sitesNode?.record_id}'`),
-                customProfilePath:""
+                customProfilePath:"../devicesummary/profile"
                 
               }}
               

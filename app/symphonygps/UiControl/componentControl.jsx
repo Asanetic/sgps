@@ -1256,66 +1256,77 @@ export function MosyActionButton({ source = "" , label, icon, onClick, className
   );
 }
 
-
 export function MosyDateRangeFilter({
   callBack = () => {},
   className = '',
+  mode = "date", // date | datetime
 }) {
+
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    setStartDate(today);
-    setEndDate(today);
-  }, []);
+  useEffect(function () {
+    const now = new Date();
 
-  const handleProceed = () => {
+    if (mode === "datetime") {
+      const local = now.toISOString().slice(0, 16); // yyyy-mm-ddThh:mm
+      setStartDate(local);
+      setEndDate(local);
+    } else {
+      const today = now.toISOString().split('T')[0]; // yyyy-mm-dd
+      setStartDate(today);
+      setEndDate(today);
+    }
+  }, [mode]);
+
+  function handleProceed() {
     callBack({
       startDate,
       endDate,
+      mode
     });
-  };
+  }
+
+  const inputType = mode === "datetime" ? "datetime-local" : "date";
 
   return (
     <div className={`row m-0 p-0 justify-content-center col-md-12 ${className}`}>
-         
-   <div className={`form-group hive_data_cell col-md-6  text-left`}>
-      <label>Start date</label>
-      <input
-        type="date"
-        className="form-control col-md-12 mr-2"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-      />
-    </div>
-    <div className={`form-group hive_data_cell col-md-6  text-left`}>
-    <label>End date</label>
-      <input
-        type="date"
-        className="form-control col-md-12  mr-2"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
-      />
+
+      <div className="form-group hive_data_cell col-md-6 text-left">
+        <label>Start {mode === "datetime" ? "date & time" : "date"}</label>
+        <input
+          type={inputType}
+          className="form-control col-md-12 mr-2"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
       </div>
 
-    <div className={`row m-0 p-0 justify-content-end col-md-12 `}>
-      <button
-        className="btn border border_set btn-primary cpointer mb-2 mr-3"
-        onClick={handleProceed}
-      >
-        <i className="fa fa-filter mr-1"></i> Proceed
-      </button>
+      <div className="form-group hive_data_cell col-md-6 text-left">
+        <label>End {mode === "datetime" ? "date & time" : "date"}</label>
+        <input
+          type={inputType}
+          className="form-control col-md-12 mr-2"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
       </div>
+
+      <div className="row m-0 p-0 justify-content-end col-md-12">
+        <button
+          className="btn border border_set btn-primary cpointer mb-2 mr-3"
+          onClick={handleProceed}
+        >
+          <i className="fa fa-filter mr-1"></i> Proceed
+        </button>
+      </div>
+
     </div>
   );
 }
 
 
-export function filterDataByDate({
-  label = "Search by date",
-  callBack = () => {},
-} = {}) {
+export function filterDataByDate({label = "Search by date", callBack = () => {}, mode = "date"} = {}) {
   MosyCard(
     "",
     <>
@@ -1323,7 +1334,7 @@ export function filterDataByDate({
         <span className="m-0 p-0 h4">{label}</span>
       </div>
       <MosySpace spaceClass="p-1" />
-      <MosyDateRangeFilter callBack={callBack} />
+      <MosyDateRangeFilter callBack={callBack} mode={mode}/>
     </>
   );
 }

@@ -75,6 +75,8 @@ export async function mosySqlUpdate(tbl, fieldsAndValuesJson, formBody, whereStr
 
   const query = `UPDATE \`${activeDB}\`.\`${tbl}\` SET ${updateStr} ${whereClause}`;
 
+  console.log(`update queriiieee ${query}`)
+
   try {
     const [result] = await conn.execute(query, magicValues);
 
@@ -263,6 +265,7 @@ export async function mosyFlexSelect(queryParams = {}, mutations = {}, mutationC
 
   //console.log("mosyFlexSelect mutationClass keys:", Object.keys(mutationClass));
   //console.log("mosyFlexSelect functionCols keys:", Object.keys(mutations));  
+  console.log("mosyFlexSelect where str keys:", decodedWhereStr);  
   
   // Handle pagination
   if (pagination && pagination.includes(':')) {
@@ -472,4 +475,23 @@ function getOrdinalSuffix(day) {
     case 3: return 'rd';
     default: return 'th';
   }
+}
+
+export function mosyToday() {
+  const now = new Date();
+  return now.toISOString().split('T')[0]; // "YYYY-MM-DD"
+}
+
+export function mosyRightNow() {
+  const now = new Date();
+  const pad = (num) => String(num).padStart(2, '0');
+
+  const year = now.getFullYear();
+  const month = pad(now.getMonth() + 1);
+  const day = pad(now.getDate());
+  const hours = pad(now.getHours());
+  const minutes = pad(now.getMinutes());
+  const seconds = pad(now.getSeconds());
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }

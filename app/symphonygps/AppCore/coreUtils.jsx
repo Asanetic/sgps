@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import { mosy_push_data, mosyBtoa, mosyGetData, mosyGetElemVal, mosyPostData, mosyPostFormData, mosyUpdateUrlParam } from "../../MosyUtils/hiveUtils";
-import { MosyAlertCard, MosyNotify } from "../../MosyUtils/ActionModals";
+import { mosy_push_data, mosyBtoa, mosyGetData, mosyGetElemVal, mosyPostData, mosyPostFormData, mosyUpdateUrlParam , mosyFormatDateTime} from "../../MosyUtils/hiveUtils";
+import { closeMosyModal, MosyAlertCard, MosyNotify } from "../../MosyUtils/ActionModals";
 
 import { getApiRoutes } from '../AppRoutes/apiRoutesHandler';
-import {LiveSearchDropdown} from "../UiControl/componentControl"
+import {filterDataByDate, LiveSearchDropdown, MosyDateRangeFilter} from "../UiControl/componentControl"
 import DevicelistProfile from "../devices/uiControl/DevicelistProfile";
 import { closeMosyCard, MosyCard } from "../../components/MosyCard";
 import { PlayBackMapData } from "../maps/playback/playbackdata";
 import {loadSiteData} from "../maps/loadSite";
 import { hiveRoutes } from "../../appConfigs/hiveRoutes";
+import { MosyLiveSearch } from "../UiControl/customUI";
 
 const apiRoutes = getApiRoutes(); // Use the imported JSON directly
 
@@ -236,7 +237,7 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
               {alerts.map((data, i) => (
                 <li
                   key={`device-${i}`}
-                  onClick={() => loadTackerProfile(data.device)}
+                  onClick={() => logAlarm(data)}
                   className="cpointer bg-light text-dark mb-3 p-2 row justify-content-center rounded"
                 >
                   <div className="col-md-12 text-dark border-bottom border-white">
@@ -244,8 +245,8 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
                     Site: {data.device_data._sites_site_name_site_id}
                   </div>
                   <div className="col-md-12 row justify-content-start pl-3 m-2">
-                    <span className="badge p-1 bg-danger text-white mr-1">
-                      Offline
+                    <span className="badge p-1 bg-success text-white mr-1">
+                      Online
                     </span>
                     <span className="badge p-1 bg-warning text-dark">
                       Not moving
@@ -861,9 +862,9 @@ export default function GeofenceMonitor({ device_id = "", title ="Device alarms"
         iconColor:"text-danger",
         message: `⚠️ ${title}`,
         yesLabel:"Noted",
-        noLabel : "Close",
+        noLabel : "Action",
         onYes : ()=>{closeMosyCard("modal2"); setShowModal(false)},
-        onNo : () =>{},
+        onNo : () =>{viewPendingAlarmHistory()},
         id : "modal2"
       })
 
@@ -876,7 +877,10 @@ export default function GeofenceMonitor({ device_id = "", title ="Device alarms"
 
 }
 
-
+export function viewPendingAlarmHistory()
+{
+  window.location=`../assetalarms/list?asset_alarms_mosyfilter=${btoa(` close_status != 'closed' `)}`
+}
 
 export async function sendPrimarySMS({ formSrc="sms_profile_form", phone = "254710766390", message = "Hello, this is a test SMS from the system." }) {
     try {
@@ -962,4 +966,226 @@ async function updateSentSmsmessage(formSrc="sms_profile_form", smsResponse={}) 
       });
 
 }
+
+
+// ╔══════════════════════════════════════╗
+// ║  AUTO-GENERATED FUNCTION  #1          
+// ║  Function: filterAlarmDate                    
+// ╚══════════════════════════════════════╝
+export function filterAlarmDate() {
+  
+  filterDataByDate({
+      mode:"datetime",
+      label: "Search by alarm date",
+      callBack: ({startDate, endDate}) => {
+          window.location=`../assetalarms/list?asset_alarms_mosyfilter=${btoa(` alarm_time >= '${mosyFormatDateTime(startDate)}' AND alarm_time <= '${mosyFormatDateTime(endDate)}' `)}`   
+      },  
+  })
+
+}
+
+
+// ╔══════════════════════════════════════╗
+// ║  AUTO-GENERATED FUNCTION  #2          
+// ║  Function: filterAlarmType                    
+// ╚══════════════════════════════════════╝
+
+export function filterAlarmType(fieldName="alarm_type") 
+{
+    //alert(`filterAlarmType`);
+
+    MosyLiveSearch({
+        api: apiRoutes.assetalarms.base,
+        title: "Search by alarm type",
+        displayField: fieldName,
+        valueField: fieldName,
+        tableName: "asset_alarms",
+        actionName: "mosyfilter",        
+        actionData: {
+          router: "../assetalarms/list",
+          qstr: `${fieldName} = '{{${fieldName}}}'`,
+          path : "../assetalarms/list",
+       }
+    })
+
+}
+
+
+// ╔══════════════════════════════════════╗
+// ║  AUTO-GENERATED FUNCTION  #3          
+// ║  Function: filterDeviceName                    
+// ╚══════════════════════════════════════╝
+export function filterDeviceName(fieldName="serial_number") {
+
+  MosyLiveSearch({
+    api: apiRoutes.devicesummary.base,
+    title: "Search by device name",
+    displayField: "device_name",
+    valueField: fieldName,
+    tableName: "device_list",
+    actionName: "mosyfilter",        
+    actionData: {
+      router: "../assetalarms/list",
+      qstr: `device_serial = '{{${fieldName}}}'`,
+      path : "../assetalarms/list",
+      parentTable: "asset_alarms",
+   }
+})
+
+}
+
+
+// ╔══════════════════════════════════════╗
+// ║  AUTO-GENERATED FUNCTION  #4          
+// ║  Function: viewAlarmHistory                    
+// ╚══════════════════════════════════════╝
+export function viewAlarmHistory() {
+    alert(`viewAlarmHistory`);
+}
+
+
+// ╔══════════════════════════════════════╗
+// ║  AUTO-GENERATED FUNCTION  #5          
+// ║  Function: acknowledgeAlarm                    
+// ╚══════════════════════════════════════╝
+export function acknowledgeAlarm(token) 
+{
+
+  const payload = {new_status :"Acknowledged", close_status : "Pending"}
+
+  MosyAlertCard({
+    title: "Acknowledge Alarm",
+    message: "Are you sure you want to acknowledge this alarm?",
+    onYes: () => confimAlarmStatus({token, payload}),
+    onNo: () => {},
+    yesLabel: "Yes",
+    noLabel: "Cancel",
+
+  })
+    
+}
+
+export async function confimAlarmStatus({token, payload})
+{
+  MosyNotify({ message: "Sending request ...", icon: "send", addTimer : false,id:"modal1" });
+  await  mosyPostData({
+    url: apiRoutes.assetalarms.manage,
+    data: {token: token, payload},
+    method: 'POST',  
+})
+
+closeMosyCard("modal1")
+
+MosyNotify({ message: `${payload.new_status} successfully`, icon: "check-circle" , iconColor : "success" });
+
+setTimeout(() => {
+  window.location.reload();
+},4000)
+
+}
+
+
+
+// ╔══════════════════════════════════════╗
+// ║  AUTO-GENERATED FUNCTION  #2          
+// ║  Function: trackAlarm                    
+// ╚══════════════════════════════════════╝
+export function trackAlarm(token) {
+    //alert(`trackAlarm`);
+    //window.location = `${hiveRoutes.cms}/maps/realtime?device=NA=
+   window.location = `${hiveRoutes.cms}/maps/realtime?device=${mosyBtoa(token)}`
+}
+
+
+// ╔══════════════════════════════════════╗
+// ║  AUTO-GENERATED FUNCTION  #2          
+// ║  Function: closeAlarm                    
+// ╚══════════════════════════════════════╝
+export function closeAlarm(token) {
+  const payload = {new_status :"Closed", close_status : "Closed"}
+
+  MosyAlertCard({
+    title: "Close Alarm",
+    message: "Are you sure you want to mark this alarm as closed?",
+    onYes: () => confimAlarmStatus({token, payload}),
+    onNo: () => {},
+    yesLabel: "Yes",
+    noLabel: "Cancel",
+    icon:"lock",
+    iconColor:"purple"
+
+  })
+}
+
+export async function logAlarm(data)
+{
+  console.log(`data..... log alarm .... `, data )
+  MosyNotify({message :"Logging alarm...",icon:"send",addTimer:false,id:"topmost"});
+
+ const logData = {...data, log_data :{alarm_type : "Geofence", description : "Geofence Violation"}}
+
+ const res = await mosyPostData({
+    url: apiRoutes.assetalarms.logalarm,
+    data: {payload:logData},
+    method: 'POST',  
+})
+
+closeMosyModal("topmost")
+MosyNotify({message :`Alarm ${res?.asset_alarms_uptoken} logged`,icon:"check-circle",addTimer:false,id:"topmost"});
+
+window.location = `${hiveRoutes.cms}/assetalarms/list?asset_alarms_mosyfilter=${btoa(` primkey = '${res?.asset_alarms_uptoken}' `)}`  
+
+}
+
+
+// ╔══════════════════════════════════════╗
+// ║  AUTO-GENERATED FUNCTION  #6          
+// ║  Function: filterAlarmStatus                    
+// ╚══════════════════════════════════════╝
+export function filterAlarmStatus(fieldName="close_status") {
+    ///alert(`filterAlarmStatus`);
+    
+    MosyLiveSearch({
+      api: apiRoutes.assetalarms.base,
+      title: "Search by status",
+      displayField: fieldName,
+      valueField: fieldName,
+      tableName: "asset_alarms",
+      actionName: "mosyfilter",  
+      signature :"status_search",      
+      actionData: {
+        router: "../assetalarms/list",
+        qstr: `${fieldName} = '{{${fieldName}}}'`,
+        path : "../assetalarms/list",
+     }
+  })
+
+}
+
+export function useStatusHighlighter() {
+  //useEffect(function () {
+   const mapping =
+   {
+    open: "open_alarm",
+    geofence: "pending_alarm",
+    motion: "darkbg_alarm",
+    battery: "purplebg_alarm",
+    pending: "yellowbg_alarm",
+    acknowledged: "yellowbg_alarm",
+    open: "open_alarm",
+    closed: "closed_alarm"
+  }
+    const cells = document.querySelectorAll("td span");
+
+    cells.forEach(function (span) {
+      const text = span.textContent?.trim().toLowerCase();
+      if (!text) return;
+
+      if (mapping[text]) {
+        span.classList.add(mapping[text]);
+      }
+    });
+ // }, [mapping]);
+}
+
 

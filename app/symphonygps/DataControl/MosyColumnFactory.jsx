@@ -1,10 +1,10 @@
 const MosyColumnFactory = {
 
-   //-- alarms cols--//
-  alarms: ["record_id", "device_id", "alarm_type", "alarm_message", "triggered_at", "remark", "acknowledged", "created_at", "hive_site_id", "hive_site_name"],
+   //-- asset_alarms cols--//
+  asset_alarms: ["record_id", "alarm_type", "alarm_time", "device_serial", "site_id", "ack_status", "status", "description", "ack_by", "close_status", "reg_date", "hive_site_id", "hive_site_name", "closed_by"],
 
    //-- device_list cols--//
-  device_list: ["record_id", "device_name", "date_installed", "serial_number", "remark", "site_id", "site_name", "reg_date", "hive_site_id", "hive_site_name", "geofence"],
+  device_list: ["record_id", "device_name", "date_installed", "serial_number", "remark", "reg_date", "hive_site_id", "hive_site_name", "geofence", "site_id", "site_name"],
 
    //-- device_pings cols--//
   device_pings: ["record_id", "device_id", "ping_time", "signal_strength", "battery_level", "remark", "status", "created_at", "hive_site_id", "hive_site_name"],

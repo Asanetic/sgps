@@ -128,6 +128,7 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
       
       <div className="table-responsive  data-tables bg-white bottom_tbl_handler">
         
+        
         <div className="text-left m-0 p-0 col-md-12">
           <div className="ml-2 cpointer badge btn_neo p-2 rounded badge-primary mb-3 tbl_print_btn"
           onClick={() => {mosyPrintToPdf({elemId : "sites_print_card", defaultTitle:"Registered Sites"})}}
@@ -180,106 +181,108 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
                   <tr key={listsites_result.primkey}>
                     <td>
                       <div className="table_cell_dropdown">
-                        <div className="table_cell_dropbtn"><b>{listsites_result.row_count}</b></div>
-                        <div className="table_cell_dropdown-content">
-                          <MosySmartDropdownActions
-                          tblName="sites"
-                          setters={{
+                        <div className="table_cell_dropbtn">
+                          
+                          <b>{listsites_result.row_count}</b></div>
+                          <div className="table_cell_dropdown-content">
+                            <MosySmartDropdownActions
+                            tblName="sites"
+                            setters={{
+                              
+                              childStateSetters: stateItemSetters,
+                              parentStateSetters: parentStateSetters
+                              
+                            }}
                             
-                            childStateSetters: stateItemSetters,
-                            parentStateSetters: parentStateSetters
+                            attributes={`${listsites_result.primkey}:${customProfilePath}:false`}
+                            callBack={(incomingRequest) => {setChildDataOut(incomingRequest) }}
                             
-                          }}
-                          
-                          attributes={`${listsites_result.primkey}:${customProfilePath}:false`}
-                          callBack={(incomingRequest) => {setChildDataOut(incomingRequest) }}
-                          
-                          />
-                          
+                            />
+                            
+                          </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
+                      
+                      <td scope="col"><span title={listsites_result.site_name}>{magicTrimText(listsites_result.site_name, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.site_code}>{magicTrimText(listsites_result.site_code, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.manager}>{magicTrimText(listsites_result.manager, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.contact_person}>{magicTrimText(listsites_result.contact_person, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.total_devices}>{magicTrimText(listsites_result.total_devices, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.latitude}>{magicTrimText(listsites_result.latitude, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.longitude}>{magicTrimText(listsites_result.longitude, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.location_address}>{magicTrimText(listsites_result.location_address, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.country}>{magicTrimText(listsites_result.country, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.county}>{magicTrimText(listsites_result.county, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.town}>{magicTrimText(listsites_result.town, 70)}</span></td>
+                      
+                    </tr>
                     
-                    <td scope="col"><span title={listsites_result.site_name}>{magicTrimText(listsites_result.site_name, 70)}</span></td>
-                    <td scope="col"><span title={listsites_result.site_code}>{magicTrimText(listsites_result.site_code, 70)}</span></td>
-                    <td scope="col"><span title={listsites_result.manager}>{magicTrimText(listsites_result.manager, 70)}</span></td>
-                    <td scope="col"><span title={listsites_result.contact_person}>{magicTrimText(listsites_result.contact_person, 70)}</span></td>
-                    <td scope="col"><span title={listsites_result.total_devices}>{magicTrimText(listsites_result.total_devices, 70)}</span></td>
-                    <td scope="col"><span title={listsites_result.latitude}>{magicTrimText(listsites_result.latitude, 70)}</span></td>
-                    <td scope="col"><span title={listsites_result.longitude}>{magicTrimText(listsites_result.longitude, 70)}</span></td>
-                    <td scope="col"><span title={listsites_result.location_address}>{magicTrimText(listsites_result.location_address, 70)}</span></td>
-                    <td scope="col"><span title={listsites_result.country}>{magicTrimText(listsites_result.country, 70)}</span></td>
-                    <td scope="col"><span title={listsites_result.county}>{magicTrimText(listsites_result.county, 70)}</span></td>
-                    <td scope="col"><span title={listsites_result.town}>{magicTrimText(listsites_result.town, 70)}</span></td>
                     
-                  </tr>
+                  </Fragment>)
+                  
+                })
+                
+              ) : (
+                
+                <tr><td colSpan="12" className="text-muted">
                   
                   
-                </Fragment>)
+                  <div className="col-md-12 text-center mt-4">
+                    <h6 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-search"></i> Sorry, no sites records found</h6>
+                    
+                    <AddNewButton src="RegisteredsitesList"  link={customProfilePath} label="New Site" icon="map-pin" />
+                    <div className="col-md-12 pt-5 " id=""></div>
+                  </div>
+                </td></tr>
                 
-              })
+              )}
               
-            ) : (
-              
-              <tr><td colSpan="12" className="text-muted">
+              <tr className="bg-light">
+                <th></th>
                 
+                <th scope="col"><b></b></th>
+                <th scope="col"><b></b></th>
+                <th scope="col"><b></b></th>
+                <th scope="col"><b></b></th>
+                <th scope="col"><b></b></th>
+                <th scope="col"><b></b></th>
+                <th scope="col"><b></b></th>
+                <th scope="col"><b></b></th>
+                <th scope="col"><b></b></th>
+                <th scope="col"><b></b></th>
+                <th scope="col"><b></b></th>
                 
-                <div className="col-md-12 text-center mt-4">
-                  <h6 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-search"></i> Sorry, no sites records found</h6>
-                  
-                  <AddNewButton src="RegisteredsitesList"  link={customProfilePath} label="New Site" icon="map-pin" />
-                  <div className="col-md-12 pt-5 " id=""></div>
-                </div>
-              </td></tr>
-              
-            )}
+              </tr>
+            </tbody>
             
-            <tr className="bg-light">
-              <th></th>
-              
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              <th scope="col"><b></b></th>
-              
-            </tr>
-          </tbody>
-          
-        </table>
+          </table>
+        </div>
+        <MosyPaginationUi
+        src="RegisteredsitesList"
+        tblName="sites"
+        totalPages={stateItem.registeredsitesListPageCount}
+        stateItemSetters={stateItemSetters}
+        />
       </div>
-      <MosyPaginationUi
-      src="RegisteredsitesList"
-      tblName="sites"
-      totalPages={stateItem.registeredsitesListPageCount}
-      stateItemSetters={stateItemSetters}
-      />
-    </div>
-    
-    
-  </form>
-  {/* snack notifications -- */}
-  {snackMessage &&(
-    <MosySnackWidget
-    content={snackMessage}
-    duration={5000}
-    type="custom"
-    onDone={() => {
-      stateItemSetters.setSnackMessage("");
-      stateItem.snackOnDone(); // Run whats inside onDone
-      deleteUrlParam("snack_alert")
-    }}
-    
-    />)}
+      
+      
+    </form>
     {/* snack notifications -- */}
-  </div>
-);
-
+    {snackMessage &&(
+      <MosySnackWidget
+      content={snackMessage}
+      duration={5000}
+      type="custom"
+      onDone={() => {
+        stateItemSetters.setSnackMessage("");
+        stateItem.snackOnDone(); // Run whats inside onDone
+        deleteUrlParam("snack_alert")
+      }}
+      
+      />)}
+      {/* snack notifications -- */}
+    </div>
+  );
+  
 }
 

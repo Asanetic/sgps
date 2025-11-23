@@ -198,7 +198,7 @@
      "event_path"=>"../../devicesummary/dataControl/DevicesummaryRequestHandler",     
      "module_path"=>"../../devicesummary/uiControl/DevicesummaryList",     
      "list_url"=>"",
-     "profile_url"=>"",
+     "profile_url"=>"../devicesummary/profile",
    ]
   ];
    

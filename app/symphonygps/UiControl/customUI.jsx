@@ -1,8 +1,6 @@
 import { LiveSearchDropdown } from "./componentControl"
 import { closeMosyCard, MosyCard } from "../../components/MosyCard";
-
 import { magicRandomStr } from "../../MosyUtils/hiveUtils";
-import { MosyNotify } from "../../MosyUtils/ActionModals";
 import { chatWithGPT } from "./customFunctions";
 
 
@@ -15,6 +13,7 @@ export function MosyLiveSearch({
     actionName = "",
     actionData = {},
     title = "Search",
+    signature="qdataInput",
     onSelectFull = () => {},
   }) {
     let finalValeField = valueField || displayField;
@@ -23,8 +22,7 @@ export function MosyLiveSearch({
     function handleOnSelect(dataRes) {
       // Call full payload regardless
 
-
-      console.log(`Live search `, actionData , dataRes , actionName)
+      //console.log(`Live search `, actionData , dataRes , actionName)
       onSelectFull(dataRes);
   
       // Perform mosyfilter logic
@@ -43,7 +41,10 @@ export function MosyLiveSearch({
         if (router && newQstr) {
             //router.push(`${actionData?.path}?${tableName}_mosyfilter=${btoa(newQstr)}`);
             window.location=`${actionData?.path}?${parentTable}_mosyfilter=${btoa(newQstr)}`;
-            stateSetters.setLocalEventSignature(magicRandomStr())
+
+            if(stateSetters){
+             stateSetters.setLocalEventSignature(magicRandomStr())
+            }
           closeMosyCard()
         }
 
@@ -85,7 +86,7 @@ export function MosyLiveSearch({
           tblName={tableName}
           parentTable={parentTable}
           inputName="liveSearchModal"
-          hiddenInputName="qdataInput"
+          hiddenInputName={signature}
           valueField={finalValeField}
           displayField={displayField}
           label=""

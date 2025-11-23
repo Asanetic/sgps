@@ -87,6 +87,32 @@ export function mosyMutateQuery(tblName, searchParams, authData, tablePrimKey)
       additionalQ =" and  invoice_type='Invoice'"
     }
 
+    if(qsrc=="asset_alarms - qdataInput" && tblName=="asset_alarms")
+    {
+      if(afterwhereStr=="")
+        {
+   
+          additionalQ=" group by alarm_type "
+  
+        }else{
+          additionalQ =" group by alarm_type  "
+        }
+
+    }
+    
+
+    if(qsrc=="asset_alarms - status_search" && tblName=="asset_alarms")
+    {
+        if(afterwhereStr=="")
+          {
+     
+            additionalQ=" group by close_status "
+    
+          }else{
+            additionalQ =" group by close_status  "
+          }
+  
+    }    
     
     const combinedParam = base64Encode(`${whereStr}${gftFilterType} ${mutatedFilterStr}  ${additionalQ} ${finalAfterwhereStr}`)
 

@@ -1,0 +1,27 @@
+//dna options== Digital Nexus Architecture (DNA) 
+$dna_file_name = "alarms_db_creation_Script"; 
+$create_dna = "yes"; //yes | no; 
+$overwrite_dna_file = "yes"; //yes | no 
+//dna options==
+
+
+//======= create table in db
+
+//=========== CLIENTS TABLE
+$client_table_script = "
+`primkey` int(255) PRIMARY KEY AUTO_INCREMENT,
+`record_id` varchar(400) NOT NULL,
+`alarm_type` varchar(500) NOT NULL,
+`alarm_time` datetime NOT NULL,
+`device_serial` varchar(500) NOT NULL,
+`site_id` varchar(500) NOT NULL,
+`ack_status` varchar(500) NOT NULL,
+`status` varchar(500) NOT NULL,
+`description` varchar(500) NOT NULL,
+`ack_by` varchar(500) NOT NULL,
+`close_status` varchar(500) NOT NULL,
+`reg_date` datetime DEFAULT CURRENT_TIMESTAMP
+";
+
+$client_table = 'asset_alarms';
+create_table($mysqliconn, $dbname, $client_table, $client_table_script);

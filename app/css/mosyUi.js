@@ -58,7 +58,54 @@ const MosyUiTheme = () => (
   z-index: 9999;
 }
 
-  
+.open_alarm{
+  color: white;
+  font-size:12px;
+  padding:5px;
+  background:red;
+  border-radius:10px;
+  width:70px;
+}
+
+.pending_alarm{
+  color: white;
+  font-size:12px;
+  padding:5px;
+  background:blue;
+  border-radius:10px;
+}
+
+.closed_alarm{
+  color: white;
+  font-size:12px;
+  padding:5px;
+  background:green;
+  border-radius:10px;
+}
+.darkbg_alarm{
+  color: white;
+  font-size:12px;
+  padding:5px;
+  background:#000;
+  border-radius:10px;
+}
+
+.yellowbg_alarm{
+  color: #000;
+  font-size:12px;
+  padding:5px;
+  background:yellow;
+  border-radius:10px;
+}
+
+.purplebg_alarm{
+  color: white;
+  font-size:12px;
+  padding:5px;
+  background:purple;
+  border-radius:10px;
+}
+
 .sidebar-inner {
   scrollbar-width: thin;
   scrollbar-color: ${mosyThemeConfigs.btnBg} transparent;

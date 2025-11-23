@@ -41,7 +41,7 @@ export const sidebarConfig = [
     type: "link", 
     label: "Alarms", 
     icon: "fa fa-bell", 
-    href: (routes) => `${routes.cms}/devicealarms/list`, 
+    href: (routes) => `${routes.cms}/assetalarms/list`, 
     roles: [] 
   },
 
