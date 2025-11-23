@@ -1189,3 +1189,14 @@ export function useStatusHighlighter() {
 }
 
 
+
+// ╔══════════════════════════════════════╗
+// ║  AUTO-GENERATED FUNCTION  #1          
+// ║  Function: viewDeviceOnMap                    
+// ╚══════════════════════════════════════╝
+export function viewDeviceOnMap(token) {
+      //console.log(`load tracker inccc`, tracker)
+  window.location = `${hiveRoutes.cms}/maps/tracker?device=${mosyBtoa(token)}`
+
+}
+

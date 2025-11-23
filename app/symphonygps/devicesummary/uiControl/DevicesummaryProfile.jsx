@@ -13,7 +13,7 @@ import { MosyAlertCard, MosyNotify ,closeMosyModal } from  '../../../MosyUtils/A
 import MosySnackWidget from '../../../MosyUtils/MosySnackWidget';
 
 //basic utils
-import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam  } from '../../../MosyUtils/hiveUtils';
+import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam ,mosyTonum  } from '../../../MosyUtils/hiveUtils';
 
 //data control and processors
 import { inteprateDevicesummaryFormAction, devicesummaryProfileData , popDeleteDialog, InteprateDevicesummaryEvent } from '../dataControl/DevicesummaryRequestHandler';
@@ -59,6 +59,8 @@ import {InteprateDevicegpslogsEvent} from '../../gpslogs/dataControl/Devicegpslo
 //import DevicegpslogsList component
 import DevicegpslogsList from '../../gpslogs/uiControl/DevicegpslogsList';
 
+//button function imports
+import { viewDeviceOnMap } from "../../AppCore/coreUtils";
 
 
 // export profile
@@ -200,6 +202,12 @@ export default function DevicesummaryProfile({ dataIn = {}, dataOut = {} }) {
                 
                 {paramDevicesummaryUptoken && (
                   <>
+                  
+                  <MosyActionButton
+                  label=" View Last Location "
+                  icon="map-marker"
+                  onClick={()=>{viewDeviceOnMap(`${device_listNode?.primkey}`)}}
+                  />
                   
                 </>
               )}

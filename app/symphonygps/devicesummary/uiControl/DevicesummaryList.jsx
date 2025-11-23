@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 
 
 //custom utils
-import { deleteUrlParam, magicTrimText, mosyUrlParam, mosyFormatDateOnly , mosyFormatDateTime} from '../../../MosyUtils/hiveUtils';
+import { deleteUrlParam, magicTrimText, mosyUrlParam, mosyFormatDateOnly , mosyFormatDateTime, mosyTonum , mosyToggleSelectAllTblRows , mosySelectTblRows } from '../../../MosyUtils/hiveUtils';
 import { mosyFilterUrl } from '../../DataControl/MosyFilterEngine';
 
 //list components
@@ -40,6 +40,9 @@ import ReactMarkdown from 'react-markdown';
 //routes manager
 ///handle routes
 import { getApiRoutes } from '../../AppRoutes/apiRoutesHandler';
+
+//custom fuctions
+//import {  } from '../../AppCore/coreUtils';
 
 // Use default base root (/)
 const apiRoutes = getApiRoutes();
@@ -124,6 +127,7 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
       
       <div className="table-responsive  data-tables bg-white bottom_tbl_handler">
         
+        
         <table className="table table-hover  text-left printTarget" id="device_list_data_table">
           <thead className="text-uppercase">
             <tr>
@@ -160,108 +164,110 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
                     <tr key={listdevice_list_result.primkey}>
                       <td>
                         <div className="table_cell_dropdown">
-                          <div className="table_cell_dropbtn"><b>{listdevice_list_result.row_count}</b></div>
-                          <div className="table_cell_dropdown-content">
-                            <MosySmartDropdownActions
-                            tblName="device_list"
-                            setters={{
+                          <div className="table_cell_dropbtn">
+                            
+                            <b>{listdevice_list_result.row_count}</b></div>
+                            <div className="table_cell_dropdown-content">
+                              <MosySmartDropdownActions
+                              tblName="device_list"
+                              setters={{
+                                
+                                childStateSetters: stateItemSetters,
+                                parentStateSetters: parentStateSetters
+                                
+                              }}
                               
-                              childStateSetters: stateItemSetters,
-                              parentStateSetters: parentStateSetters
+                              attributes={`${listdevice_list_result.primkey}:${customProfilePath}:false`}
+                              callBack={(incomingRequest) => {setChildDataOut(incomingRequest) }}
                               
-                            }}
-                            
-                            attributes={`${listdevice_list_result.primkey}:${customProfilePath}:false`}
-                            callBack={(incomingRequest) => {setChildDataOut(incomingRequest) }}
-                            
-                            />
-                            
+                              />
+                              
+                            </div>
                           </div>
-                        </div>
-                      </td>
+                        </td>
+                        
+                        <td scope="col"><span title={listdevice_list_result.device_name}>{magicTrimText(listdevice_list_result.device_name, 70)}</span></td>
+                        <td scope="col"><span title={listdevice_list_result.serial_number}>{magicTrimText(listdevice_list_result.serial_number, 70)}</span></td>
+                        <td scope="col"><span title={listdevice_list_result.site_id}>{magicTrimText(listdevice_list_result._sites_site_name_site_id, 70)}</span></td>
+                        <td scope="col"><span title={listdevice_list_result.site_code}>{magicTrimText(listdevice_list_result.site_code, 70)}</span></td>
+                        <td scope="col"><span title={listdevice_list_result.date_installed}>{mosyFormatDateOnly(listdevice_list_result.date_installed)}</span></td>
+                        <td scope="col"><span>
+                          <ReactMarkdown>
+                            
+                            {magicTrimText(listdevice_list_result.remark, 70)}
+                            
+                          </ReactMarkdown>
+                        </span></td>
+                        <td scope="col"><span title={listdevice_list_result.reg_date}>{mosyFormatDateOnly(listdevice_list_result.reg_date)}</span></td>
+                        <td scope="col"><span title={listdevice_list_result.installation_longitude}>{magicTrimText(listdevice_list_result.installation_longitude, 70)}</span></td>
+                        <td scope="col"><span title={listdevice_list_result.installation_latitude}>{magicTrimText(listdevice_list_result.installation_latitude, 70)}</span></td>
+                        
+                      </tr>
                       
-                      <td scope="col"><span title={listdevice_list_result.device_name}>{magicTrimText(listdevice_list_result.device_name, 70)}</span></td>
-                      <td scope="col"><span title={listdevice_list_result.serial_number}>{magicTrimText(listdevice_list_result.serial_number, 70)}</span></td>
-                      <td scope="col"><span title={listdevice_list_result.site_id}>{magicTrimText(listdevice_list_result._sites_site_name_site_id, 70)}</span></td>
-                      <td scope="col"><span title={listdevice_list_result.site_code}>{magicTrimText(listdevice_list_result.site_code, 70)}</span></td>
-                      <td scope="col"><span title={listdevice_list_result.date_installed}>{mosyFormatDateOnly(listdevice_list_result.date_installed)}</span></td>
-                      <td scope="col"><span>
-                        <ReactMarkdown>
-                          
-                          {magicTrimText(listdevice_list_result.remark, 70)}
-                          
-                        </ReactMarkdown>
-                      </span></td>
-                      <td scope="col"><span title={listdevice_list_result.reg_date}>{mosyFormatDateOnly(listdevice_list_result.reg_date)}</span></td>
-                      <td scope="col"><span title={listdevice_list_result.installation_longitude}>{magicTrimText(listdevice_list_result.installation_longitude, 70)}</span></td>
-                      <td scope="col"><span title={listdevice_list_result.installation_latitude}>{magicTrimText(listdevice_list_result.installation_latitude, 70)}</span></td>
                       
-                    </tr>
+                    </Fragment>)
+                    
+                  })
+                  
+                ) : (
+                  
+                  <tr><td colSpan="10" className="text-muted">
                     
                     
-                  </Fragment>)
+                    <div className="col-md-12 text-center mt-4">
+                      <h6 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-search"></i> Sorry, no devices records found</h6>
+                      
+                      <AddNewButton src="DevicesummaryList"  link={customProfilePath} label="New Device" icon="plus-circle" />
+                      <div className="col-md-12 pt-5 " id=""></div>
+                    </div>
+                  </td></tr>
                   
-                })
+                )}
                 
-              ) : (
-                
-                <tr><td colSpan="10" className="text-muted">
+                <tr className="bg-light">
+                  <th></th>
                   
+                  <th scope="col"><b></b></th>
+                  <th scope="col"><b></b></th>
+                  <th scope="col"><b></b></th>
+                  <th scope="col"><b></b></th>
+                  <th scope="col"><b></b></th>
+                  <th scope="col"><b></b></th>
+                  <th scope="col"><b></b></th>
+                  <th scope="col"><b></b></th>
+                  <th scope="col"><b></b></th>
                   
-                  <div className="col-md-12 text-center mt-4">
-                    <h6 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-search"></i> Sorry, no devices records found</h6>
-                    
-                    <AddNewButton src="DevicesummaryList"  link={customProfilePath} label="New Device" icon="plus-circle" />
-                    <div className="col-md-12 pt-5 " id=""></div>
-                  </div>
-                </td></tr>
-                
-              )}
+                </tr>
+              </tbody>
               
-              <tr className="bg-light">
-                <th></th>
-                
-                <th scope="col"><b></b></th>
-                <th scope="col"><b></b></th>
-                <th scope="col"><b></b></th>
-                <th scope="col"><b></b></th>
-                <th scope="col"><b></b></th>
-                <th scope="col"><b></b></th>
-                <th scope="col"><b></b></th>
-                <th scope="col"><b></b></th>
-                <th scope="col"><b></b></th>
-                
-              </tr>
-            </tbody>
+            </table>
             
-          </table>
+            <MosyPaginationUi
+            src="DevicesummaryList"
+            tblName="device_list"
+            totalPages={stateItem.devicesummaryListPageCount}
+            stateItemSetters={stateItemSetters}
+            />
+          </div>
           
-          <MosyPaginationUi
-          src="DevicesummaryList"
-          tblName="device_list"
-          totalPages={stateItem.devicesummaryListPageCount}
-          stateItemSetters={stateItemSetters}
-          />
-        </div>
-        
-        
-      </form>
-      {/* snack notifications -- */}
-      {snackMessage &&(
-        <MosySnackWidget
-        content={snackMessage}
-        duration={5000}
-        type="custom"
-        onDone={() => {
-          stateItemSetters.setSnackMessage("");
-          stateItem.snackOnDone(); // Run whats inside onDone
-          deleteUrlParam("snack_alert")
-        }}
-        
-        />)}
+          
+        </form>
         {/* snack notifications -- */}
-      </div>
-    );
+        {snackMessage &&(
+          <MosySnackWidget
+          content={snackMessage}
+          duration={5000}
+          type="custom"
+          onDone={() => {
+            stateItemSetters.setSnackMessage("");
+            stateItem.snackOnDone(); // Run whats inside onDone
+            deleteUrlParam("snack_alert")
+          }}
+          
+          />)}
+          {/* snack notifications -- */}
+        </div>
+      );
+      
+    }
     
-  }
-  

@@ -2,5 +2,7 @@
     "assetalarms/profile": "http://localhost/nextv2/mainapps/symphonygps/terminal/home?check_autoload=Li4vYXBwZG5hL3N5bXBob255Z3BzL2Fzc2V0X2FsYXJtcy9Bc3NldCBBbGFybXNfYmx1ZXByaW50LkRuYWFm",
     "assetalarms/list": "http://localhost/nextv2/mainapps/symphonygps/terminal/home?check_autoload=Li4vYXBwZG5hL3N5bXBob255Z3BzL2Fzc2V0X2FsYXJtcy9Bc3NldCBBbGFybXNfYmx1ZXByaW50LkRuYWFm",
     "gpssites/profile": "http://localhost/nextv2/mainapps/symphonygps/terminal/home?check_autoload=Li4vYXBwZG5hL3N5bXBob255Z3BzL3NpdGVzL1JlZ2lzdGVyZWRzaXRlc1Byb2ZpbGVfUmVnaXN0ZXJlZCBTaXRlcy5EbmFhZg==",
-    "gpssites/list": "http://localhost/nextv2/mainapps/symphonygps/terminal/home?check_autoload=Li4vYXBwZG5hL3N5bXBob255Z3BzL3NpdGVzL1JlZ2lzdGVyZWRzaXRlc1Byb2ZpbGVfUmVnaXN0ZXJlZCBTaXRlcy5EbmFhZg=="
+    "gpssites/list": "http://localhost/nextv2/mainapps/symphonygps/terminal/home?check_autoload=Li4vYXBwZG5hL3N5bXBob255Z3BzL3NpdGVzL1JlZ2lzdGVyZWRzaXRlc1Byb2ZpbGVfUmVnaXN0ZXJlZCBTaXRlcy5EbmFhZg==",
+    "devicesummary/profile": "http://localhost/nextv2/mainapps/symphonygps/terminal/home?check_autoload=Li4vYXBwZG5hL3N5bXBob255Z3BzL2RldmljZV9saXN0L0RldmljZSBzdW1tYXJ5X2JsdWVwcmludC5EbmFhZg==",
+    "devicesummary/list": "http://localhost/nextv2/mainapps/symphonygps/terminal/home?check_autoload=Li4vYXBwZG5hL3N5bXBob255Z3BzL2RldmljZV9saXN0L0RldmljZSBzdW1tYXJ5X2JsdWVwcmludC5EbmFhZg=="
 }

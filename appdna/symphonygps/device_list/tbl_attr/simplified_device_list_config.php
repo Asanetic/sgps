@@ -181,7 +181,7 @@
 
     $primary_table__=>[
        //"signal: Test Ping "=>"triggerDevicePing()",
-      // "map-marker: View Last Location "=>"viewLastGPS()"
+      "map-marker: View Last Location "=>'viewDeviceOnMap(`${device_listNode?.primkey}`)'
     ],
 
   ];
