@@ -1164,6 +1164,7 @@ export function filterAlarmStatus(fieldName="close_status") {
 
 export function useStatusHighlighter() {
   //useEffect(function () {
+
    const mapping =
    {
     open: "open_alarm",
@@ -1185,6 +1186,8 @@ export function useStatusHighlighter() {
         span.classList.add(mapping[text]);
       }
     });
+
+    console.log("useStatusHighlighter called", mapping);
  // }, [mapping]);
 }
 
