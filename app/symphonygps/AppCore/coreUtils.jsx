@@ -1162,23 +1162,29 @@ export function filterAlarmStatus(fieldName="close_status") {
 
 }
 
-export function useStatusHighlighter() {
-  //useEffect(function () {
+export function useStatusHighlighter(list = []) {
+  useEffect(function () {
 
-   const mapping =
-   {
-    open: "open_alarm",
-    geofence: "pending_alarm",
-    motion: "darkbg_alarm",
-    battery: "purplebg_alarm",
-    pending: "yellowbg_alarm",
-    acknowledged: "yellowbg_alarm",
-    open: "open_alarm",
-    closed: "closed_alarm"
-  }
-    const cells = document.querySelectorAll("td span");
+    if (!list || list.length === 0) return;
 
-    cells.forEach(function (span) {
+    const mapping = {
+      open: "open_alarm",
+      geofence: "pending_alarm",
+      motion: "darkbg_alarm",
+      battery: "purplebg_alarm",
+      pending: "yellowbg_alarm",
+      acknowledged: "yellowbg_alarm",
+      closed: "closed_alarm",
+      active: "open_alarm", 
+      inactive: "inactive_status",
+      expired: "inactive_status",
+      online: "online_status",
+      offline: "offline_status",
+    };
+
+    const spans = document.querySelectorAll("td span");
+
+    spans.forEach(function (span) {
       const text = span.textContent?.trim().toLowerCase();
       if (!text) return;
 
@@ -1187,8 +1193,9 @@ export function useStatusHighlighter() {
       }
     });
 
-    console.log("useStatusHighlighter called", mapping);
- // }, [mapping]);
+    console.log("Highlighter applied");
+
+  }, [list]);
 }
 
 

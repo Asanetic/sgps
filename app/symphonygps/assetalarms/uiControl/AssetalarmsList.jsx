@@ -98,9 +98,7 @@ export default function AssetalarmsList({ dataIn = {}, dataOut = {} }) {
     
   }, [localEventSignature]);
   
-  {(stateItem.assetalarmsListData?.length > 0) && (
-    useStatusHighlighter()
-  )}
+  useStatusHighlighter(stateItem.assetalarmsListData);
   
   return (
     
