@@ -45,13 +45,13 @@ export const sidebarConfig = [
     roles: [] 
   },
 
-  // { 
-  //   type: "link", 
-  //   label: "Playback", 
-  //   icon: "fa fa-play", 
-  //   href: (routes) => `${routes.cms}/playback/devices`, 
-  //   roles: [] 
-  // },
+  { 
+    type: "link", 
+    label: "Tcp settings", 
+    icon: "fa fa-copy", 
+    href: (routes) => `${routes.cms}/tcp`, 
+    roles: [] 
+  },
 
   // { 
   //   type: "link", 

@@ -1,3 +1,8 @@
+import { magicRandomStr, mosyQddata, mosyRightNow } from "../../apiUtils/dataControl/dataUtils";
+import { AddAssetalarms } from "../assetalarms/assetalarms/AssetalarmsDbGateway";
+import { mutateInputArray } from "../beMonitor";
+import { UpdateDevicegpslogs } from "../gpslogs/devicegpslogs/DevicegpslogsDbGateway";
+
 /**
  * Parses a GPS device raw string into a structured object.
  * Supports dynamic number of Base Stations and WiFi entries.
@@ -76,12 +81,21 @@ export function parseGPSData(rawString) {
     // ----- WIFI ENTRIES -----
     // Remaining fields are WiFi signals: each triplet = wfName, MAC, signal
     const wifi = [];
-    while (index + 2 < parts.length) {
-      const wfName = parts[index++];
-      const mac = parts[index++];
-      const signal = parseInt(parts[index++]);
-      wifi.push({ name: wfName, mac, signal });
+
+    // Check if first WiFi value is the WiFi count
+    let wifiCount = parseInt(parts[index]);
+    if (!isNaN(wifiCount)) {
+        index++; // skip the count
     }
+
+    while (index + 2 < parts.length) {
+        const name = parts[index++];
+        const mac = parts[index++];
+        const signal = parseInt(parts[index++]);
+
+        wifi.push({ name, mac, signal });
+    }
+
   
     // ----- FINAL STRUCTURED OBJECT -----
     return { ...fixedFields, baseStations, wifi };
@@ -96,7 +110,7 @@ export function parseGPSData(rawString) {
  *    siteName, remark, hiveSiteId, hiveSiteName, createdAt
  * @returns {object} formatted input for gps_logs
  */
-export function processDevicePingToLog(parsedGPS, options = {}) {
+export async function processDevicePingToLog(parsedGPS, options = {}) {
     if (!parsedGPS) return null;
   
     const {
@@ -136,10 +150,12 @@ export function processDevicePingToLog(parsedGPS, options = {}) {
       baseStations,
       wifi
     };
-  
-    return {
+
+    const deviceData = await mosyQddata("device_list", "serial_number",`${deviceId}`);
+
+    const devicePingLog = {
       log_type: 'GPS',                    // fixed type for GPS logs
-      site_name: options.siteName || '?',
+      site_name: deviceData.site_id || 'na',
       device_id: deviceId || '?',
       battery: battery || '?',
       latitude: lat || '?',
@@ -152,6 +168,166 @@ export function processDevicePingToLog(parsedGPS, options = {}) {
       hive_site_id: options.hiveSiteId || '?',
       hive_site_name: options.hiveSiteName || '?'
     };
+      
+    return {
+      insertObject : devicePingLog,
+      gpsRequest : parsedGPS
+    };
+
   }
   
-  
+  export async function logTcpAlarm(data, parsedData, newId)
+  {
+    
+    let alarmType = "";
+    let description=""
+    let addAlarm = false;
+
+    const alarmByte = parsedData.motionByte;
+
+    if(alarmByte=="00100008")
+    {
+      alarmType = "Motion";
+      description ="Asset in motion";
+      addAlarm = true
+    }
+    
+    if(alarmByte=="00000008")
+    {
+      alarmType = "Battery";
+      description ="Low battery alert";
+      addAlarm = true
+    }
+
+    const deviceData = await mosyQddata("device_list", "serial_number",`${parsedData.imei}`);    
+
+    //--- Begin  asset_alarms inputs array ---//     
+      const AssetalarmsInputsArr = {
+        "record_id": newId,
+        "alarm_time" : mosyRightNow(),     
+        "alarm_type" : alarmType, 
+        "description" : description || "",               
+        "device_serial" : parsedData.imei,               
+        "site_id" : deviceData.site_id || "na",               
+        "status" : "Open",               
+        "ack_status" : "Open",               
+        "close_status" : "Open",               
+        "reg_date" : mosyRightNow(), 
+      
+    };
+           
+      if(addAlarm){
+      //--- End asset_alarms inputs array --//
+        const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});     
+      }
+
+
+
+  }
+
+
+  export async function computeUnknownCoordinates(parseGPSData, recordId)
+  {
+     console.log(`computeUnknownCoordinates`, parseGPSData);
+
+     const googlePayload = buildGoogleGeoPayload(parseGPSData)  
+
+     console.log(`buildGoogleGeoPayload`, googlePayload);
+
+    const location = await requestGoogleLocation(googlePayload);
+
+    console.log(`requestGoogleLocation`, location);
+
+    UpdateDevicegpslogs(recordId, 
+      {
+
+      latitude: location.lat,
+      longitude: location.lng
+
+     },
+    {},{}, ` record_id ='${recordId}'`);
+
+  }
+
+  export function buildGoogleGeoPayload(deviceData) 
+  {
+
+    // 1. Extract main tower info
+    const mcc = deviceData.mcc || 0;
+    const mnc = deviceData.mnc || 0;
+
+    // 2. Convert Base Stations → Google format
+    const cellTowers = (deviceData.baseStations || []).map(function (tower) {
+        return {
+            cellId: tower.baseStationNumber,
+            locationAreaCode: tower.areaCode,
+            mobileCountryCode: mcc,
+            mobileNetworkCode: mnc,
+            signalStrength: tower.signal
+        };
+    });
+
+    // 3. Convert WiFi list → Google format
+    const wifiAccessPoints = (deviceData.wifi || [])
+        .filter(function (wifi) {
+            return wifi.mac && wifi.mac !== "" && !isNaN(wifi.signal);
+        })
+        .map(function (wifi) {
+            return {
+                macAddress: wifi.mac,
+                signalStrength: wifi.signal
+            };
+        });
+
+    // 4. Build final Google payload
+    const googlePayload = {
+        homeMobileCountryCode: mcc,
+        homeMobileNetworkCode: mnc,
+        radioType: "gsm",
+        considerIp: false,
+        cellTowers: cellTowers,
+        wifiAccessPoints: wifiAccessPoints
+    };
+
+    return googlePayload;
+
+}
+
+export async function requestGoogleLocation(payload) {
+
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+  const url = `https://www.googleapis.com/geolocation/v1/geolocate?key=${apiKey}`;
+
+  try {
+      const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      console.error("Google Geolocation API Response:", data);
+
+      // Return only the computed coordinates
+      return {
+          lat: data?.location?.lat || null,
+          lng: data?.location?.lng || null,
+          accuracy: data?.accuracy || null,
+          raw: data
+      };
+
+  } catch (err) {
+
+      console.error("Google Geolocation API Error:", err);
+
+      return {
+          lat: null,
+          lng: null,
+          accuracy: null,
+          raw: null,
+          error: true
+      };
+  }
+}

@@ -1,31 +1,37 @@
 import net from "net";
 import {AddDevicegpslogs} from '../gpslogs/devicegpslogs/DevicegpslogsDbGateway';
 import { magicRandomStr } from "../../apiUtils/dataControl/dataUtils";
-import { parseGPSData, processDevicePingToLog } from "./tunnelUtils";
+import { computeUnknownCoordinates, logTcpAlarm, parseGPSData, processDevicePingToLog } from "./tunnelUtils";
 
 let tcpServer = null;
 let sockets = [];
 
-export function startTCPListener({ port = 9000, onData }) {
+export function startTCPListener({ port = 9000, onData }) 
+{
   if (tcpServer) return tcpServer;
 
   tcpServer = net.createServer((socket) => {
-    sockets.push(socket);
     
-    console.log(`New TCP connection from ${socket.remoteAddress}:${socket.remotePort}`);
+    sockets.push(socket);    
 
-    socket.on("data", (data) => {
+    socket.on("data", async (data) => {
+
       const message = data.toString().trim();
-      console.log("Received  dataaaa :", message);
-      
+
       // insert data 
       const newId = magicRandomStr(10);
       const interpretedData = parseGPSData(message)
-      const parsedLogs = processDevicePingToLog(interpretedData)
+      const {insertObject, gpsRequest} = await processDevicePingToLog(interpretedData)
+      
+      insertObject.record_id = newId    
+      AddDevicegpslogs(newId, insertObject, {}, {})      
+      logTcpAlarm(insertObject, gpsRequest, newId)
 
-      AddDevicegpslogs(newId, parsedLogs, {}, {})
+      //--- End ---//      
+      computeUnknownCoordinates(interpretedData, newId)
 
       if (typeof onData === "function") onData(message, socket);
+
     });
 
     socket.on("end", () => {
@@ -79,4 +85,3 @@ export function stopTCPListener() {
     });
   });
 }
-

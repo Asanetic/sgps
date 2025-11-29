@@ -1,8 +1,10 @@
+"use client";
 import DynamicModalProvider from "./DynamicModalProvider";
 
 import {FloatingUpgradeButton} from '../mosybilling/PremuimBtn';
 
 import { BuilderButton } from "../builderUtils/builder";
+import GeofenceMonitor from "../symphonygps/AppCore/coreUtils";
 
 export default function AdminFooter() {
   return (
@@ -18,6 +20,8 @@ export default function AdminFooter() {
       <FloatingUpgradeButton/>
       <script type="text/javascript" src="https://cora.asanetic.com/cora.js?coraasset=Symphony gps"></script>
       {/* <BuilderButton/> */}
+        
+      {/* <GeofenceMonitor title="Asset alerts"/> */}
 
     </>
   );

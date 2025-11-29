@@ -1,6 +1,9 @@
 import { startTCPListener, stopTCPListener } from '../tunnel';
 
 if (!global.tcpLogs) global.tcpLogs = [];
+//global.tcpLogs = [];
+//console.log("Logs cleared automatically on restart.");
+
 let initialized = false;
 
 export async function GET() {

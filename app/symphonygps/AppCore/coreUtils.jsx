@@ -14,7 +14,6 @@ import { MosyLiveSearch } from "../UiControl/customUI";
 
 const apiRoutes = getApiRoutes(); // Use the imported JSON directly
 
-
 // ====================
 // Send SMS
 // ====================
@@ -187,6 +186,28 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
     };
   }, [alerts, soundEnabled, audioReady]);
 
+  const alarmListUiList = LoadAlarmListUi();
+
+  // Detect if alarms exist
+  useEffect(() => {
+
+    if (alarmListUiList !== null) {
+      
+      const audio = audioRef.current;
+      if (!audioReady) return; // Wait until user enables sound
+      
+      if (soundEnabled){
+        audio.play().catch((err) =>
+          console.warn("Audio play failed:", err.message)
+        );
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  }, [alarmListUiList]);
+  
+  
   // Handles first-time permission grant
   function handleSoundToggle() {
     if (!audioReady) {
@@ -232,9 +253,13 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
         </div>
 
         <div className="card-body p-3">
+        <ul className="list-group list-group-flush">
+          <span>{alarmListUiList}</span>
+        </ul>
           {alerts.length > 0 ? (
             <ul className="list-group list-group-flush">
               {alerts.map((data, i) => (
+                
                 <li
                   key={`device-${i}`}
                   onClick={() => logAlarm(data)}
@@ -245,11 +270,11 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
                     Site: {data.device_data._sites_site_name_site_id}
                   </div>
                   <div className="col-md-12 row justify-content-start pl-3 m-2">
-                    <span className="badge p-1 bg-success text-white mr-1">
+                    <span className="badge p-1 bg-success text-white mr-1 d-none">
                       Online
                     </span>
-                    <span className="badge p-1 bg-warning text-dark">
-                      Not moving
+                    <span className="pending_alarm">
+                      Geofence
                     </span>
                   </div>
                   <div className="col-md-12 text-dark">
@@ -265,13 +290,132 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
                     </div>
                   )}
                 </li>
+                
               ))}
             </ul>
           ) : (
-            <p className="text-center text-muted mb-0">No alerts</p>
+            <p className="text-center text-muted mb-0">_</p>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+//goto alarm list 
+export function gotoAlarmList(alarmkey) {
+
+  window.location = `${hiveRoutes.cms}/assetalarms/list?asset_alarms_mosyfilter=${btoa(` primkey = '${alarmkey}' `)}`  
+
+}
+
+export function LoadAlarmListUi() {
+  const [alarmList, setAlarmsList] = useState(null);   // <-- start as null
+
+  const pollInterval = 3000;
+
+  const mapping = {
+    open: "open_alarm",
+    geofence: "pending_alarm",
+    motion: "darkbg_alarm",
+    battery: "purplebg_alarm",
+    pending: "yellowbg_alarm",
+    acknowledged: "yellowbg_alarm",
+    closed: "closed_alarm",
+    active: "open_alarm",
+    inactive: "inactive_status",
+    expired: "inactive_status",
+    online: "online_status",
+    offline: "offline_status",
+  };
+
+  function getAlarmClass(alarmType) {
+    if (!alarmType) return "";
+    const key = alarmType.toLowerCase().trim();
+    return mapping[key] || "";
+  }
+
+  // Fetch device data periodically
+  useEffect(() => {
+    let intervalId;
+
+    async function fetchData() {
+      try {
+        let qparams = { q: mosyBtoa(`where close_status !='Closed'`), fullQ: true };
+
+        const res = await mosyGetData({
+          endpoint: apiRoutes.assetalarms.base,
+          params: qparams
+        });
+
+        if (res?.data) {
+          const items = (res.data || []).reverse();
+          setAlarmsList(items.length > 0 ? items : []);   // empty array
+        } else {
+          setAlarmsList([]);  // no data
+        }
+
+      } catch (err) {
+        console.error("Alarms fetch error:", err);
+        setAlarmsList([]); // treat errors as empty result
+      }
+    }
+
+    fetchData();
+    intervalId = setInterval(fetchData, pollInterval);
+    return () => clearInterval(intervalId);
+  }, [pollInterval]);
+
+  // -----------------------------------------------------
+  // ✅ If alarmList is null → still loading → return null
+  // -----------------------------------------------------
+  if (alarmList === null) {
+    return null; 
+  }
+
+  // -----------------------------------------------------
+  // ✅ If alarmList is EMPTY → return null explicitly
+  // -----------------------------------------------------
+  if (alarmList.length === 0) {
+    return null;
+  }
+
+  // -----------------------------------------------------
+  // Otherwise → render the UI
+  // -----------------------------------------------------
+  return (
+    <div className="card-body p-0">
+      <ul className="list-group list-group-flush">
+        {alarmList.map((data, i) => (
+          <li
+            key={`device-${i}`}
+            onClick={() => gotoAlarmList(data.primkey)}
+            className={`cpointer mb-3 p-2 row justify-content-center rounded text-dark`}
+          >
+            <div className="col-md-12 text-dark border-bottom border-white">
+              <b>{data.device_name}</b> <br />
+              Site: {data._sites_site_name_site_id}
+            </div>
+
+            <div className="col-md-12 row justify-content-start pl-3 m-2">
+
+              <div className={`text-center p-1 text-white mr-1 ${getAlarmClass(data.alarm_type)}`}>
+                {data.alarm_type}
+              </div>
+
+              <div className={`text-center p-1 ${getAlarmClass(data.close_status)}`}>
+                {data.close_status}
+              </div>
+
+            </div>
+
+            <div className="col-md-12 text-dark">
+              <small className="smal_text">Serial: {data.device_serial}</small>
+            </div>
+
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -835,12 +979,12 @@ export default function GeofenceMonitor({ device_id = "", title ="Device alarms"
     }
 
     fetchData();
+    
     intervalId = setInterval(fetchData, pollInterval);
     return () => clearInterval(intervalId);
   }, [device_id, pollInterval]);
 
   //console.log(`geofence monitorrrrr`, devices)
-
 
   // Compute alerts
   useEffect(() => {
@@ -1084,8 +1228,6 @@ setTimeout(() => {
 
 }
 
-
-
 // ╔══════════════════════════════════════╗
 // ║  AUTO-GENERATED FUNCTION  #2          
 // ║  Function: trackAlarm                    
@@ -1193,7 +1335,7 @@ export function useStatusHighlighter(list = []) {
       }
     });
 
-    console.log("Highlighter applied");
+    ///console.log("Highlighter applied");
 
   }, [list]);
 }
@@ -1209,4 +1351,5 @@ export function viewDeviceOnMap(token) {
   window.location = `${hiveRoutes.cms}/maps/tracker?device=${mosyBtoa(token)}`
 
 }
+
 
