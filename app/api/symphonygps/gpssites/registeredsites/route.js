@@ -154,6 +154,16 @@ export async function POST(RegisteredsitesRequest) {
     "manager_email" : "?", 
     "contact_person_mobile" : "?", 
     "contact_person_email" : "?", 
+    "company_security_manager" : "?", 
+    "company_security_contacts" : "?", 
+    "vendor_contact_person" : "?", 
+    "vendor_contacts" : "?", 
+    "response_team_contact_person" : "?", 
+    "response_team_contacts" : "?", 
+    "crew_commander_contact_person" : "?", 
+    "crew_commander_contacts" : "?", 
+    "vehicle_reg_number" : "?", 
+    "alternate_phone_number" : "?", 
 
   };
 

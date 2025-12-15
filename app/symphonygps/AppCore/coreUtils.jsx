@@ -267,7 +267,7 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
                 >
                   <div className="col-md-12 text-dark border-bottom border-white">
                     <b>{data.device.device_name}</b> <br />
-                    Site: {data.device_data._sites_site_name_site_id}
+                    {data.device_data._sites_site_name_site_id}
                   </div>
                   <div className="col-md-12 row justify-content-start pl-3 m-2">
                     <span className="badge p-1 bg-success text-white mr-1 d-none">
@@ -317,7 +317,7 @@ export function LoadAlarmListUi() {
   const mapping = {
     open: "open_alarm",
     geofence: "pending_alarm",
-    motion: "darkbg_alarm",
+    disturbance: "darkbg_alarm",
     battery: "purplebg_alarm",
     pending: "yellowbg_alarm",
     acknowledged: "yellowbg_alarm",
@@ -394,7 +394,7 @@ export function LoadAlarmListUi() {
           >
             <div className="col-md-12 text-dark border-bottom border-white">
               <b>{data.device_name}</b> <br />
-              Site: {data._sites_site_name_site_id}
+              {data._sites_site_name_site_id} - {data._sites_site_name_site_id}
             </div>
 
             <div className="col-md-12 row justify-content-start pl-3 m-2">
@@ -501,7 +501,7 @@ export function DashSiteInfoData({ alerts = {}, title = "Devices" }) {
                 >
                   <div className="col-md-12 text-dark border-bottom border-white">
                     <b>{device.device_name}</b> <br />
-                    Site: {device.site_data.name}
+                    {device.site_data.site_code} - {device.site_data.name}
                   </div>
                   <div className="col-md-12 row justify-content-end p-1 m-0">
                     <span className="badge p-1 bg-danger text-white mr-1">Offline</span>
@@ -684,7 +684,7 @@ export function loadSiteInfoWindowCard({site, showSiteDetails=true,newPage=false
   return (
     <div className="col-md-12 p-2 m-0 text-left row justify-content-center p-0 m-0">
       <div className="col-md-12 row justify-content-start p-2 m-0">
-        <div className="p-2 h5">Site : {site.site_name || site.name} ({site.site_code || "_"})</div>
+        <div className="p-2 h5">{site.site_code || "_"} - {site.site_name || site.name}  </div>
         <span className="p-2 h6"> | Devices : ({site.total_devices})</span>
       </div>
 
@@ -1312,7 +1312,7 @@ export function useStatusHighlighter(list = []) {
     const mapping = {
       open: "open_alarm",
       geofence: "pending_alarm",
-      motion: "darkbg_alarm",
+      disturbance: "darkbg_alarm",
       battery: "purplebg_alarm",
       pending: "yellowbg_alarm",
       acknowledged: "yellowbg_alarm",

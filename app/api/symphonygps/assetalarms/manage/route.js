@@ -1,6 +1,6 @@
 
 //utils 
-import { mosySqlInsert, mosySqlUpdate, base64Decode, mosyFlexSelect, mosyUploadFile, mosyDeleteFile, magicRandomStr } from '../../../apiUtils/dataControl/dataUtils';
+import { mosySqlInsert, mosySqlUpdate, base64Decode, mosyFlexSelect, mosyUploadFile, mosyDeleteFile, magicRandomStr, mosyRightNow } from '../../../apiUtils/dataControl/dataUtils';
 
 //be gate keeper and auth 
 import { validateSelect , mosyMutateQuery, mutateInputArray } from '../../beMonitor';
@@ -36,8 +36,14 @@ export async function POST(AssetalarmsRequest) {
     if(payload.new_status=="Closed")
     {
       updateArr.closed_by = authData.name
+      updateArr.close_time = mosyRightNow()
     }
 
+    if(payload.new_status=="Acknowledged")
+    {
+        updateArr.ack_time = mosyRightNow()
+    }
+    
     const newId = magicRandomStr(10);
 
     const mutatedDataArray = mutateInputArray("asset_alarms", updateArr, AssetalarmsRequest, newId, authData);

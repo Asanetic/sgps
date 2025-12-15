@@ -13,7 +13,7 @@ import { MosyAlertCard, MosyNotify ,closeMosyModal } from  '../../../MosyUtils/A
 import MosySnackWidget from '../../../MosyUtils/MosySnackWidget';
 
 //basic utils
-import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam ,mosyTonum  } from '../../../MosyUtils/hiveUtils';
+import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam  } from '../../../MosyUtils/hiveUtils';
 
 //data control and processors
 import { inteprateDevicesummaryFormAction, devicesummaryProfileData , popDeleteDialog, InteprateDevicesummaryEvent } from '../dataControl/DevicesummaryRequestHandler';
@@ -306,8 +306,8 @@ export default function DevicesummaryProfile({ dataIn = {}, dataOut = {} }) {
                   
                   {device_listNode?.primkey && (
                     <div className="form-group col-md-6 hive_data_cell  ">
-                      <label >Site code</label>
-                      <div className="border border_set p-2 rounded_medium form-control pt-3" id="div_site_code" name="div_site_code" placeholder="Site code">{device_listNode?.site_code || ""}</div>
+                      <label >Site id</label>
+                      <div className="border border_set p-2 rounded_medium form-control pt-3" id="div_site_code" name="div_site_code" placeholder="Site id">{device_listNode?.site_code || ""}</div>
                     </div>)}
                     
                     <MosySmartField
@@ -320,6 +320,19 @@ export default function DevicesummaryProfile({ dataIn = {}, dataOut = {} }) {
                     inputOverrides={{}}
                     type="textarea"
                     cellOverrides={{additionalClass: "col-md-12 hive_data_cell"}}
+                    />
+                    
+                    
+                    <MosySmartField
+                    module="device_list"
+                    field="low_battery_level"
+                    label="Low battery level value"
+                    value={device_listNode?.low_battery_level || ""}
+                    onChange={handleInputChange}
+                    context={{ hostParent: hostParent  }}
+                    inputOverrides={{}}
+                    type="text"
+                    cellOverrides={{additionalClass: "col-md-4"}}
                     />
                     
                     

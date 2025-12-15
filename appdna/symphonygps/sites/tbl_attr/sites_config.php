@@ -86,17 +86,20 @@
             "sites" => [
                 "Site Details" => ["site_name","site_code"],
                 "Manager and contact person" => ["manager","manager_mobile","manager_email","contact_person","contact_person_mobile","contact_person_email"],
+                "Company security & Vendor" => ["company_security_manager" , "company_security_contacts","vendor_contact_person" , "vendor_contacts"],
+                "Response team" => ["response_team_contact_person" , "response_team_contacts" , "crew_commander_contact_person" , "crew_commander_contacts" , "vehicle_reg_number" , "alternate_phone_number"],
                 "Location Details" => [ "country" , "county" , "town" , "location_address","latitude","longitude","total_devices","remark","created_at"]
               
             ]
         ],
+//"primkey" , "record_id" , "site_name" , "site_code" , "country" , "city" , "county" , "town" , "latitude" , "longitude" , "location_address" , "remark" , "created_at" , "hive_site_id" , "hive_site_name" , "manager" , "manager_mobile" , "manager_email" , "contact_person" , "contact_person_mobile" , "contact_person_email" , "company_security_manager" , "company_security_contacts" , "vendor_contact_person" , "vendor_contacts" , "response_team_contact_person" , "response_team_contacts" , "crew_commander_contact_person" , "crew_commander_contacts" , "vehicle_reg_number" , "alternate_phone_number" , 
 
         "image_columns" => [],
         "default_col_class" => "col-md-6",
         "hidden_inputs" => ["created_at"], 
         "print_tables" => ["sites"], 
         "skip_cols_profile" => ["hive_site_id","hive_site_name", "device_list","city"], 
-        "skip_cols_list" => ["hive_site_id","hive_site_name", "device_list","remark","city","manager_email","manager_mobile","contact_person_email","contact_person_mobile","created_at"], 
+        "skip_cols_list" => ["hive_site_id","hive_site_name", "device_list","remark","city","manager_email","manager_mobile","contact_person_email","contact_person_mobile","created_at","response_team_contact_person" , "response_team_contacts" , "crew_commander_contact_person" , "crew_commander_contacts" , "vehicle_reg_number" , "alternate_phone_number","company_security_manager" , "company_security_contacts","vendor_contact_person" , "vendor_contacts", "country","county"], 
         "running_bal_col_tbl" => [], 
         "grid_tbl" => [], 
         "view_tbl_only" => [], 
@@ -116,12 +119,19 @@
 
         "rename_cols_array" => [ 
             "site_name" => "Site Name:col-md-6",
-            "site_code" => "Site Code:col-md-6",
+            "site_code" => "Site Id:col-md-6",
+            "vendor_contact_person" => "Vendor contact person:col-md-6",
+            "vendor_contacts" => "Vendor contacts:col-md-6",
+            "company_security_contacts" => "Security Manager contacts:col-md-6",
+            "company_security_manager" => "Security Manager:col-md-6",
+            "vendor_contacts" => "Vendor contacts:col-md-6",
             "latitude" => "Latitude (Y)",
+            "town" => "Distribution region",
             "longitude" => "Longitude (X)",
             "location_address" => "Address description:col-md-12",
             "remark" => "Remark / Notes",
             "created_at" => "Date Created"
+          
         ],
 
         "rename_tables_array" => [
@@ -129,7 +139,7 @@
         ],
 
         "new_label_buttons_arr" => [ 
-            "sites" => "map-pin:New Site:{`Site profile / \${sitesNode?.site_name}`}"
+            "sites" => "map-pin:New Site:{`Site profile / \${sitesNode?.site_code} - \${sitesNode?.site_name}`}"
         ],
 
         "profile_pic_style" => "width:120px; height:120px; border-radius:10%;"

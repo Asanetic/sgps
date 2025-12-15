@@ -1,0 +1,36 @@
+//dna options== Digital Nexus Architecture (DNA)
+
+$dna_file_name="site_ list_columns"; 
+$create_dna="yes"; //yes | no; 
+$overwrite_dna_file="yes"; //yes | no 
+//dna options==
+
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `company_security_manager` varchar(500) not null');
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `company_security_contacts` varchar(500) not null');
+
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `vendor_contact_person` varchar(500) not null');
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `vendor_contacts` varchar(500) not null');
+
+
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `response_team_contact_person` varchar(500) not null');
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `response_team_contacts` varchar(500) not null');
+
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `crew_commander_contact_person` varchar(500) not null');
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `crew_commander_contacts` varchar(500) not null');
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `vehicle_reg_number` varchar(500) not null');
+alter_table($mysqliconn, $dbname, 'sites', 'ADD column `alternate_phone_number` varchar(500) not null');
+
+
+/*
+  Add more contact persons
+     - company security manager
+           
+     - vendor security manager
+     - response team contact 
+          - Crew commander
+             phone numbers
+                primary 
+                alternate phone number
+                vehicle reg number 
+*/
+

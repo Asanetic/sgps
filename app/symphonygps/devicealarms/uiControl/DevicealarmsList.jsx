@@ -120,7 +120,7 @@ export default function DevicealarmsList({ dataIn = {}, dataOut = {} }) {
             <a href="list" className="medium_btn border border_set btn-white hive_list_nav_refresh ml-3"><i className="fa fa-refresh mr-1 "></i> Refresh </a>
             
             
-            <AddNewButton src="DevicealarmsList" link={customProfilePath} label="New Log Entry" icon="map-marker" />
+            {/* <AddNewButton src="DevicealarmsList" link={customProfilePath} label="New Log Entry" icon="map-marker" /> */}
           </div>
         </div>
       </div> )}

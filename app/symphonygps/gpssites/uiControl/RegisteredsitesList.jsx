@@ -14,7 +14,7 @@ import { mosyPrintToPdf } from '../../../MosyUtils/hiveUtils';
 
 
 //custom utils
-import { deleteUrlParam, magicTrimText, mosyUrlParam, mosyFormatDateOnly , mosyFormatDateTime} from '../../../MosyUtils/hiveUtils';
+import { deleteUrlParam, magicTrimText, mosyUrlParam, mosyFormatDateOnly , mosyFormatDateTime, mosyTonum , mosyToggleSelectAllTblRows , mosySelectTblRows } from '../../../MosyUtils/hiveUtils';
 import { mosyFilterUrl } from '../../DataControl/MosyFilterEngine';
 
 //list components
@@ -44,6 +44,9 @@ import ReactMarkdown from 'react-markdown';
 //routes manager
 ///handle routes
 import { getApiRoutes } from '../../AppRoutes/apiRoutesHandler';
+
+//custom fuctions
+//import {  } from '../../AppCore/coreUtils';
 
 // Use default base root (/)
 const apiRoutes = getApiRoutes();
@@ -149,16 +152,14 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
             <th scope="col">#</th>
             
             <th scope="col"><b>Site Name</b></th>
-            <th scope="col"><b>Site Code</b></th>
+            <th scope="col"><b>Site Id</b></th>
             <th scope="col"><b>Manager</b></th>
             <th scope="col"><b>Contact Person</b></th>
             <th scope="col"><b>Total Devices</b></th>
             <th scope="col"><b>Latitude (Y)</b></th>
             <th scope="col"><b>Longitude (X)</b></th>
             <th scope="col"><b>Address description</b></th>
-            <th scope="col"><b>Country</b></th>
-            <th scope="col"><b>County</b></th>
-            <th scope="col"><b>Town</b></th>
+            <th scope="col"><b>Distribution region</b></th>
             
           </tr>
           
@@ -167,7 +168,7 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
           {stateItem.registeredsitesLoading ? (
             <tr>
               <th scope="col">#</th>
-              <td colSpan="12" className="text-muted">
+              <td colSpan="10" className="text-muted">
                 <h5 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-spinner fa-spin"></i> Loading Registered Sites ...</h5>
               </td>
             </tr>
@@ -211,8 +212,6 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
                       <td scope="col"><span title={listsites_result.latitude}>{magicTrimText(listsites_result.latitude, 70)}</span></td>
                       <td scope="col"><span title={listsites_result.longitude}>{magicTrimText(listsites_result.longitude, 70)}</span></td>
                       <td scope="col"><span title={listsites_result.location_address}>{magicTrimText(listsites_result.location_address, 70)}</span></td>
-                      <td scope="col"><span title={listsites_result.country}>{magicTrimText(listsites_result.country, 70)}</span></td>
-                      <td scope="col"><span title={listsites_result.county}>{magicTrimText(listsites_result.county, 70)}</span></td>
                       <td scope="col"><span title={listsites_result.town}>{magicTrimText(listsites_result.town, 70)}</span></td>
                       
                     </tr>
@@ -224,7 +223,7 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
                 
               ) : (
                 
-                <tr><td colSpan="12" className="text-muted">
+                <tr><td colSpan="10" className="text-muted">
                   
                   
                   <div className="col-md-12 text-center mt-4">
@@ -240,8 +239,6 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
               <tr className="bg-light">
                 <th></th>
                 
-                <th scope="col"><b></b></th>
-                <th scope="col"><b></b></th>
                 <th scope="col"><b></b></th>
                 <th scope="col"><b></b></th>
                 <th scope="col"><b></b></th>

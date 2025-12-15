@@ -13,7 +13,7 @@ import { MosyAlertCard, MosyNotify ,closeMosyModal } from  '../../../MosyUtils/A
 import MosySnackWidget from '../../../MosyUtils/MosySnackWidget';
 
 //basic utils
-import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam  } from '../../../MosyUtils/hiveUtils';
+import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam ,mosyTonum  } from '../../../MosyUtils/hiveUtils';
 
 //data control and processors
 import { inteprateRegisteredsitesFormAction, registeredsitesProfileData , popDeleteDialog, InteprateRegisteredsitesEvent } from '../dataControl/RegisteredsitesRequestHandler';
@@ -163,7 +163,7 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
             <div className="col-md-12 pt-4 p-0 hive_profile_title_top d-lg-none" id=""></div>
             <h3 className="col-md-12 title_text text-left p-0 pt-3 hive_profile_title row justify-content-center m-0 ">
               <div className="col m-0 p-0 pb-3">
-                {sitesNode?.primkey ? (  <span>{`Site profile / ${sitesNode?.site_name}`}</span> ) :(<span> New Site</span>)}
+                {sitesNode?.primkey ? (  <span>{`Site profile / ${sitesNode?.site_code} - ${sitesNode?.site_name}`}</span> ) :(<span> New Site</span>)}
               </div>
               <>{!showNavigationIsle && (<div className="col m-0 p-0 text-right ">
                 {paramRegisteredsitesUptoken && (
@@ -272,7 +272,7 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
                   <MosySmartField
                   module="sites"
                   field="site_code"
-                  label="Site Code"
+                  label="Site Id"
                   value={sitesNode?.site_code || ""}
                   onChange={handleInputChange}
                   context={{ hostParent: hostParent  }}
@@ -380,6 +380,164 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
               <div className="col-md-12 bg-white border border_set shadow-md p-4 mb-4 hive_form_section  ">
                 <h5 className="col-md-12 row p-2 justify-content-center p-0 m-0">
                   <div className="col-md-3 bg-dark mb-3 mb-lg-0 mt-lg-3" style={{height: "1px"}}></div>
+                  <div className="col-md-5 text-center">Company Security & Vendor</div>
+                  <div className="col-md-4 bg-dark mt-3" style={{height: "1px"}}></div>
+                </h5>
+                
+                <div className="col-md-12 pt-3 p-0" id=""></div>
+                
+                <div className="row justify-content-start col-md-12 p-0 m-0 ">
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="company_security_manager"
+                  label="Security Manager"
+                  value={sitesNode?.company_security_manager || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-6"}}
+                  />
+                  
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="company_security_contacts"
+                  label="Security Manager contacts"
+                  value={sitesNode?.company_security_contacts || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-6"}}
+                  />
+                  
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="vendor_contact_person"
+                  label="Vendor contact person"
+                  value={sitesNode?.vendor_contact_person || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-6"}}
+                  />
+                  
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="vendor_contacts"
+                  label="Vendor contacts"
+                  value={sitesNode?.vendor_contacts || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-6"}}
+                  />
+                  
+                </div>
+                
+              </div>
+              
+              <div className="col-md-12 bg-white border border_set shadow-md p-4 mb-4 hive_form_section  ">
+                <h5 className="col-md-12 row p-2 justify-content-center p-0 m-0">
+                  <div className="col-md-3 bg-dark mb-3 mb-lg-0 mt-lg-3" style={{height: "1px"}}></div>
+                  <div className="col-md-5 text-center">Response Team</div>
+                  <div className="col-md-4 bg-dark mt-3" style={{height: "1px"}}></div>
+                </h5>
+                
+                <div className="col-md-12 pt-3 p-0" id=""></div>
+                
+                <div className="row justify-content-start col-md-12 p-0 m-0 ">
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="response_team_contact_person"
+                  label="Response Team Contact Person"
+                  value={sitesNode?.response_team_contact_person || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-4 hive_data_cell "}}
+                  />
+                  
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="response_team_contacts"
+                  label="Response Team Contacts"
+                  value={sitesNode?.response_team_contacts || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-4 hive_data_cell "}}
+                  />
+                  
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="crew_commander_contact_person"
+                  label="Crew Commander Contact Person"
+                  value={sitesNode?.crew_commander_contact_person || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-4 hive_data_cell "}}
+                  />
+                  
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="crew_commander_contacts"
+                  label="Crew Commander Contacts"
+                  value={sitesNode?.crew_commander_contacts || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-4 hive_data_cell "}}
+                  />
+                  
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="vehicle_reg_number"
+                  label="Vehicle Reg Number"
+                  value={sitesNode?.vehicle_reg_number || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-4 hive_data_cell "}}
+                  />
+                  
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="alternate_phone_number"
+                  label="Alternate Phone Number"
+                  value={sitesNode?.alternate_phone_number || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-4 hive_data_cell "}}
+                  />
+                  
+                </div>
+                
+              </div>
+              
+              <div className="col-md-12 bg-white border border_set shadow-md p-4 mb-4 hive_form_section  ">
+                <h5 className="col-md-12 row p-2 justify-content-center p-0 m-0">
+                  <div className="col-md-3 bg-dark mb-3 mb-lg-0 mt-lg-3" style={{height: "1px"}}></div>
                   <div className="col-md-5 text-center">Location Details</div>
                   <div className="col-md-4 bg-dark mt-3" style={{height: "1px"}}></div>
                 </h5>
@@ -419,14 +577,14 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
                   
                   
                   <div className="form-group col-md-4 hive_data_cell ">
-                    <label className="d-none">Town</label>
+                    <label className="d-none">Distribution region</label>
                     
                     <SmartDropdown
                     apiEndpoint={apiRoutes.registeredsites.base}
                     idField="primkey"
                     labelField="town"
                     inputName="txt_town"
-                    label="Town"
+                    label="Distribution region"
                     onSelect={(val) => console.log('Selected:', val)}
                     defaultValue={sitesNode?.town || ""}
                     />

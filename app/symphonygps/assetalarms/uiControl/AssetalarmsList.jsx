@@ -234,7 +234,7 @@ export default function AssetalarmsList({ dataIn = {}, dataOut = {} }) {
                             callBack={(incomingRequest) => {setChildDataOut(incomingRequest) }}
                             
                             />
-                            
+                            {listasset_alarms_result.close_status != "Closed" && (
                             <MosyGridRowOptions
                             src="AssetalarmsList"
                             action="_acknowledge"
@@ -243,12 +243,14 @@ export default function AssetalarmsList({ dataIn = {}, dataOut = {} }) {
                             dataIn={() => acknowledgeAlarm(`${listasset_alarms_result.primkey}`)}   // only runs on click now
                             callBack={(incomingRequest) => {setChildDataOut(incomingRequest) }}
                             />
+                            )}
+
                             <MosyGridRowOptions
                             src="AssetalarmsList"
                             action="_realtime_track"
                             label=" Realtime track"
                             icon="map-marker"
-                            dataIn={() => trackAlarm(`${listasset_alarms_result.primkey}`)}   // only runs on click now
+                            dataIn={() => trackAlarm(`${listasset_alarms_result.device_key}`)}   // only runs on click now
                             callBack={(incomingRequest) => {setChildDataOut(incomingRequest) }}
                             />
                           </div>

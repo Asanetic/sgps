@@ -9,6 +9,7 @@
  *   Assembly DNA file (*.Dnaaf)
  ****************************************************/
 
+//@extract config file
 //sites //"primkey" , "record_id" , "site_name" , "country" , "city" , "county" , "town" , "building" , "latitude" , "longitude" , "location_address" , "remark" , "created_at" ,
 
 /* =========================

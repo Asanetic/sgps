@@ -28,7 +28,7 @@ export default function SessionMonitor({ sessionPrefix = 'sauth'}) {
 
 
     //monitor billing
-    loadBillingAccountDetails()    
+    //loadBillingAccountDetails()    
   }, []);
 
   return null; // This component just checks, doesn't render anything

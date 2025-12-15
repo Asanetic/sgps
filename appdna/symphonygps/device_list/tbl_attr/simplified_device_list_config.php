@@ -90,7 +90,7 @@
         // Grouped inputs
         "form_input_segmentation_arr" => [
             "device_list" => [
-                "Device Information" => ["device_name","serial_number","site_id","site_code","geofence","installation_latitude","installation_longitude","date_installed","remark"],
+                "Device Information" => ["device_name","serial_number","site_id","site_code","geofence","low_battery_level","installation_latitude","installation_longitude","date_installed","remark"],
             ]
         ],
 
@@ -126,7 +126,8 @@
             "site_name" => "Site Name",
             "installation_latitude" => "Installation latitude:col-md-4",
             "installation_longitude" => "Installation longitude:col-md-4",
-            "site_code" => "Site code",
+            "low_battery_level" => "Low battery level value:col-md-4",
+            "site_code" => "Site id",
             "site_id" => "Location site",
             "geofence" => "Geofence cordinates ",
             "reg_date" => "Registration Date"

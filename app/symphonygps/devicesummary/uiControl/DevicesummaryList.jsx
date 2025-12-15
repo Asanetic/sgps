@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 
 
 //custom utils
-import { deleteUrlParam, magicTrimText, mosyUrlParam, mosyFormatDateOnly , mosyFormatDateTime, mosyTonum , mosyToggleSelectAllTblRows , mosySelectTblRows } from '../../../MosyUtils/hiveUtils';
+import { deleteUrlParam, magicTrimText, mosyUrlParam, mosyFormatDateOnly , mosyFormatDateTime} from '../../../MosyUtils/hiveUtils';
 import { mosyFilterUrl } from '../../DataControl/MosyFilterEngine';
 
 //list components
@@ -40,9 +40,6 @@ import ReactMarkdown from 'react-markdown';
 //routes manager
 ///handle routes
 import { getApiRoutes } from '../../AppRoutes/apiRoutesHandler';
-
-//custom fuctions
-//import {  } from '../../AppCore/coreUtils';
 
 // Use default base root (/)
 const apiRoutes = getApiRoutes();
@@ -136,10 +133,11 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
               <th scope="col"><b>Device Name</b></th>
               <th scope="col"><b>Serial Number</b></th>
               <th scope="col"><b>Location site</b></th>
-              <th scope="col"><b>Site code</b></th>
+              <th scope="col"><b>Site id</b></th>
               <th scope="col"><b>Installation Date</b></th>
               <th scope="col"><b>Remark</b></th>
               <th scope="col"><b>Registration Date</b></th>
+              <th scope="col"><b>Low battery level value</b></th>
               <th scope="col"><b>Installation longitude</b></th>
               <th scope="col"><b>Installation latitude</b></th>
               
@@ -150,7 +148,7 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
             {stateItem.devicesummaryLoading ? (
               <tr>
                 <th scope="col">#</th>
-                <td colSpan="10" className="text-muted">
+                <td colSpan="11" className="text-muted">
                   <h5 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-spinner fa-spin"></i> Loading Device summary ...</h5>
                 </td>
               </tr>
@@ -199,6 +197,7 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
                           </ReactMarkdown>
                         </span></td>
                         <td scope="col"><span title={listdevice_list_result.reg_date}>{mosyFormatDateOnly(listdevice_list_result.reg_date)}</span></td>
+                        <td scope="col"><span title={listdevice_list_result.low_battery_level}>{magicTrimText(listdevice_list_result.low_battery_level, 70)}</span></td>
                         <td scope="col"><span title={listdevice_list_result.installation_longitude}>{magicTrimText(listdevice_list_result.installation_longitude, 70)}</span></td>
                         <td scope="col"><span title={listdevice_list_result.installation_latitude}>{magicTrimText(listdevice_list_result.installation_latitude, 70)}</span></td>
                         
@@ -211,7 +210,7 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
                   
                 ) : (
                   
-                  <tr><td colSpan="10" className="text-muted">
+                  <tr><td colSpan="11" className="text-muted">
                     
                     
                     <div className="col-md-12 text-center mt-4">
@@ -227,6 +226,7 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
                 <tr className="bg-light">
                   <th></th>
                   
+                  <th scope="col"><b></b></th>
                   <th scope="col"><b></b></th>
                   <th scope="col"><b></b></th>
                   <th scope="col"><b></b></th>

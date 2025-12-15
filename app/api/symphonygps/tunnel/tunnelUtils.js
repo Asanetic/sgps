@@ -185,28 +185,44 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
     const alarmByte = parsedData.motionByte;
 
-    if(alarmByte=="00100008")
-    {
-      alarmType = "Motion";
-      description ="Asset in motion";
-      addAlarm = true
-    }
-    
-    if(alarmByte=="00000008")
-    {
-      alarmType = "Battery";
-      description ="Low battery alert";
-      addAlarm = true
-    }
-
     const deviceData = await mosyQddata("device_list", "serial_number",`${parsedData.imei}`);    
+    const lowlevel = deviceData.low_battery_level || 0;
+    const currentLevel = parsedData.power || 0;
+
+    const siteData = await mosyQddata("sites", "record_id",`${deviceData.site_id}`);
+    const siteName = siteData.site_name || "na";
+    const siteCode = siteData.site_code || "na";
+
+    //contact people
+    const company_security_contacts = siteData.company_security_contacts || "";
+    const vendor_contacts = siteData.vendor_contacts || "";
+    const response_team_contacts = siteData.response_team_contacts || "";
+    const crew_commander_contacts = siteData.crew_commander_contacts || "";
+
+    const fallbackContact = "0710766390";
+
+    
+    const recipientCsv = [
+      company_security_contacts,
+      vendor_contacts,
+      response_team_contacts,
+      crew_commander_contacts,
+      siteData.manager_mobile || "",
+      siteData.contact_person_mobile || ""
+    ]
+    
+    .filter(v => v && v.toString().trim() !== "")
+    .join(",") || fallbackContact;
+
+      
+    console.log(`Low battery alert - @${currentLevel} - ${lowlevel}%`, recipientCsv);
 
     //--- Begin  asset_alarms inputs array ---//     
       const AssetalarmsInputsArr = {
         "record_id": newId,
         "alarm_time" : mosyRightNow(),     
         "alarm_type" : alarmType, 
-        "description" : description || "",               
+        "description" : description || ``,               
         "device_serial" : parsedData.imei,               
         "site_id" : deviceData.site_id || "na",               
         "status" : "Open",               
@@ -215,16 +231,72 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
         "reg_date" : mosyRightNow(), 
       
     };
-           
-      if(addAlarm){
+      
+    if(Number(currentLevel) <= Number(lowlevel))
+      {
+          alarmType = "Battery";
+          description =`Low battery alert - current @${currentLevel}% - threshold ${lowlevel}%`;
+          addAlarm = true
+
+          AssetalarmsInputsArr.alarm_type = alarmType;
+          AssetalarmsInputsArr.description = description;
       //--- End asset_alarms inputs array --//
-        const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});     
+        const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
+
+              
+      const message = `Low battery alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}` ;
+
+      sendPrimarySMS(message, recipientCsv);
+
       }
 
 
+      if(alarmByte=="00100008")
+      {
+          alarmType = "Disturbance";
+          description ="Asset disturbance alert";
+          addAlarm = true
+
+          AssetalarmsInputsArr.alarm_type = alarmType;
+          AssetalarmsInputsArr.description = description;
+      //--- End asset_alarms inputs array --//
+      
+      const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
+      
+      const message = `Asset disturbance alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} ` ;
+
+      sendPrimarySMS(message, recipientCsv);
+        
+      }
+    
 
   }
 
+  export async function sendPrimarySMS(message, recipientCsv)
+  {
+    const smsApiUrl = 'https://asanetic.com/sms/sendsms';
+
+    const recipient = recipientCsv;//'254710766390';
+
+    ///const message = 'Hello, this is a test SMS from the system.';
+
+        // 🧠 Prepare SMS request
+        const smsRequest = `pushsms&recp=${encodeURIComponent(recipient)}&body=${encodeURIComponent(message)}`;
+
+        // 🚀 Send SMS
+        const response = await fetch(smsApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: smsRequest,
+        });
+    
+        const resultText = await response.text();
+
+        console.log('SMS result:', resultText, recipientCsv);
+
+  }
 
   export async function computeUnknownCoordinates(parseGPSData, recordId)
   {

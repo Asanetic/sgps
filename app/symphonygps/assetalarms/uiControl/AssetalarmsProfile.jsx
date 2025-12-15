@@ -193,12 +193,13 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
                 
                 {paramAssetalarmsUptoken && (
                   <>
-                  
-                  <MosyActionButton
-                  label=" Acknowledge"
-                  icon="check-square"
-                  onClick={()=>{acknowledgeAlarm(`${asset_alarmsNode?.primkey}`)}}
-                  />
+                  {asset_alarmsNode?.close_status != "Closed" && (
+                    <MosyActionButton
+                    label=" Acknowledge"
+                    icon="check-square"
+                    onClick={()=>{acknowledgeAlarm(`${asset_alarmsNode?.primkey}`)}}
+                    />
+                  )}
                   
                   <MosyActionButton
                   label=" Close issue "
@@ -209,7 +210,7 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
                   <MosyActionButton
                   label=" Realtime track"
                   icon="map-marker"
-                  onClick={()=>{trackAlarm()}}
+                  onClick={()=>{trackAlarm(`${asset_alarmsNode?.device_key}`)}}
                   />
                   
                 </>
@@ -332,6 +333,11 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
                         <div className="border border_set p-2 rounded_medium form-control pt-3" id="div_ack_by" name="div_ack_by" placeholder="Acknowledged By">{asset_alarmsNode?.ack_by || ""}</div>
                       </div>)}
                       
+                      {asset_alarmsNode?.primkey && (
+                          <div className="form-group col-md-4 hive_data_cell  ">
+                            <label >ACK Time</label>
+                            <div className="border border_set p-2 rounded_medium form-control pt-3" id="div_closed_by" name="div_closed_by" placeholder="Closed By">{asset_alarmsNode?.ack_time || ""}</div>
+                          </div>)}                      
                       <div className="form-group col-md-4 hive_data_cell ">
                         <label >Close Status</label>
                         
@@ -357,7 +363,11 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
                             <label >Closed By</label>
                             <div className="border border_set p-2 rounded_medium form-control pt-3" id="div_closed_by" name="div_closed_by" placeholder="Closed By">{asset_alarmsNode?.closed_by || ""}</div>
                           </div>)}
-                          
+                          {asset_alarmsNode?.primkey && (
+                          <div className="form-group col-md-4 hive_data_cell  ">
+                            <label >Close time</label>
+                            <div className="border border_set p-2 rounded_medium form-control pt-3" id="div_closed_by" name="div_closed_by" placeholder="Closed By">{asset_alarmsNode?.close_time || ""}</div>
+                          </div>)}                          
                           {asset_alarmsNode?.primkey && (
                             <div className="form-group col-md-4 hive_data_cell  ">
                               <label >Device Name</label>
@@ -367,7 +377,7 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
                             <MosySmartField
                             module="asset_alarms"
                             field="description"
-                            label="Description"
+                            label="Alarm notes"
                             value={asset_alarmsNode?.description || ""}
                             onChange={handleInputChange}
                             context={{ hostParent: hostParent  }}
@@ -392,7 +402,7 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
                           <div className="row justify-content-start col-md-12 p-0 m-0 ">
                             
                             {asset_alarmsNode?.primkey && (
-                              <div className="form-group col-md-4 hive_data_cell  ">
+                              <div className="form-group col-md-4 hive_data_cell d-none ">
                                 <label >Device Key</label>
                                 <div className="border border_set p-2 rounded_medium form-control pt-3" id="div_device_key" name="div_device_key" placeholder="Device Key">{asset_alarmsNode?.device_key || ""}</div>
                               </div>)}

@@ -21,8 +21,8 @@ import { useDropdownNavigation } from '../AppCore/appGlobalUtils';
 const DEFAULT_BASE = hiveRoutes.hiveBaseRoute; // default root if none passed
 
 function isComponentEnabled(tblName, actionType = 'cu') {
-  console.log(`isComponet enabledddddddddd ${tblName} --- ${actionType}`)
-  const disabledDeleteTables = ["device_list","system_role_bundles", "system_users"];
+  //console.log(`isComponet enabledddddddddd ${tblName} --- ${actionType}`)
+  const disabledDeleteTables = ["AssetalarmsMainProfilePage","AssetalarmsList","asset_alarms","device_list","system_role_bundles", "system_users"];
   
   const [action, table] = tblName.includes(':') ? tblName.split(':') : [actionType, tblName];
 

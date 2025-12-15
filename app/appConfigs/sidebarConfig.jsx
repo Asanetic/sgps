@@ -45,13 +45,13 @@ export const sidebarConfig = [
     roles: [] 
   },
 
-  { 
-    type: "link", 
-    label: "Tcp settings", 
-    icon: "fa fa-copy", 
-    href: (routes) => `${routes.cms}/tcp`, 
-    roles: [] 
-  },
+  // { 
+  //   type: "link", 
+  //   label: "Tcp settings", 
+  //   icon: "fa fa-copy", 
+  //   href: (routes) => `${routes.cms}/tcp`, 
+  //   roles: [] 
+  // },
 
   // { 
   //   type: "link", 
@@ -73,13 +73,13 @@ export const sidebarConfig = [
   //     { label: "Alarm Reports", href: (routes) => `${routes.cms}/reports/alarms`, roles: [] },
   //   ],
   // },
-  { 
-    type: "link", 
-    label: "Device sim", 
-    icon: "fa fa-bolt", 
-    href: (routes) => `${routes.cms}/maps/devicesim`, 
-    roles: [] 
-  },
+  // { 
+  //   type: "link", 
+  //   label: "Device sim", 
+  //   icon: "fa fa-bolt", 
+  //   href: (routes) => `${routes.cms}/maps/devicesim`, 
+  //   roles: [] 
+  // },
   // Account
   { 
     type: "link", 
