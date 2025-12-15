@@ -249,7 +249,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       const message = `Low battery alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}` ;
 
       sendPrimarySMS(message, recipientCsv);
-      sendEmail(message,manager_email, `Low battery alert ${deviceData?.device_name}`,);
+      sendEmail(message,manager_email, `Low battery alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`,);
 
       }
 
@@ -269,7 +269,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       const message = `Asset disturbance alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} ` ;
 
       sendPrimarySMS(message, recipientCsv);
-      sendEmail(message, manager_email, `Disturbance alert ${deviceData?.device_name}`,);
+      sendEmail(message, manager_email, `Disturbance alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`,);
       }
     
 
