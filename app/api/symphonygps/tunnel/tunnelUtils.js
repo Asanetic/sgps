@@ -1,7 +1,8 @@
+import { NextResponse } from "next/dist/server/web/spec-extension/response";
 import { magicRandomStr, mosyQddata, mosyRightNow } from "../../apiUtils/dataControl/dataUtils";
 import { AddAssetalarms } from "../assetalarms/assetalarms/AssetalarmsDbGateway";
-import { mutateInputArray } from "../beMonitor";
 import { UpdateDevicegpslogs } from "../gpslogs/devicegpslogs/DevicegpslogsDbGateway";
+import nodemailer from 'nodemailer';
 
 /**
  * Parses a GPS device raw string into a structured object.
@@ -198,6 +199,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
     const vendor_contacts = siteData.vendor_contacts || "";
     const response_team_contacts = siteData.response_team_contacts || "";
     const crew_commander_contacts = siteData.crew_commander_contacts || "";
+    const manager_email = siteData.manager_email || "";
 
     const fallbackContact = "0710766390";
 
@@ -247,6 +249,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       const message = `Low battery alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}` ;
 
       sendPrimarySMS(message, recipientCsv);
+      sendEmail(message,manager_email, `Low battery alert ${deviceData?.device_name}`,);
 
       }
 
@@ -266,7 +269,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       const message = `Asset disturbance alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} ` ;
 
       sendPrimarySMS(message, recipientCsv);
-        
+      sendEmail(message, manager_email, `Disturbance alert ${deviceData?.device_name}`,);
       }
     
 
@@ -295,6 +298,39 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
         const resultText = await response.text();
 
         console.log('SMS result:', resultText, recipientCsv);
+
+  }
+
+
+  export async function sendEmail(message, recipientCsv, subject = "Symphony GPS")
+  {
+    console.log(`sendEmail`, message, recipientCsv);
+   
+    const emailpassword = `ksff wxtm mqfd ngww`
+    const emailAccount  =`symphonygpske@gmail.com`;
+
+    // Configure Gmail transport
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: emailAccount,
+        pass: emailpassword, // ✅ Gmail App Password        
+      },
+    });
+
+    const finalMessage = `${message} View site issue here https://gps.symphony.co.ke/symphonygps/maps/home`
+
+    // Send the actual email
+    const info = await transporter.sendMail({
+      from: `Symphony <${emailAccount}>`,
+      to: recipientCsv,
+      subject,
+      text: finalMessage, // plain text
+      html: `<p>${finalMessage.replace(/\n/g, '<br/>')}</p>`, // basic HTML
+    });
+
+    console.log('📨 Email sent:', info.messageId);
+    return NextResponse.json({ success: true, message: 'Email sent successfully!' });    
 
   }
 
