@@ -273,9 +273,9 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       sendEmail(message, manager_email, `Disturbance alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`,);
       }
 
-      if(speed > 0)
+      if(Number(speed) > 0)
         {
-            alarmType = "Critical motion";
+            alarmType = "Critical_motion";
             description ="Critial motion asset moving";
             addAlarm = true
   

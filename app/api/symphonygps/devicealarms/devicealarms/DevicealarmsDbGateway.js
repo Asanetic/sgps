@@ -5,6 +5,7 @@ import { mosySqlDelete  , mosySqlInsert , mosySqlUpdate } from "../../../apiUtil
 export async function AddDevicealarms(newId, mutatedDataArray, body, authData)
 {
 
+  //check for existing 
   const result = await mosySqlInsert("gps_logs", mutatedDataArray, body);
    
   return result;

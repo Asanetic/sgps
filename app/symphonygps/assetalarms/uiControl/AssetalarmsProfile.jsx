@@ -13,7 +13,7 @@ import { MosyAlertCard, MosyNotify ,closeMosyModal } from  '../../../MosyUtils/A
 import MosySnackWidget from '../../../MosyUtils/MosySnackWidget';
 
 //basic utils
-import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam ,mosyTonum  } from '../../../MosyUtils/hiveUtils';
+import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam ,mosyTonum, disableFormInputs  } from '../../../MosyUtils/hiveUtils';
 
 //data control and processors
 import { inteprateAssetalarmsFormAction, assetalarmsProfileData , popDeleteDialog, InteprateAssetalarmsEvent } from '../dataControl/AssetalarmsRequestHandler';
@@ -101,6 +101,7 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
   //use route navigation system
   const router = useRouter();
   
+
   //manage post form
   function postAssetalarmsFormData(e) {
     
@@ -134,6 +135,8 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
   
   useEffect(() => {
     
+    disableFormInputs("asset_alarms_profile_form")
+
     assetalarmsProfileData(customQueryStr, stateItemSetters, router, customProfileData)
     
     mosyScrollTo(activeScrollId)
@@ -390,7 +393,7 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
                           
                         </div>
                         
-                        <div className="col-md-12 bg-white border border_set shadow-md p-4 mb-4 hive_form_section  ">
+                        <div className="col-md-12 bg-white border border_set shadow-md p-4 mb-4 hive_form_section  d-none  ">
                           <h5 className="col-md-12 row p-2 justify-content-center p-0 m-0">
                             <div className="col-md-3 bg-dark mb-3 mb-lg-0 mt-lg-3" style={{height: "1px"}}></div>
                             <div className="col-md-5 text-center"></div>
