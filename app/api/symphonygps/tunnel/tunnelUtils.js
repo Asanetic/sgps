@@ -185,6 +185,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
     let addAlarm = false;
 
     const alarmByte = parsedData.motionByte;
+    const speed = parsedData.speed || 0;
 
     const deviceData = await mosyQddata("device_list", "serial_number",`${parsedData.imei}`);    
     const lowlevel = deviceData.low_battery_level || 0;
@@ -271,6 +272,24 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       sendPrimarySMS(message, recipientCsv);
       sendEmail(message, manager_email, `Disturbance alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`,);
       }
+
+      if(speed > 0)
+        {
+            alarmType = "Critical motion";
+            description ="Critial motion asset moving";
+            addAlarm = true
+  
+            AssetalarmsInputsArr.alarm_type = alarmType;
+            AssetalarmsInputsArr.description = description;
+        //--- End asset_alarms inputs array --//
+        
+        const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
+        
+        const message = `Critical motion. Your asset is moving at ${speed} Km/h Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} ` ;
+  
+        sendPrimarySMS(message, recipientCsv);
+        sendEmail(message, manager_email, `Critical motion alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`,);
+        }      
     
 
   }
