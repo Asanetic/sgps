@@ -484,14 +484,18 @@ export function mosyToday() {
 
 export function mosyRightNow() {
   const now = new Date();
-  const pad = (num) => String(num).padStart(2, '0');
 
-  const year = now.getFullYear();
-  const month = pad(now.getMonth() + 1);
-  const day = pad(now.getDate());
-  const hours = pad(now.getHours());
-  const minutes = pad(now.getMinutes());
-  const seconds = pad(now.getSeconds());
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Africa/Nairobi',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
 
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return formatter.format(now).replace(',', '');
 }
+

@@ -179,7 +179,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
   
   export async function logTcpAlarm(data, parsedData, newId)
   {
-    
+
     let alarmType = "";
     let description=""
     let addAlarm = false;
@@ -190,35 +190,14 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
     const deviceData = await mosyQddata("device_list", "serial_number",`${parsedData.imei}`);    
     const lowlevel = deviceData.low_battery_level || 0;
     const currentLevel = parsedData.power || 0;
-
+      
+        
     const siteData = await mosyQddata("sites", "record_id",`${deviceData.site_id}`);
     const siteName = siteData.site_name || "na";
     const siteCode = siteData.site_code || "na";
 
-    //contact people
-    const company_security_contacts = siteData.company_security_contacts || "";
-    const vendor_contacts = siteData.vendor_contacts || "";
-    const response_team_contacts = siteData.response_team_contacts || "";
-    const crew_commander_contacts = siteData.crew_commander_contacts || "";
-    const manager_email = siteData.manager_email || "";
 
-    const fallbackContact = "0710766390";
-
-    
-    const recipientCsv = [
-      company_security_contacts,
-      vendor_contacts,
-      response_team_contacts,
-      crew_commander_contacts,
-      siteData.manager_mobile || "",
-      siteData.contact_person_mobile || ""
-    ]
-    
-    .filter(v => v && v.toString().trim() !== "")
-    .join(",") || fallbackContact;
-
-      
-    console.log(`Low battery alert - @${currentLevel} - ${lowlevel}%`, recipientCsv);
+    ///console.log(`Low battery alert - @${currentLevel} - ${lowlevel}%`, recipientCsv);
 
     //--- Begin  asset_alarms inputs array ---//     
       const AssetalarmsInputsArr = {
@@ -245,15 +224,14 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
           AssetalarmsInputsArr.description = description;
       //--- End asset_alarms inputs array --//
         const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
-
+        const newKey = result.record_id
               
-      const message = `Low battery alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}` ;
+      const message = `Low battery alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} Battery Level @ ${currentLevel}%   ,  Report time : ${mosyRightNow()}` ;
 
-      sendPrimarySMS(message, recipientCsv);
-      sendEmail(message,manager_email, `Low battery alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`,);
+      sendAlertSMS(message, siteData);
+      sendAlertEmail(message, `Low battery alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
 
       }
-
 
       if(alarmByte=="00100008")
       {
@@ -266,14 +244,15 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       //--- End asset_alarms inputs array --//
       
       const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
-      
-      const message = `Asset disturbance alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} ` ;
+      const newKey = result.record_id
 
-      sendPrimarySMS(message, recipientCsv);
-      sendEmail(message, manager_email, `Disturbance alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`,);
+      const message = `Asset disturbance alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}   Report time : ${mosyRightNow()}` ;
+
+      sendAlertSMS(message, siteData);
+      sendAlertEmail(message, `Disturbance alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
       }
 
-      if(Number(speed) > 0)
+      if(Number(speed) > 0.0)
         {
             alarmType = "Critical_motion";
             description ="Critial motion asset moving";
@@ -284,46 +263,108 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
         //--- End asset_alarms inputs array --//
         
         const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
-        
-        const message = `Critical motion. Your asset is moving at ${speed} Km/h Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} ` ;
+        const newKey = result.record_id
+
+        const message = `Critical motion. Your asset is moving at ${speed} Km/h Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()}` ;
   
-        sendPrimarySMS(message, recipientCsv);
-        sendEmail(message, manager_email, `Critical motion alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`,);
-        }      
+        sendAlertSMS(message, siteData);
+        sendAlertEmail(message, `Critical motion alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
+        } 
+        
+        
+        if(newId=="geofence")
+        {
+          alarmType = "Geofence";
+          description ="Geofence Violation";
+          addAlarm = true
+
+          AssetalarmsInputsArr.alarm_type = alarmType;
+          AssetalarmsInputsArr.description = description;
+        //--- End asset_alarms inputs array --//
+        
+        const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
+        const newKey = result.record_id
+
+        const message = `Geofence Violation. Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()}` ;  
+
+        sendAlertSMS(message, siteData);
+        sendAlertEmail(message, `Geofence Violation alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData); 
+
+        }
     
 
   }
 
-  export async function sendPrimarySMS(message, recipientCsv)
+  export function loadSystemContacts(siteData)
+  {
+
+    console.log(`loadSystemContacts++++++++++++++++++_____________++++++++++`, siteData);
+
+    const siteName = siteData.site_name || "na";
+    const siteCode = siteData.site_code || "na";
+
+    //contact people
+    const company_security_contacts = siteData.company_security_contacts || "";
+    const vendor_contacts = siteData.vendor_contacts || "";
+    const response_team_contacts = siteData.response_team_contacts || "";
+    const crew_commander_contacts = siteData.crew_commander_contacts || "";
+    const manager_email = siteData.manager_email || "";
+
+    const fallbackContact = "0710766390";
+
+    
+    const recipientCsv = [
+      company_security_contacts,
+      vendor_contacts,
+      response_team_contacts,
+      crew_commander_contacts,
+      siteData.manager_mobile || "",
+      siteData.contact_person_mobile || ""
+    ]
+    
+    .filter(v => v && v.toString().trim() !== "")
+    .join(",") || fallbackContact;
+
+    const recipiensContacts = {phone_numbers : recipientCsv, manager_email : manager_email};
+
+    console.log(`recipiensContacts loadSystemContacts++++++++++++++++++_____________++++++++++`, recipiensContacts);
+
+    return recipiensContacts
+  }
+
+  export async function sendAlertSMS(message, siteData)
   {
     const smsApiUrl = 'https://asanetic.com/sms/sendsms';
 
-    const recipient = recipientCsv;//'254710766390';
+    const recipient = loadSystemContacts(siteData).phone_numbers;//'254710766390';
+
+    console.log(`sendAlert SMSMSM ++++++++++++++++_______________`, message, recipient);
 
     ///const message = 'Hello, this is a test SMS from the system.';
 
-        // 🧠 Prepare SMS request
-        const smsRequest = `pushsms&recp=${encodeURIComponent(recipient)}&body=${encodeURIComponent(message)}`;
+    // 🧠 Prepare SMS request
+    const smsRequest = `pushsms&recp=${encodeURIComponent(recipient)}&body=${encodeURIComponent(message)}`;
 
-        // 🚀 Send SMS
-        const response = await fetch(smsApiUrl, {
-          method: 'POST',
-          headers: {
+    // 🚀 Send SMS
+    const response = await fetch(smsApiUrl, {
+      method: 'POST',
+      headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: smsRequest,
-        });
+      },
+      body: smsRequest,
+    });
     
         const resultText = await response.text();
 
-        console.log('SMS result:', resultText, recipientCsv);
+        console.log('SMS result:', resultText, recipient);
 
   }
 
-
-  export async function sendEmail(message, recipientCsv, subject = "Symphony GPS")
+  export async function sendAlertEmail(message, subject = "Symphony GPS", siteData)
   {
-    console.log(`sendEmail`, message, recipientCsv);
+    const recipientCsv = loadSystemContacts(siteData).manager_email;
+
+    console.log(`sendAlertEmail++++++++++++++++_______________`, message, recipientCsv);
    
     const emailpassword = `ksff wxtm mqfd ngww`
     const emailAccount  =`symphonygpske@gmail.com`;
@@ -339,7 +380,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
     const finalMessage = `${message} View site issue here https://gps.symphony.co.ke/symphonygps/maps/home`
 
-    // Send the actual email
+    // // Send the actual email
     const info = await transporter.sendMail({
       from: `Symphony <${emailAccount}>`,
       to: recipientCsv,
@@ -365,7 +406,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
     console.log(`requestGoogleLocation`, location);
 
-    UpdateDevicegpslogs(recordId, 
+    await UpdateDevicegpslogs(recordId, 
       {
 
       latitude: location.lat,
@@ -374,6 +415,18 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
      },
     {},{}, ` record_id ='${recordId}'`);
 
+    //device geofence 
+    const deviceDataRes = await mosyQddata("device_list", "serial_number",`${parseGPSData.imei}`);
+    const deviceData = deviceDataRes;
+
+    //run geofence 
+   const isInsideGeofence = runGeofence(location, deviceData?.geofence)?.[0]?.inside;
+   console.log(`isInsideGeofence`, isInsideGeofence);
+
+   if(!isInsideGeofence)
+   {
+    logTcpAlarm(deviceData, parseGPSData, "geofence");
+   }
   }
 
   export function buildGoogleGeoPayload(deviceData) 
@@ -457,4 +510,28 @@ export async function requestGoogleLocation(payload) {
           error: true
       };
   }
+}
+
+
+
+export function runGeofence(points, polygon) {
+  if (!Array.isArray(points)) points = [points];
+
+  return points.map(p => {
+    const x = Number(p.x);
+    const y = Number(p.y);
+    let inside = false;
+    const n = polygon.length;
+
+    for (let i = 0, j = n - 1; i < n; j = i++) {
+      const xi = Number(polygon[i].x), yi = Number(polygon[i].y);
+      const xj = Number(polygon[j].x), yj = Number(polygon[j].y);
+
+      const intersect = ((yi > y) !== (yj > y)) &&
+                        (x < ((xj - xi) * (y - yi)) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+    }
+
+    return { ...p, inside };
+  });
 }

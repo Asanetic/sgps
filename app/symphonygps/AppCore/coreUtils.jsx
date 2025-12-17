@@ -998,11 +998,13 @@ export default function GeofenceMonitor({ device_id = "", title ="Device alarms"
         const inside = computeGeofence(latestPoint, fence.coords)?.[0]?.inside;
         if (inside === false) {
           newAlerts.push({ device: latestPoint, fence, device_data });
+                         
         }
       });
     });
 
     if(newAlerts.length > 0 && showModal){
+
       MosyAlertCard({icon: "warning",
         iconColor:"text-danger",
         message: `⚠️ ${title}`,

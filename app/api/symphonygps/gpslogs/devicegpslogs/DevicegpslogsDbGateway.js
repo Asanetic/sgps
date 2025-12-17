@@ -5,7 +5,7 @@ import { mosySqlDelete  , mosySqlInsert , mosySqlUpdate } from "../../../apiUtil
 export async function AddDevicegpslogs(newId, mutatedDataArray, body, authData)
 {
   mutatedDataArray.record_id = newId
-  
+       
   const result = await mosySqlInsert("gps_logs", mutatedDataArray, body);
    
   return result;

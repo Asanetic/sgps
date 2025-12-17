@@ -1,4 +1,3 @@
-
 //utils 
 import { mosySqlInsert, mosySqlUpdate, base64Decode, mosyFlexSelect, mosyUploadFile, mosyDeleteFile, magicRandomStr } from '../../../apiUtils/dataControl/dataUtils';
 
@@ -151,9 +150,7 @@ export async function POST(DevicegpslogsRequest) {
       mutatedDataArray.record_id = newId;
       
       // Insert into table Devicegpslogs
-      const result = await AddDevicegpslogs(newId, mutatedDataArray, body, authData);     
-
-       
+      const result = await AddDevicegpslogs(newId, mutatedDataArray, body, authData);            
 
       return Response.json({
         status: 'success',
