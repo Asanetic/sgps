@@ -1,8 +1,11 @@
 import { NextResponse } from "next/dist/server/web/spec-extension/response";
-import { magicRandomStr, mosyQddata, mosyRightNow } from "../../apiUtils/dataControl/dataUtils";
+import { base64Encode, magicRandomStr, mosyQddata, mosyRightNow } from "../../apiUtils/dataControl/dataUtils";
 import { AddAssetalarms } from "../assetalarms/assetalarms/AssetalarmsDbGateway";
 import { UpdateDevicegpslogs } from "../gpslogs/devicegpslogs/DevicegpslogsDbGateway";
 import nodemailer from 'nodemailer';
+
+
+const devicePageUrl = `https://gps.symphony.co.ke/symphonygps/maps/realtime?device=`
 
 /**
  * Parses a GPS device raw string into a structured object.
@@ -152,16 +155,18 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       wifi
     };
 
+
     const deviceData = await mosyQddata("device_list", "serial_number",`${deviceId}`);
+    console.log(`processssgps pinggggggggggggg imei ${deviceId}`, parsedGPS, deviceData);
 
     const devicePingLog = {
       log_type: 'GPS',                    // fixed type for GPS logs
-      site_name: deviceData.site_id || 'na',
-      device_id: deviceId || '?',
+      site_name: deviceData?.site_id || 'na',
+      device_id: deviceData?.record_id || '?',
       battery: battery || '?',
       latitude: lat || '?',
       longitude: lng || '?',
-      speed: speed || '?',
+      speed: speed || '0',
       remark: options.remark || '?',
       timestamp: timestamp || '?',
       created_at: options.createdAt || new Date().toISOString(),
@@ -214,6 +219,9 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       
     };
       
+    const deviceURlPageDetails = ` - View site issue here ${devicePageUrl}${base64Encode(`${deviceData.primkey}`)}`
+
+    //console.log(`device deviceURlPageDetails +++++++____+++___+++_+++++++ ${deviceData.primkey}`, deviceData)
     if(Number(currentLevel) <= Number(lowlevel))
       {
           alarmType = "Battery";
@@ -226,7 +234,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
         const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
         const newKey = result.record_id
               
-      const message = `Low battery alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} Battery Level @ ${currentLevel}%   ,  Report time : ${mosyRightNow()}` ;
+      const message = `Low battery alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} Battery Level @ ${currentLevel}%   ,  Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;
 
       sendAlertSMS(message, siteData);
       sendAlertEmail(message, `Low battery alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
@@ -246,7 +254,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
       const newKey = result.record_id
 
-      const message = `Asset disturbance alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}   Report time : ${mosyRightNow()}` ;
+      const message = `Asset disturbance alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}   Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;
 
       sendAlertSMS(message, siteData);
       sendAlertEmail(message, `Disturbance alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
@@ -265,7 +273,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
         const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
         const newKey = result.record_id
 
-        const message = `Critical motion. Your asset is moving at ${speed} Km/h Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()}` ;
+        const message = `Critical motion. Your asset is moving at ${speed} Km/h Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails} ` ;
   
         sendAlertSMS(message, siteData);
         sendAlertEmail(message, `Critical motion alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
@@ -285,7 +293,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
         const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
         const newKey = result.record_id
 
-        const message = `Geofence Violation. Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()}` ;  
+        const message = `Geofence Violation. Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;  
 
         sendAlertSMS(message, siteData);
         sendAlertEmail(message, `Geofence Violation alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData); 
@@ -298,7 +306,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
   export function loadSystemContacts(siteData)
   {
 
-    console.log(`loadSystemContacts++++++++++++++++++_____________++++++++++`, siteData);
+    //console.log(`loadSystemContacts++++++++++++++++++_____________++++++++++`, siteData);
 
     const siteName = siteData.site_name || "na";
     const siteCode = siteData.site_code || "na";
@@ -327,7 +335,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
     const recipiensContacts = {phone_numbers : recipientCsv, manager_email : manager_email};
 
-    console.log(`recipiensContacts loadSystemContacts++++++++++++++++++_____________++++++++++`, recipiensContacts);
+    //console.log(`recipiensContacts loadSystemContacts++++++++++++++++++_____________++++++++++`, recipiensContacts);
 
     return recipiensContacts
   }
@@ -338,7 +346,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
     const recipient = loadSystemContacts(siteData).phone_numbers;//'254710766390';
 
-    console.log(`sendAlert SMSMSM ++++++++++++++++_______________`, message, recipient);
+    //console.log(`sendAlert SMSMSM ++++++++++++++++_______________`, message, recipient);
 
     ///const message = 'Hello, this is a test SMS from the system.';
 
@@ -364,7 +372,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
   {
     const recipientCsv = loadSystemContacts(siteData).manager_email;
 
-    console.log(`sendAlertEmail++++++++++++++++_______________`, message, recipientCsv);
+    //console.log(`sendAlertEmail++++++++++++++++_______________`, message, recipientCsv);
    
     const emailpassword = `ksff wxtm mqfd ngww`
     const emailAccount  =`symphonygpske@gmail.com`;
@@ -378,7 +386,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       },
     });
 
-    const finalMessage = `${message} View site issue here https://gps.symphony.co.ke/symphonygps/maps/home`
+    const finalMessage = `${message}`
 
     // // Send the actual email
     const info = await transporter.sendMail({
