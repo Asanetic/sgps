@@ -256,7 +256,7 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
         <ul className="list-group list-group-flush">
           <span>{alarmListUiList}</span>
         </ul>
-          {alerts.length > 0 ? (
+          {/* {alerts.length > 0 ? (
             <ul className="list-group list-group-flush">
               {alerts.map((data, i) => (
                 
@@ -295,7 +295,7 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
             </ul>
           ) : (
             <p className="text-center text-muted mb-0">_</p>
-          )}
+          )} */}
         </div>
       </div>
     </div>

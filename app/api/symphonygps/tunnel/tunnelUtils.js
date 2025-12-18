@@ -1,5 +1,5 @@
 import { NextResponse } from "next/dist/server/web/spec-extension/response";
-import { base64Encode, magicRandomStr, mosyQddata, mosyRightNow } from "../../apiUtils/dataControl/dataUtils";
+import { base64Encode, magicRandomStr, mosyCountRows, mosyQddata, mosyQuickSel, mosyRightNow } from "../../apiUtils/dataControl/dataUtils";
 import { AddAssetalarms } from "../assetalarms/assetalarms/AssetalarmsDbGateway";
 import { UpdateDevicegpslogs } from "../gpslogs/devicegpslogs/DevicegpslogsDbGateway";
 import nodemailer from 'nodemailer';
@@ -230,14 +230,20 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
           AssetalarmsInputsArr.alarm_type = alarmType;
           AssetalarmsInputsArr.description = description;
-      //--- End asset_alarms inputs array --//
-        const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
-        const newKey = result.record_id
-              
-      const message = `Low battery alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} Battery Level @ ${currentLevel}%   ,  Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;
+          const deviceSerial = parsedData.imei
 
-      sendAlertSMS(message, siteData);
-      sendAlertEmail(message, `Low battery alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
+          const checkSimilarAlarms = await mosyCountRows(`asset_alarms`, `where device_serial='${deviceSerial}' and alarm_type='${alarmType}' and status !='Closed'`)
+
+          if(checkSimilarAlarms==0)
+          {
+            //--- End asset_alarms inputs array --//
+            const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
+                    
+            const message = `Low battery alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName} Battery Level @ ${currentLevel}%   ,  Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;
+
+            sendAlertSMS(message, siteData);
+            sendAlertEmail(message, `Low battery alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
+          }
 
       }
 
@@ -249,15 +255,24 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
           AssetalarmsInputsArr.alarm_type = alarmType;
           AssetalarmsInputsArr.description = description;
-      //--- End asset_alarms inputs array --//
-      
-      const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
-      const newKey = result.record_id
+          //--- End asset_alarms inputs array --//
+          
+          const deviceSerial = parsedData.imei
 
-      const message = `Asset disturbance alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}   Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;
+          const checkSimilarAlarms = await mosyCountRows(`asset_alarms`, `where device_serial='${deviceSerial}' and alarm_type='${alarmType}' and status !='Closed'`)
 
-      sendAlertSMS(message, siteData);
-      sendAlertEmail(message, `Disturbance alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
+          if(checkSimilarAlarms==0)
+          {
+
+            const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
+            const newKey = result.record_id
+
+            const message = `Asset disturbance alert - Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}   Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;
+
+            sendAlertSMS(message, siteData);
+            sendAlertEmail(message, `Disturbance alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
+
+          }
       }
 
       if(Number(speed) > 0.0)
@@ -268,15 +283,23 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
   
             AssetalarmsInputsArr.alarm_type = alarmType;
             AssetalarmsInputsArr.description = description;
-        //--- End asset_alarms inputs array --//
-        
-        const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
-        const newKey = result.record_id
+            //--- End asset_alarms inputs array --//
+            const deviceSerial = parsedData.imei
 
-        const message = `Critical motion. Your asset is moving at ${speed} Km/h Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails} ` ;
-  
-        sendAlertSMS(message, siteData);
-        sendAlertEmail(message, `Critical motion alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
+            const checkSimilarAlarms = await mosyCountRows(`asset_alarms`, `where device_serial='${deviceSerial}' and alarm_type='${alarmType}' and status !='Closed'`)
+
+            if(checkSimilarAlarms==0)
+            {
+
+              const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
+              const newKey = result.record_id
+
+              const message = `Critical motion. Your asset is moving at ${speed} Km/h Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails} ` ;
+        
+              sendAlertSMS(message, siteData);
+              sendAlertEmail(message, `Critical motion alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData);
+            }
+
         } 
         
         
@@ -288,16 +311,22 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
           AssetalarmsInputsArr.alarm_type = alarmType;
           AssetalarmsInputsArr.description = description;
-        //--- End asset_alarms inputs array --//
-        
-        const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
-        const newKey = result.record_id
+          //--- End asset_alarms inputs array --//
+          const deviceSerial = parsedData.imei
 
-        const message = `Geofence Violation. Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;  
+          const checkSimilarAlarms = await mosyCountRows(`asset_alarms`, `where device_serial='${deviceSerial}' and alarm_type='${alarmType}' and status !='Closed'`)
 
-        sendAlertSMS(message, siteData);
-        sendAlertEmail(message, `Geofence Violation alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData); 
+          if(checkSimilarAlarms==0)
+          {
 
+          const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
+          const newKey = result.record_id
+
+          const message = `Geofence Violation. Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;  
+
+          sendAlertSMS(message, siteData);
+          sendAlertEmail(message, `Geofence Violation alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData); 
+          }
         }
     
 
