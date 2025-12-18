@@ -314,18 +314,21 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
           //--- End asset_alarms inputs array --//
           const deviceSerial = parsedData.imei
 
-          const checkSimilarAlarms = await mosyCountRows(`asset_alarms`, `where device_serial='${deviceSerial}' and alarm_type='${alarmType}' and status !='Closed'`)
+            //if there is no geofence
+            if(deviceData.geofence!=""){
+              const checkSimilarAlarms = await mosyCountRows(`asset_alarms`, `where device_serial='${deviceSerial}' and alarm_type='${alarmType}' and status !='Closed'`)
 
-          if(checkSimilarAlarms==0)
-          {
+              if(checkSimilarAlarms==0)
+              {
 
-          const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
-          const newKey = result.record_id
+              const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
+              const newKey = result.record_id
 
-          const message = `Geofence Violation. Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;  
+              const message = `Geofence Violation. Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;  
 
-          sendAlertSMS(message, siteData);
-          sendAlertEmail(message, `Geofence Violation alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData); 
+              sendAlertSMS(message, siteData);
+              sendAlertEmail(message, `Geofence Violation alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData); 
+              }
           }
         }
     
