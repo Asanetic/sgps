@@ -25,7 +25,7 @@ export function startTCPListener({ port = 9000, onData })
       
       insertObject.record_id = newId 
       insertObject.remark = `Sat`   
-      insertObject.log_details = `${message} ${gpsRequest}`
+      insertObject.log_details = `${gpsRequest} - ${message}`
       AddDevicegpslogs(newId, insertObject, {}, {})      
       logTcpAlarm(insertObject, gpsRequest, newId)
 
