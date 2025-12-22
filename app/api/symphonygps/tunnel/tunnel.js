@@ -23,13 +23,17 @@ export function startTCPListener({ port = 9000, onData })
       const interpretedData = parseGPSData(message)
       const {insertObject, gpsRequest} = await processDevicePingToLog(interpretedData)
       
-      insertObject.record_id = newId    
+      insertObject.record_id = newId 
+      insertObject.remark = `Sat`   
+      insertObject.log_details = `${message}`
       AddDevicegpslogs(newId, insertObject, {}, {})      
       logTcpAlarm(insertObject, gpsRequest, newId)
 
-      //if(insertObject.)
+      if(gpsRequest.satellites == 0){
       //--- End ---//      
-      computeUnknownCoordinates(interpretedData, newId)
+        computeUnknownCoordinates(interpretedData, newId)
+
+      }
 
       if (typeof onData === "function") onData(message, socket);
 

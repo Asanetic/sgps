@@ -161,11 +161,11 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
     const devicePingLog = {
       log_type: 'GPS',                    // fixed type for GPS logs
-      site_name: deviceData?.site_id || 'na',
-      device_id: deviceData?.record_id || deviceId,
+      site_name: deviceData?.site_id || 'N/A',
+      device_id: deviceData?.record_id || `Unregistered device ${deviceId}`,  
       battery: battery || '?',
-      latitude: lat || '?',
-      longitude: lng || '?',
+      latitude: lat || 'na',
+      longitude: lng || 'na',
       speed: speed || '0',
       remark: options.remark || '?',
       timestamp: timestamp || '?',
@@ -349,6 +349,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
     const response_team_contacts = siteData.response_team_contacts || "";
     const crew_commander_contacts = siteData.crew_commander_contacts || "";
     const manager_email = siteData.manager_email || "";
+    const contact_person_email = siteData.contact_person_email || "";
 
     const fallbackContact = "0710766390";
 
@@ -365,7 +366,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
     .filter(v => v && v.toString().trim() !== "")
     .join(",") || fallbackContact;
 
-    const recipiensContacts = {phone_numbers : recipientCsv, manager_email : manager_email};
+    const recipiensContacts = {phone_numbers : recipientCsv, manager_email : `${manager_email},${contact_person_email}`};
 
     //console.log(`recipiensContacts loadSystemContacts++++++++++++++++++_____________++++++++++`, recipiensContacts);
 
@@ -450,7 +451,8 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       {
 
       latitude: location.lat,
-      longitude: location.lng
+      longitude: location.lng,
+       remark : "Computed"
 
      },
     {},{}, ` record_id ='${recordId}'`);
