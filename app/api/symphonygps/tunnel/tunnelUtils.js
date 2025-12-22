@@ -452,7 +452,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
       latitude: location.lat,
       longitude: location.lng,
-       remark : "Computed"
+      remark : "Computed"
 
      },
     {},{}, ` record_id ='${recordId}'`);
