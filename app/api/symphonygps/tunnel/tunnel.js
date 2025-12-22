@@ -27,6 +27,7 @@ export function startTCPListener({ port = 9000, onData })
       AddDevicegpslogs(newId, insertObject, {}, {})      
       logTcpAlarm(insertObject, gpsRequest, newId)
 
+      //if(insertObject.)
       //--- End ---//      
       computeUnknownCoordinates(interpretedData, newId)
 

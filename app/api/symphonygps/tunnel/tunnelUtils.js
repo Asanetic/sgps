@@ -162,7 +162,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
     const devicePingLog = {
       log_type: 'GPS',                    // fixed type for GPS logs
       site_name: deviceData?.site_id || 'na',
-      device_id: deviceData?.record_id || '?',
+      device_id: deviceData?.record_id || deviceId,
       battery: battery || '?',
       latitude: lat || '?',
       longitude: lng || '?',
@@ -210,7 +210,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
         "alarm_time" : mosyRightNow(),     
         "alarm_type" : alarmType, 
         "description" : description || ``,               
-        "device_serial" : parsedData.imei,               
+        "device_serial" : parsedData.imei ,               
         "site_id" : deviceData.site_id || "na",               
         "status" : "Open",               
         "ack_status" : "Open",               

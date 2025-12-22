@@ -1005,15 +1005,15 @@ export default function GeofenceMonitor({ device_id = "", title ="Device alarms"
 
     if(newAlerts.length > 0 && showModal){
 
-      MosyAlertCard({icon: "warning",
-        iconColor:"text-danger",
-        message: `⚠️ ${title}`,
-        yesLabel:"Noted",
-        noLabel : "Action",
-        onYes : ()=>{closeMosyCard("modal2"); setShowModal(false)},
-        onNo : () =>{viewPendingAlarmHistory()},
-        id : "modal2"
-      })
+      // MosyAlertCard({icon: "warning",
+      //   iconColor:"text-danger",
+      //   message: `⚠️ ${title}`,
+      //   yesLabel:"Noted",
+      //   noLabel : "Action",
+      //   onYes : ()=>{closeMosyCard("modal2"); setShowModal(false)},
+      //   onNo : () =>{viewPendingAlarmHistory()},
+      //   id : "modal2"
+      // })
 
   }
 
