@@ -165,7 +165,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       device_id: deviceData?.record_id || `Unregistered device ${deviceId}`,  
       battery: battery || '?',
       latitude: lat || 'na',
-      longitude: lng || 'na',
+      longitude: `-${lng}` || 'na',
       speed: speed || '0',
       remark: options.remark || '?',
       timestamp: timestamp || '?',

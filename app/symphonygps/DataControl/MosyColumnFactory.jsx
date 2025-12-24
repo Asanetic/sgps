@@ -16,7 +16,7 @@ const MosyColumnFactory = {
   page_manifest_: ["manikey", "page_group", "site_id", "page_url", "hive_site_id", "hive_site_name", "project_id", "project_name"],
 
    //-- sites cols--//
-  sites: ["record_id", "site_name", "site_code", "country", "city", "county", "town", "latitude", "longitude", "location_address", "remark", "created_at", "hive_site_id", "hive_site_name", "manager", "manager_mobile", "manager_email", "contact_person", "contact_person_mobile", "contact_person_email", "company_security_manager", "company_security_contacts", "vendor_contact_person", "vendor_contacts", "response_team_contact_person", "response_team_contacts", "crew_commander_contact_person", "crew_commander_contacts", "vehicle_reg_number", "alternate_phone_number"],
+  sites: ["record_id", "site_name", "site_code", "country", "city", "county", "town", "latitude", "longitude", "location_address", "remark", "created_at", "hive_site_id", "hive_site_name", "manager", "manager_mobile", "manager_email", "contact_person", "contact_person_mobile", "contact_person_email", "company_security_manager", "company_security_contacts", "vendor_contact_person", "vendor_contacts", "response_team_contact_person", "response_team_contacts", "crew_commander_contact_person", "crew_commander_contacts", "vehicle_reg_number", "alternate_phone_number", "vendor"],
 
    //-- system_role_bundles cols--//
   system_role_bundles: ["record_id", "bundle_id", "bundle_name", "remark", "hive_site_id", "hive_site_name"],

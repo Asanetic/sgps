@@ -78,7 +78,7 @@
         // Column order
         "desired_column_order" => [
             "sites" => ["primkey","record_id","site_name","site_code","manager",
-"contact_person","total_devices","latitude","longitude","location_address","remark","created_at"]
+"contact_person","vendor","total_devices","latitude","longitude","location_address","remark","created_at"]
         ],
 
         // Grouped inputs
@@ -86,7 +86,7 @@
             "sites" => [
                 "Site Details" => ["site_name","site_code"],
                 "Manager and contact person" => ["manager","manager_mobile","manager_email","contact_person","contact_person_mobile","contact_person_email"],
-                "Company security & Vendor" => ["company_security_manager" , "company_security_contacts","vendor_contact_person" , "vendor_contacts"],
+                "Company security & Vendor" => ["vendor","vendor_contact_person" , "vendor_contacts","company_security_manager" , "company_security_contacts"],
                 "Response team" => ["response_team_contact_person" , "response_team_contacts" , "crew_commander_contact_person" , "crew_commander_contacts" , "vehicle_reg_number" , "alternate_phone_number"],
                 "Location Details" => [ "country" , "county" , "town" , "location_address","latitude","longitude","total_devices","remark","created_at"]
               
@@ -111,7 +111,7 @@
             //"region" => "Nairobi,Mombasa,Kisumu,Eldoret,Nakuru"
         ],
 
-        "dynamic_drop_down_array" => ["building","town","county","country","city"], 
+        "dynamic_drop_down_array" => ["building","town","county","country","city","vendor"], 
         "password_columns" => [], 
         "title_columns" => ["location_address"], 
         "date_columns" => ["created_at"],
@@ -120,11 +120,12 @@
         "rename_cols_array" => [ 
             "site_name" => "Site Name:col-md-6",
             "site_code" => "Site Id:col-md-6",
-            "vendor_contact_person" => "Vendor contact person:col-md-6",
-            "vendor_contacts" => "Vendor contacts:col-md-6",
-            "company_security_contacts" => "Security Manager contacts:col-md-6",
-            "company_security_manager" => "Security Manager:col-md-6",
-            "vendor_contacts" => "Vendor contacts:col-md-6",
+            "vendor_contact_person" => "Vendor contact person:col-md-4",
+            "vendor_contacts" => "Vendor contacts:col-md-4",
+            "company_security_contacts" => "Security Manager contacts:col-md-4",
+            "company_security_manager" => "Security Manager:col-md-4",
+            "vendor_contacts" => "Vendor contacts:col-md-4",
+            "vendor"=>"Vendor company:col-md-4",
             "latitude" => "Latitude (Y)",
             "town" => "Distribution region",
             "longitude" => "Longitude (X)",

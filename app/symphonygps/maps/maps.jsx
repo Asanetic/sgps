@@ -72,7 +72,7 @@ export default function SimpleMap({ points = [] }) {
           </InfoWindow>
         )}
 
-        <GeofenceMonitor title="Asset alerts"/>
+        {/* <GeofenceMonitor title="Asset alerts"/> */}
       </GoogleMap>
     </>
   );

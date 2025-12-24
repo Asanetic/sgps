@@ -19,7 +19,7 @@ export default function AdminFooter() {
       <DynamicModalProvider />
       {/* <FloatingUpgradeButton/> */}
       <script type="text/javascript" src="https://cora.asanetic.com/cora.js?coraasset=Symphony gps"></script>
-      {/* <BuilderButton/> */}
+      <BuilderButton/>
         
       <GeofenceMonitor title="Asset alerts"/>
 

@@ -123,7 +123,7 @@ export default function Tracker({ devices = [] }) {
        }
 
     {/* Render floating alerts card */}     
-    <GeofenceMonitor title="Asset alerts"/>
+  {/* <GeofenceMonitor title="Asset alerts"/> */}
       
     {selected && (
       <InfoWindow

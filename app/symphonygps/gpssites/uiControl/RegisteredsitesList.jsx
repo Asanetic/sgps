@@ -155,6 +155,7 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
             <th scope="col"><b>Site Id</b></th>
             <th scope="col"><b>Manager</b></th>
             <th scope="col"><b>Contact Person</b></th>
+            <th scope="col"><b>Vendor company</b></th>
             <th scope="col"><b>Total Devices</b></th>
             <th scope="col"><b>Latitude (Y)</b></th>
             <th scope="col"><b>Longitude (X)</b></th>
@@ -168,7 +169,7 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
           {stateItem.registeredsitesLoading ? (
             <tr>
               <th scope="col">#</th>
-              <td colSpan="10" className="text-muted">
+              <td colSpan="11" className="text-muted">
                 <h5 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-spinner fa-spin"></i> Loading Registered Sites ...</h5>
               </td>
             </tr>
@@ -208,6 +209,7 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
                       <td scope="col"><span title={listsites_result.site_code}>{magicTrimText(listsites_result.site_code, 70)}</span></td>
                       <td scope="col"><span title={listsites_result.manager}>{magicTrimText(listsites_result.manager, 70)}</span></td>
                       <td scope="col"><span title={listsites_result.contact_person}>{magicTrimText(listsites_result.contact_person, 70)}</span></td>
+                      <td scope="col"><span title={listsites_result.vendor}>{magicTrimText(listsites_result.vendor, 70)}</span></td>
                       <td scope="col"><span title={listsites_result.total_devices}>{magicTrimText(listsites_result.total_devices, 70)}</span></td>
                       <td scope="col"><span title={listsites_result.latitude}>{magicTrimText(listsites_result.latitude, 70)}</span></td>
                       <td scope="col"><span title={listsites_result.longitude}>{magicTrimText(listsites_result.longitude, 70)}</span></td>
@@ -223,7 +225,7 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
                 
               ) : (
                 
-                <tr><td colSpan="10" className="text-muted">
+                <tr><td colSpan="11" className="text-muted">
                   
                   
                   <div className="col-md-12 text-center mt-4">
@@ -239,6 +241,7 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
               <tr className="bg-light">
                 <th></th>
                 
+                <th scope="col"><b></b></th>
                 <th scope="col"><b></b></th>
                 <th scope="col"><b></b></th>
                 <th scope="col"><b></b></th>

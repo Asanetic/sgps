@@ -388,30 +388,19 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
                 
                 <div className="row justify-content-start col-md-12 p-0 m-0 ">
                   
-                  <MosySmartField
-                  module="sites"
-                  field="company_security_manager"
-                  label="Security Manager"
-                  value={sitesNode?.company_security_manager || ""}
-                  onChange={handleInputChange}
-                  context={{ hostParent: hostParent  }}
-                  inputOverrides={{}}
-                  type="text"
-                  cellOverrides={{additionalClass: "col-md-6"}}
-                  />
-                  
-                  
-                  <MosySmartField
-                  module="sites"
-                  field="company_security_contacts"
-                  label="Security Manager contacts"
-                  value={sitesNode?.company_security_contacts || ""}
-                  onChange={handleInputChange}
-                  context={{ hostParent: hostParent  }}
-                  inputOverrides={{}}
-                  type="text"
-                  cellOverrides={{additionalClass: "col-md-6"}}
-                  />
+                  <div className="form-group col-md-4">
+                    <label className="d-none">Vendor company</label>
+                    
+                    <SmartDropdown
+                    apiEndpoint={apiRoutes.registeredsites.base}
+                    idField="primkey"
+                    labelField="vendor"
+                    inputName="txt_vendor"
+                    label="Vendor company"
+                    onSelect={(val) => console.log('Selected:', val)}
+                    defaultValue={sitesNode?.vendor || ""}
+                    />
+                  </div>
                   
                   
                   <MosySmartField
@@ -423,7 +412,7 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
                   context={{ hostParent: hostParent  }}
                   inputOverrides={{}}
                   type="text"
-                  cellOverrides={{additionalClass: "col-md-6"}}
+                  cellOverrides={{additionalClass: "col-md-4"}}
                   />
                   
                   
@@ -436,7 +425,33 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
                   context={{ hostParent: hostParent  }}
                   inputOverrides={{}}
                   type="text"
-                  cellOverrides={{additionalClass: "col-md-6"}}
+                  cellOverrides={{additionalClass: "col-md-4"}}
+                  />
+                  
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="company_security_manager"
+                  label="Security Manager"
+                  value={sitesNode?.company_security_manager || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-4"}}
+                  />
+                  
+                  
+                  <MosySmartField
+                  module="sites"
+                  field="company_security_contacts"
+                  label="Security Manager contacts"
+                  value={sitesNode?.company_security_contacts || ""}
+                  onChange={handleInputChange}
+                  context={{ hostParent: hostParent  }}
+                  inputOverrides={{}}
+                  type="text"
+                  cellOverrides={{additionalClass: "col-md-4"}}
                   />
                   
                 </div>

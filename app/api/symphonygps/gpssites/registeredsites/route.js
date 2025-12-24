@@ -139,6 +139,7 @@ export async function POST(RegisteredsitesRequest) {
     "site_code" : "?", 
     "manager" : "?", 
     "contact_person" : "?", 
+    "vendor" : "?", 
     "latitude" : "?", 
     "longitude" : "?", 
     "location_address" : "?", 
