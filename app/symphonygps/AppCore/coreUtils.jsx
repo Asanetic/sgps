@@ -160,6 +160,8 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [audioReady, setAudioReady] = useState(false);
 
+  const [showAlerts, setShowAlerts] = useState(true);
+
   useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio("/alarm.mp3");
@@ -228,6 +230,25 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
   }
 
   return (
+    <>
+    <button
+      onClick={() => setShowAlerts(prev => !prev)}
+      className="position-fixed rounded-circle shadow"
+      style={{
+        bottom: "20px",
+        right: "20px",
+        width: "55px",
+        height: "55px",
+        zIndex: 10000,
+        border: "none",
+        background: "#dc3545",
+        color: "white",
+        fontSize: "22px"
+      }}
+    >
+      {showAlerts ? "✖" : "🚨"}
+    </button>
+    {showAlerts && (
     <div
       className="position-fixed bottom-50 end-0 translate-middle-y p-3"
       style={{
@@ -299,6 +320,8 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
         </div>
       </div>
     </div>
+    )}
+    </>
   );
 }
 
