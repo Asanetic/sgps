@@ -70,7 +70,10 @@ export default function Tracker({ devices = [] }) {
     }
 
     const deviceListUpToken = mosyUrlParam("device_list_uptoken");
-
+    let zoomValue = 12
+    if(deviceListUpToken){
+      zoomValue = 18
+    }
   return (
     <><MosyTitleTag title={title}/>
     {devices.length > 1 && (
@@ -80,7 +83,7 @@ export default function Tracker({ devices = [] }) {
       onLoad={(map) => setMapRef(map)}
       mapContainerStyle={{ height: "100vh", width: "100%" }}
       center={center}
-      zoom={12}
+      zoom={zoomValue}
       onRightClick={(e) => {
         e.domEvent.preventDefault();
         const lat = e.latLng.lat();
