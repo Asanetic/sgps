@@ -16,6 +16,17 @@ const devicePageUrl = `https://gps.symphony.co.ke/symphonygps/maps/realtime?devi
  * @param {string} rawString
  * @returns {object|null} parsed data
  */
+
+function applyDirection(value, direction) {
+  if (value == null || isNaN(value)) return null;
+
+  const dir = direction?.toUpperCase();
+  if (dir === 'S' || dir === 'W') return -Math.abs(value);
+  return Math.abs(value); // N or E
+}
+
+
+
 export function parseGPSData(rawString) {
     if (!rawString) return null;
   
@@ -46,12 +57,12 @@ export function parseGPSData(rawString) {
   
       // Location
       location: {
-        lat: parseFloat(parts[4]),       // latitude value
-        ns: parts[5],                     // 'N' or 'S'
-        lng: parseFloat(parts[6]),       // longitude value
-        ew: parts[7]                      // 'E' or 'W'
+        lat: applyDirection(parseFloat(parts[4]), parts[5]), // latitude value
+        lng: applyDirection(parseFloat(parts[6]), parts[7]),  // longitude value 
+        ns: parts[5], // 'N' or 'S'
+        ew: parts[7]  // 'E' or 'W'
       },
-  
+      
       speed: parseFloat(parts[8]),        // speed in km/h or m/s
       angle: parseFloat(parts[9]),        // direction angle
       altitude: parseFloat(parts[10]),    // altitude in meters
@@ -165,10 +176,10 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       device_id: deviceData?.record_id || `Unregistered device ${deviceId}`,  
       battery: battery || '?',
       latitude: lat || 'na',
-      longitude: `-${lng}` || 'na',
+      longitude: lng || 'na',
       speed: speed || '0',
       remark: options.remark || '?',
-      timestamp: timestamp || '?',
+      timestamp: mosyRightNow(),
       created_at: options.createdAt || new Date().toISOString(),
       log_details: JSON.stringify(logDetails),
       hive_site_id: options.hiveSiteId || '?',
