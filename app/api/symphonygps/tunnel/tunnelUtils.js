@@ -57,12 +57,16 @@ export function parseGPSData(rawString) {
   
       // Location
       location: {
-        lat: applyDirection(parseFloat(parts[4]), parts[5]), // latitude value
-        lng: applyDirection(parseFloat(parts[6]), parts[7]),  // longitude value 
+        
+        // lat: applyDirection(parseFloat(parts[4]), parts[5]), // latitude value
+        // lng: applyDirection(parseFloat(parts[6]), parts[7]),  // longitude value 
+        lat: (parseFloat(parts[4])), // latitude value
+        lng: (parseFloat(parts[6])),  // longitude value         
         ns: parts[5], // 'N' or 'S'
         ew: parts[7]  // 'E' or 'W'
       },
       
+      //[3G*863957075085453*008A*UD,271225,093806,A,0.957812,S,36.898604,E,0.00,0,0,11,100,74,0,0,00000008,3,255,639,02,2564,16665,155,11015,7700495,52,11015,23466511,46,0]
       speed: parseFloat(parts[8]),        // speed in km/h or m/s
       angle: parseFloat(parts[9]),        // direction angle
       altitude: parseFloat(parts[10]),    // altitude in meters
@@ -175,7 +179,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
       site_name: deviceData?.site_id || 'N/A',
       device_id: deviceData?.record_id || `Unregistered device ${deviceId}`,  
       battery: battery || '?',
-      latitude: lat || 'na',
+      latitude: `-${lat}` || 'na',
       longitude: lng || 'na',
       speed: speed || '0',
       remark: options.remark || '?',
