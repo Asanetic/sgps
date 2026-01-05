@@ -16,7 +16,7 @@ export const DevicelistRowMutations = {
   //dope device_logs column to the response              
   device_logs: async (row) => {
 
-    const data_res = await mosyFlexQuickSel('gps_logs', `timestamp, log_type, latitude, longitude,battery, remark`, `where device_id ='${row?.record_id}' and latitude!='' and longitude!='' order  by primkey asc limit 10 `);;
+    const data_res = await mosyFlexQuickSel('gps_logs', `timestamp, log_type, latitude, longitude,battery, remark`, `where device_id ='${row?.record_id}' and latitude!='' and longitude!='' order  by primkey desc limit 10 `);;
 
     return data_res;
 

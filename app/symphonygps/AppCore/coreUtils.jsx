@@ -571,7 +571,7 @@ export function loadTrackerDataCard(tracker)
   const cardBody = (
     <div className="col-md-12 p-2 m-0 text-left row justify-content-center p-0 m-0 ">
         <div className="col-md-12 row justify-content-start p-2 m-0">
-          <span className="badge p-2 bg-danger text-white mr-1">Offline</span>
+          <span className="badge p-2 bg-success text-white mr-1">Online</span>
           <span className="badge p-2 bg-warning text-dark">Not moving</span>
         </div>      
     <div className="col-md-12 p-2 border-top border-info"></div>
@@ -581,9 +581,8 @@ export function loadTrackerDataCard(tracker)
       <p><strong>Serial:</strong> {tracker.serial_number}</p>
       </div>
       <div className="col-md-6">
-      <p><strong>Type :</strong> {tracker.device_name}</p>
-      <p><strong>Last seen :</strong> {tracker.device_name}</p>
-      <p><strong>Battery:</strong> {tracker.device_name}</p>
+      <p><strong>Latest Location :</strong> Y: {tracker.y} , X : {tracker.x} </p>
+      <p><strong>Last log :</strong> {tracker.timestamp}</p>
 
       </div>
       
