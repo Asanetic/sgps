@@ -8,15 +8,16 @@ import { PlayBackMapData } from "./playbackdata";
 const apiRoutes = getApiRoutes();
 
 export async function generateMetadata({ searchParams }) {
-  const mosyTitle = searchParams?.mosyTitle || "Dashboard";
+  const mosyTitle = searchParams?.mosyTitle || "Device playback";
   return {
     title: decodeURIComponent(mosyTitle),
-    description: "SymphonyGPS Registered Sites",
+    description: "SymphonyGPS Device playback",
     icons: {
       icon: `${hiveRoutes.hiveBaseRoute}/logo.png`,
     },
   };
 }
+
 //v
 export default async function MapPage() {
 

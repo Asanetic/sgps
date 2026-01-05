@@ -14,6 +14,9 @@ export async function GET(request) {
     const queryParams = Object.fromEntries(searchParams.entries());
 
     const encodedMutations = searchParams.get('mutations');
+    const startDate = searchParams.get('start_date');
+    const endDate = searchParams.get('end_date');
+
 
     let requestedMutationsObj = {};
     if (encodedMutations) {
@@ -64,8 +67,22 @@ export async function GET(request) {
     }
  
     const isEmpty = (obj) => !obj || Object.keys(obj).length === 0;
-    const mutationsObj = isEmpty(requestedMutationsObj) ? listDevicelistRowMutationsKeys : requestedMutationsObj;
+    let  mutationsObj = isEmpty(requestedMutationsObj) ? listDevicelistRowMutationsKeys : requestedMutationsObj;
     
+    //for date logs filter 
+    const dateMutationsKeys = {
+      _sites_site_name_site_id : [],
+      device_logs : [{
+        startDate : startDate,
+        endDate : endDate,
+      }],
+      };
+
+     if(startDate && endDate)
+     {
+      mutationsObj  = dateMutationsKeys 
+     }
+
     if(requestValid){
     
       const result = await mosyFlexSelect(enhancedParams, mutationsObj, DevicelistRowMutations);

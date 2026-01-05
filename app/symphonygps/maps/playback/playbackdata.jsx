@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { mosyGetData , mosyBtoa, mosyUrlParam, mosyAtob} from "../../../MosyUtils/hiveUtils";
+import { mosyGetData, mosyBtoa, mosyUrlParam, mosyAtob } from "../../../MosyUtils/hiveUtils";
 import { getApiRoutes } from "../../AppRoutes/apiRoutesHandler";
 import { refactorDeviceData } from "../../AppCore/coreUtils";
 import { MosyNotify } from "../../../MosyUtils/ActionModals";
@@ -8,66 +8,75 @@ import PlayBack from "./playback";
 
 const apiRoutes = getApiRoutes();
 
-export function PlayBackMapData({device_id=""}) {
-  const [pointsData, setPointsData] = useState([]); // ✅ more descriptive name
+export function PlayBackMapData({ device_id = "" }) 
+{
 
-  let requestedDeviceId = device_id
-  const reqDeviceUrl = mosyUrlParam("device")
+  const [requestedDeviceId, setRequestedDeviceId] = useState("");
+  const [dates, setDates] = useState({ start: "", end: "" });
+  const [pointsData, setPointsData] = useState([]);
+  const [isReady, setIsReady] = useState(false);
 
-  if(reqDeviceUrl!="")
-  {
-    requestedDeviceId=mosyAtob(reqDeviceUrl)
-  }
-
-  if(requestedDeviceId==''){
-    MosyNotify({icon:'info',message:'No device selected for playback',addTimer:true});
-    return;
-  }
-
-  let qparams ={fullQ :false}
-
-  if(requestedDeviceId!=''){
-
-    qparams = { q: mosyBtoa(`where primkey ='${requestedDeviceId}'`), fullQ:true};
-
-  }
-
+  // 1️⃣ Safely read URL data (client-only)
   useEffect(() => {
-    let intervalId;
-  
+    const urlDevice = mosyUrlParam("device");
+    const startDate = mosyUrlParam("start_date");
+    const endDate   = mosyUrlParam("end_date");
+
+    setRequestedDeviceId(urlDevice ? mosyAtob(urlDevice) : device_id);
+    setDates({ start: startDate || "", end: endDate || "" });
+    setIsReady(true);
+  }, [device_id]);
+
+  // 2️⃣ Fetch playback data when ready
+  useEffect(() => {
+    if (!isReady) return;
+
+    if (!requestedDeviceId) {
+      MosyNotify({
+        icon: "info",
+        message: "No device selected for playback",
+        addTimer: true
+      });
+      return;
+    }
+
     async function fetchData() {
       try {
+        const qparams = {
+          q: mosyBtoa(`where primkey='${requestedDeviceId}'`),
+          fullQ: true,
+          start_date: dates.start || "",
+          end_date: dates.end || ""
+        };
+
         const res = await mosyGetData({
-          endpoint: `${apiRoutes.devicelist.map}`,
+          endpoint: apiRoutes.devicelist.map,
           params: qparams
         });
-  
-        if (res?.data) {
-          setPointsData(res);
-        }
+
+        if (res?.data) setPointsData(res);
       } catch (err) {
         console.error("Error fetching map data:", err);
       }
     }
-  
-    // initial fetch
+
     fetchData();
-  
-    // poll every 3 seconds
-    intervalId = setInterval(fetchData, 30000000);
-  
-    // cleanup on unmount
+
+    // ⏱ poll occasionally (but not crazy aggressive)
+    const intervalId = setInterval(fetchData, 30000); // 30s
     return () => clearInterval(intervalId);
-  }, [device_id]);
-  
-  const deviceData= refactorDeviceData(pointsData);
+  }, [isReady, requestedDeviceId, dates]);
+
+  const deviceData = refactorDeviceData(pointsData);
 
   return (
     <div className="col-md-12 p-0 m-0">
       {deviceData.length > 0 ? (
         <PlayBack devices={deviceData} />
       ) : (
-        <div className="col-md-12 p-5 text-center h3">Loading map...</div>
+        <div className="col-md-12 p-5 text-center h3">
+          Loading map...
+        </div>
       )}
     </div>
   );

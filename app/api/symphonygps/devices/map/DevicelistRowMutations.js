@@ -14,11 +14,54 @@ export const DevicelistRowMutations = {
 
   
   //dope device_logs column to the response              
-  device_logs: async (row) => {
+  device_logs: async (row, {startDate, endDate}) => {
+  
+    const hasStart = startDate !== undefined && startDate !== "";
+    const hasEnd   = endDate   !== undefined && endDate   !== "";
 
-    const data_res = await mosyFlexQuickSel('gps_logs', `timestamp, log_type, latitude, longitude,battery, remark`, `where device_id ='${row?.record_id}' and latitude!='' and longitude!='' order  by primkey desc limit 10 `);;
+    console.log(`device log request data has ${hasEnd} has start ${hasStart}`, startDate, endDate);
 
+
+    if (hasStart && hasEnd) {
+  
+      const formatDate = (v) =>
+        v ? v.replace("T", " ") + ":00" : "";
+  
+      const start = formatDate(startDate);
+      const end   = formatDate(endDate);
+  
+      const data_res = await mosyFlexQuickSel(
+        "gps_logs",
+        "timestamp, log_type, latitude, longitude, battery, remark",
+        `
+          where device_id='${row?.record_id}'
+          and latitude!=''
+          and longitude!=''
+          and timestamp BETWEEN '${start}' AND '${end}'
+          order by primkey desc
+          limit 300
+        `
+      );
+  
+      return data_res;
+    }
+  
+    // fallback — latest 10
+    const data_res = await mosyFlexQuickSel(
+      "gps_logs",
+      "timestamp, log_type, latitude, longitude, battery, remark",
+      `
+        where device_id='${row?.record_id}'
+        and latitude!=''
+        and longitude!=''
+        order by primkey desc
+        limit 300
+      `
+    );
+  
     return data_res;
-
   }
+  
+
+  
 }

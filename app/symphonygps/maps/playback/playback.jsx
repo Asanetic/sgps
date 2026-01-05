@@ -5,7 +5,7 @@ import { hiveRoutes } from "../../../appConfigs/hiveRoutes";
 import { loadSiteData } from "../loadSite";
 import { MosyTitleTag } from "../../UiControl/componentControl";
 import { FloatingSearchBar, loadTrackerPlayBack } from "../../AppCore/coreUtils";
-import { mosyBtoa } from "../../../MosyUtils/hiveUtils";
+import { mosyBtoa, mosyFormatDateTime, mosyUrlParam } from "../../../MosyUtils/hiveUtils";
 
 export default function PlayBack({ devices = [] }) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -43,9 +43,31 @@ export default function PlayBack({ devices = [] }) {
     return () => clearInterval(interval);
   }, [playing, routePath.length, speed]);
 
-  const togglePlayback = () => {
-    if (!playing) setProgress(1);
-    setPlaying(!playing);
+  useEffect(() => {
+      
+    const startDate = mosyUrlParam("start_date")
+    const endDate = mosyUrlParam("end_date")
+
+    if(startDate!="" && endDate!="")
+    {
+      setStartDate(startDate)
+      setEndDate(endDate)
+    }
+  }, [])  
+
+  useEffect(() => {
+    const playbackParam = mosyUrlParam("playback");
+  
+    // only auto-play if we have enough points to animate
+    if (playbackParam === "true" && allPoints.length > 1) {
+      setProgress(1);
+      setPlaying(true);
+    }
+  }, [allPoints.length]);
+
+  
+  const setPlaybackDates = () => {
+    window.location=`../maps/playback?device=${mosyBtoa(devices[0].device_data.primkey)}&start_date=${startDate}&end_date=${endDate}&playback=true` 
   };
 
   const visiblePath = routePath.slice(0, progress);
@@ -61,8 +83,10 @@ export default function PlayBack({ devices = [] }) {
   const deviceData = devices[0];
   let title = "Tracker Playback";
 
+  let dateRemark = startDate && endDate ? ` | Date filter  : (${mosyFormatDateTime(startDate)} - ${mosyFormatDateTime(endDate)})` : " no date filter";
+
   if (devices.length === 1 && deviceData) {
-    title = `Tracker playback : ${deviceData.device_name}`;
+    title = `Tracker playback : ${deviceData.device_name} ${dateRemark}`;
   }
 
   return (
@@ -150,7 +174,8 @@ export default function PlayBack({ devices = [] }) {
         <label>
           Start Date:
           <input
-            type="date"
+            type="datetime-local"
+            id="startDate"
             value={startDate}
             onChange={e => setStartDate(e.target.value)}
             style={{
@@ -166,7 +191,8 @@ export default function PlayBack({ devices = [] }) {
         <label>
           End Date:
           <input
-            type="date"
+           id="endDate"
+            type="datetime-local"
             value={endDate}
             onChange={e => setEndDate(e.target.value)}
             style={{
@@ -193,7 +219,7 @@ export default function PlayBack({ devices = [] }) {
         </label>
 
         <button
-          onClick={togglePlayback}
+          onClick={setPlaybackDates}
           style={{
             background: playing ? "#dc3545" : "#331050",
             color: "#fff",
