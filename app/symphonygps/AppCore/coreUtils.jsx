@@ -169,26 +169,31 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
     }
   }, []);
 
+  const alarmListUiList = LoadAlarmListUi();
+
+  const hasAlerts =
+  alerts.length > 0 || Boolean(alarmListUiList);
+
+
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audioReady) return; // Wait until user enables sound
-
-    if (soundEnabled && alerts.length > 0) {
-      audio.play().catch((err) =>
+    if (!audioReady) return;
+  
+    if (soundEnabled && hasAlerts) {
+      audio.play().catch(err =>
         console.warn("Audio play failed:", err.message)
       );
     } else {
       audio.pause();
       audio.currentTime = 0;
     }
-
+  
     return () => {
       audio.pause();
       audio.currentTime = 0;
     };
-  }, [alerts, soundEnabled, audioReady]);
-
-  const alarmListUiList = LoadAlarmListUi();
+  }, [hasAlerts, soundEnabled, audioReady]);
+  
 
   // Detect if alarms exist
   useEffect(() => {
@@ -206,6 +211,10 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
         audio.pause();
         audio.currentTime = 0;
       }
+    }else{
+      
+      setSoundEnabled(false); audioRef.current.pause(); audioRef.current.currentTime = 0;
+
     }
   }, [alarmListUiList]);
   
@@ -263,6 +272,7 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
       <div className="card shadow-sm border rounded">
         <div className="card-header bg-danger text-white d-flex justify-content-between align-items-center">
           <strong>{title}</strong>
+          {alarmListUiList !=null && (
           <button type="button"
             className={`btn btn-sm ${
               soundEnabled ? "btn-light" : "btn-outline-light"
@@ -271,6 +281,7 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
           >
             {soundEnabled ? "🔊 Mute" : "🔇 Unmute"}
           </button>
+          )}
         </div>
 
         <div className="card-body p-3">

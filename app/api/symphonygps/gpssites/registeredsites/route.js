@@ -165,6 +165,7 @@ export async function POST(RegisteredsitesRequest) {
     "crew_commander_contacts" : "?", 
     "vehicle_reg_number" : "?", 
     "alternate_phone_number" : "?", 
+    "management_company" : "?", 
 
   };
 

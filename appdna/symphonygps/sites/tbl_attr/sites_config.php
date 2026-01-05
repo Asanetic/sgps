@@ -85,7 +85,7 @@
         "form_input_segmentation_arr" => [
             "sites" => [
                 "Site Details" => ["site_name","site_code"],
-                "Manager and contact person" => ["manager","manager_mobile","manager_email","contact_person","contact_person_mobile","contact_person_email"],
+                "Manager and contact person" => ["management_company","manager","manager_mobile","manager_email","contact_person","contact_person_mobile","contact_person_email"],
                 "Company security & Vendor" => ["vendor","vendor_contact_person" , "vendor_contacts","company_security_manager" , "company_security_contacts"],
                 "Response team" => ["response_team_contact_person" , "response_team_contacts" , "crew_commander_contact_person" , "crew_commander_contacts" , "vehicle_reg_number" , "alternate_phone_number"],
                 "Location Details" => [ "country" , "county" , "town" , "location_address","latitude","longitude","total_devices","remark","created_at"]
@@ -111,7 +111,7 @@
             //"region" => "Nairobi,Mombasa,Kisumu,Eldoret,Nakuru"
         ],
 
-        "dynamic_drop_down_array" => ["building","town","county","country","city","vendor"], 
+        "dynamic_drop_down_array" => ["building","town","county","country","city","vendor","management_company"], 
         "password_columns" => [], 
         "title_columns" => ["location_address"], 
         "date_columns" => ["created_at"],
