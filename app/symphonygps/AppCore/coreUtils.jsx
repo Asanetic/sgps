@@ -582,7 +582,7 @@ export function loadTrackerDataCard(tracker)
       </div>
       <div className="col-md-6">
       <p><strong>Latest Location :</strong> Y: {tracker.y} , X : {tracker.x} </p>
-      <p><strong>Last log :</strong> {tracker.timestamp}</p>
+      <p><strong>Last log :</strong> {mosyFormatDateTime(tracker.timestamp)}</p>
 
       </div>
       
