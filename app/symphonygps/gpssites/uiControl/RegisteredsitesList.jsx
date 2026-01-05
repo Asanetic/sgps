@@ -161,7 +161,7 @@ export default function RegisteredsitesList({ dataIn = {}, dataOut = {} }) {
             <th scope="col"><b>Longitude (X)</b></th>
             <th scope="col"><b>Address description</b></th>
             <th scope="col"><b>Distribution region</b></th>
-            <th scope="col"><b>Management Company</b></th>
+            <th scope="col"><b>Company</b></th>
             
           </tr>
           

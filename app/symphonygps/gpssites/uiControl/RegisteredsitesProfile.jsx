@@ -297,14 +297,14 @@ export default function RegisteredsitesProfile({ dataIn = {}, dataOut = {} }) {
                 <div className="row justify-content-start col-md-12 p-0 m-0 ">
                   
                   <div className="form-group col-md-4 hive_data_cell ">
-                    <label className="d-none">Management Company</label>
+                    <label className="d-none">Company</label>
                     
                     <SmartDropdown
                     apiEndpoint={apiRoutes.registeredsites.base}
                     idField="primkey"
                     labelField="management_company"
                     inputName="txt_management_company"
-                    label="Management Company"
+                    label="Company"
                     onSelect={(val) => console.log('Selected:', val)}
                     defaultValue={sitesNode?.management_company || ""}
                     />

@@ -131,6 +131,7 @@
             "longitude" => "Longitude (X)",
             "location_address" => "Address description:col-md-12",
             "remark" => "Remark / Notes",
+            "management_company"=>"Company",
             "created_at" => "Date Created"
           
         ],
