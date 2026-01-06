@@ -145,7 +145,7 @@ export default function Tracker({ devices = [] }) {
         }}
       >
 
-      {trail.length > 1 && (
+      {/* {trail.length > 1 && (
         <Polyline
           path={trail}
           options={{
@@ -154,7 +154,7 @@ export default function Tracker({ devices = [] }) {
             strokeWeight: 3,
           }}
         />
-      )}
+      )} */}
 
 
         {/* Smooth animated marker */}

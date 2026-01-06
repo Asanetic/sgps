@@ -13,7 +13,7 @@ import { MosyAlertCard, MosyNotify ,closeMosyModal } from  '../../../MosyUtils/A
 import MosySnackWidget from '../../../MosyUtils/MosySnackWidget';
 
 //basic utils
-import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam  } from '../../../MosyUtils/hiveUtils';
+import { mosyScrollTo , deleteUrlParam, mosyFormInputHandler,mosyUrlParam ,mosyTonum  } from '../../../MosyUtils/hiveUtils';
 
 //data control and processors
 import { inteprateDevicesummaryFormAction, devicesummaryProfileData , popDeleteDialog, InteprateDevicesummaryEvent } from '../dataControl/DevicesummaryRequestHandler';
@@ -389,6 +389,32 @@ export default function DevicesummaryProfile({ dataIn = {}, dataOut = {} }) {
                       <div className="row justify-content-start col-md-12 p-0 m-0 ">
                         
                         <input className="form-control" id="txt_site_name" name="txt_site_name" value={device_listNode?.site_name || ""} placeholder="Site Name" type="hidden"/>
+                        
+                        
+                        <MosySmartField
+                        module="device_list"
+                        field="device_location"
+                        label="Device Location"
+                        value={device_listNode?.device_location || ""}
+                        onChange={handleInputChange}
+                        context={{ hostParent: hostParent  }}
+                        inputOverrides={{}}
+                        type="text"
+                        cellOverrides={{additionalClass: "col-md-6 hive_data_cell "}}
+                        />
+                        
+                        
+                        <MosySmartField
+                        module="device_list"
+                        field="geofence_limit_distance"
+                        label="Geofence Limit Distance"
+                        value={device_listNode?.geofence_limit_distance || ""}
+                        onChange={handleInputChange}
+                        context={{ hostParent: hostParent  }}
+                        inputOverrides={{}}
+                        type="text"
+                        cellOverrides={{additionalClass: "col-md-6 hive_data_cell "}}
+                        />
                         
                         
                         <input className="form-control" id="txt_reg_date" name="txt_reg_date" value={device_listNode?.reg_date || ""} placeholder="Registration Date" type="hidden"/>

@@ -33,7 +33,7 @@ export const DevicelistRowMutations = {
         "gps_logs",
         "timestamp, log_type, latitude, longitude, battery, remark",
         `
-          where device_id='${row?.record_id}'
+          where device_id='${row?.record_id}' and remark='Sat'
           and latitude!=''
           and longitude!=''
           and timestamp BETWEEN '${start}' AND '${end}'

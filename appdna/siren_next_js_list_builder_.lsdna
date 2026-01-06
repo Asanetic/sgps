@@ -23,7 +23,7 @@ $overwrite_dna_file = "yes"; // yes | no
    ========================= */
 eval(find_snippet("1171"));   // camelCase converter
 
-$table_config_file__ = "../appdna/symphonygps/sites/tbl_attr/sites_config.php";
+$table_config_file__ = "../appdna/symphonygps/device_list/tbl_attr/simplified_device_list_config.php";
 
 include($table_config_file__);
 

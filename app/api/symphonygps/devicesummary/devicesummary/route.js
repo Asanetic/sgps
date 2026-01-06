@@ -139,6 +139,8 @@ export async function POST(DevicesummaryRequest) {
     "serial_number" : "?", 
     "site_name" : "?", 
     "site_id" : "?", 
+    "device_location" : "?", 
+    "geofence_limit_distance" : "?", 
     "geofence" : "?", 
     "date_installed" : "?", 
     "remark" : "?", 

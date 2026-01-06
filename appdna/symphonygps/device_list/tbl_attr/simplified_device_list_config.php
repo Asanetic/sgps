@@ -84,7 +84,7 @@
 
         // Column order
         "desired_column_order" => [
-            "device_list" => ["primkey","record_id","device_name","serial_number","site_name","site_id","site_code","geofence","date_installed","manufacture_date","remark","reg_date"]
+            "device_list" => ["primkey","record_id","device_name","serial_number","site_name","site_id","site_code","device_location","geofence_limit_distance","geofence","date_installed","manufacture_date","remark","reg_date"]
         ],
 
         // Grouped inputs
