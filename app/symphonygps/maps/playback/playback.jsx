@@ -89,6 +89,9 @@ export default function PlayBack({ devices = [] }) {
     title = `Tracker playback : ${deviceData.device_name} ${dateRemark}`;
   }
 
+  const currentPoint = visiblePath[Math.min(progress - 1, visiblePath.length - 1)];
+
+
   return (
     <div style={{ position: "relative" }}>
       {!isLoaded ? (
@@ -123,7 +126,7 @@ export default function PlayBack({ devices = [] }) {
               }}
             />
           )}
-
+{/* 
           {allPoints.map((p, i) => (
             <Marker
               key={`marker-${i}`}
@@ -134,7 +137,17 @@ export default function PlayBack({ devices = [] }) {
                 scaledSize: new window.google.maps.Size(50, 50),
               }}
             />
-          ))}
+          ))} */}
+
+          {currentPoint && (
+            <Marker
+              position={currentPoint}
+              icon={{
+                url: `${hiveRoutes.hiveBaseRoute}/pin.png`,
+                scaledSize: new window.google.maps.Size(50, 50),
+              }}
+            />
+          )}
 
           {selected && (
             <InfoWindow

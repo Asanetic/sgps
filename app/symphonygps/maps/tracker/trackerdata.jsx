@@ -50,7 +50,7 @@ export default function TrackerMapData({device_id=""}) {
     fetchData();
   
     // poll every 3 seconds
-    //intervalId = setInterval(fetchData, 3000);
+    intervalId = setInterval(fetchData, 30000000);
   
     // cleanup on unmount
     return () => clearInterval(intervalId);

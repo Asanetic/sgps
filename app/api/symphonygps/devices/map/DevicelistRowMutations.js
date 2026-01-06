@@ -14,7 +14,7 @@ export const DevicelistRowMutations = {
 
   
   //dope device_logs column to the response              
-  device_logs: async (row, {startDate, endDate}) => {
+  device_logs: async (row, {startDate, endDate}={}) => {
   
     const hasStart = startDate !== undefined && startDate !== "";
     const hasEnd   = endDate   !== undefined && endDate   !== "";
