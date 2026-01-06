@@ -73,8 +73,8 @@ export async function GET(request) {
     const dateMutationsKeys = {
         _sites_site_name_site_id : [],
         device_logs : [{
-          startDate : startDate,
-          endDate : endDate,
+          startDate : startDate || "",
+          endDate : endDate || "",
         }],
       };
 
