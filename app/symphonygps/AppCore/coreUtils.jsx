@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import { mosy_push_data, mosyBtoa, mosyGetData, mosyGetElemVal, mosyPostData, mosyPostFormData, mosyUpdateUrlParam , mosyFormatDateTime} from "../../MosyUtils/hiveUtils";
+import { mosy_push_data, mosyBtoa, mosyGetData, mosyGetElemVal, mosyPostData, mosyPostFormData, mosyUpdateUrlParam , mosyFormatDateTime, mosyGetLSData} from "../../MosyUtils/hiveUtils";
 import { closeMosyModal, MosyAlertCard, MosyNotify } from "../../MosyUtils/ActionModals";
 
 import { getApiRoutes } from '../AppRoutes/apiRoutesHandler';
@@ -154,7 +154,6 @@ export  function loadTackerProfile(sitedata)
     
 }
 
-
 export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
   const audioRef = useRef(null);
   const [soundEnabled, setSoundEnabled] = useState(false);
@@ -183,24 +182,23 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
           .catch(() => {});
       }
   
-      window.removeEventListener("click", unlockAudio);
-      window.removeEventListener("touchstart", unlockAudio);
+      //window.removeEventListener("click", unlockAudio);
+      //window.removeEventListener("touchstart", unlockAudio);
     }
   
-    window.addEventListener("click", unlockAudio);
-    window.addEventListener("touchstart", unlockAudio);
+    //window.addEventListener("click", unlockAudio);
+    //window.addEventListener("touchstart", unlockAudio);
   
     return () => {
-      window.removeEventListener("click", unlockAudio);
-      window.removeEventListener("touchstart", unlockAudio);
+      //window.removeEventListener("click", unlockAudio);
+      //window.removeEventListener("touchstart", unlockAudio);
     };
   }, []);
   
 
   const alarmListUiList = LoadAlarmListUi();
 
-  const hasAlerts =
-  alerts.length > 0 || Boolean(alarmListUiList);
+  const hasAlerts = alerts.length > 0 || Boolean(alarmListUiList);
 
 
   useEffect(() => {
@@ -227,6 +225,9 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
   useEffect(() => {
     if (!audioRef.current) return;
   
+    //count saved alarm list
+    const alarmCount = mosyGetLSData("alarm_list_count")
+
     if (alarmListUiList !== null) {
       // only auto-play if user did NOT mute
       if (audioReady && !userMuted) {
@@ -309,7 +310,6 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
           </button>
           )}
         </div>
-
         <div className="card-body p-3">
         <ul className="list-group list-group-flush">
           <span>{alarmListUiList}</span>
