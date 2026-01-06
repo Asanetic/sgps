@@ -7,7 +7,7 @@ const commonRoot = ""; // Update this path if needed
 
 const mosyThemeConfigs = {
   // App Identity
-  mosyAppName: "Symphony Asset Tracker",
+  mosyAppName: "Symphony",
   mosySystemName: "AssetTracker",
   mosyAppLogo: logo.src,
   mosyAppLogoStyle: {
