@@ -1,7 +1,7 @@
 import net from "net";
 import {AddDevicegpslogs} from '../gpslogs/devicegpslogs/DevicegpslogsDbGateway';
 import { magicRandomStr } from "../../apiUtils/dataControl/dataUtils";
-import { computeUnknownCoordinates, logTcpAlarm, parseGPSData, processDevicePingToLog } from "./tunnelUtils";
+import { computeDistanceGeofence, computeUnknownCoordinates, logTcpAlarm, parseGPSData, processDevicePingToLog } from "./tunnelUtils";
 
 let tcpServer = null;
 let sockets = [];
@@ -27,7 +27,14 @@ export function startTCPListener({ port = 9000, onData })
       insertObject.remark = `Sat`   
       insertObject.log_details = `${JSON.stringify(gpsRequest)} - ${message}`
       AddDevicegpslogs(newId, insertObject, {}, {})      
-      logTcpAlarm(insertObject, gpsRequest, newId)
+      logTcpAlarm(gpsRequest, newId)
+
+      const isInsideGeofence = await computeDistanceGeofence(gpsRequest.imei, {lat:insertObject.latitude, lng:insertObject.longitude});  
+
+      if(!isInsideGeofence)
+      {
+         logTcpAlarm(interpretedData, "geofence");
+      }
 
       if(gpsRequest.satellites == 0){
       //--- End ---//      

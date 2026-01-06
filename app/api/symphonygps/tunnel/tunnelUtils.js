@@ -198,7 +198,7 @@ export async function processDevicePingToLog(parsedGPS, options = {})
 
   }
   
-  export async function logTcpAlarm(data, parsedData, newId)
+  export async function logTcpAlarm(parsedData, newId)
   {
 
     let alarmType = "";
@@ -473,18 +473,35 @@ export async function processDevicePingToLog(parsedGPS, options = {})
      },
     {},{}, ` record_id ='${recordId}'`);
 
-    //device geofence 
-    const deviceDataRes = await mosyQddata("device_list", "serial_number",`${parseGPSData.imei}`);
-    const deviceData = deviceDataRes;
-
-    //run geofence 
-   const isInsideGeofence = runGeofence(location, deviceData?.geofence)?.[0]?.inside;
-   console.log(`isInsideGeofence`, isInsideGeofence);
+   const isInsideGeofence = await computeDistanceGeofence(parseGPSData.imei, { lat: location.lat, lng: location.lng });
 
    if(!isInsideGeofence)
    {
-    logTcpAlarm(deviceData, parseGPSData, "geofence");
+    logTcpAlarm(parseGPSData, "geofence");
    }
+
+  }
+
+
+  export async function computeDistanceGeofence(device_imei, { lat, lng } = {})
+  {
+    //device geofence 
+    const deviceDataRes = await mosyQddata("device_list", "serial_number",`${device_imei}`);
+    const deviceData = deviceDataRes;
+
+    const deviceSiteDataRes = await mosyQddata("sites", "record_id",`${deviceData.site_id}`);
+    const deviceSiteData = deviceSiteDataRes;
+
+    const deviceLong = deviceSiteData?.longitude;
+    const deviceLat = deviceSiteData?.latitude;
+
+   const distFromLocation= distanceMeters(deviceLat, deviceLong, lat, lng);
+   const isInsideGeofence = distFromLocation <= deviceData?.geofence_limit_distance;
+   
+   console.log(`isInsideGeofence  distFromLocation ${distFromLocation} ${deviceData?.geofence_limit_distance}`, isInsideGeofence);
+   
+   return isInsideGeofence
+
   }
 
   export function buildGoogleGeoPayload(deviceData) 
@@ -594,7 +611,8 @@ export function runGeofence(points, polygon) {
   });
 }
 
-function distanceMeters(lat1, lon1, lat2, lon2) {
+function distanceMeters(lat1, lon1, lat2, lon2) 
+{
   const R = 6371000; // meters
   const toRad = deg => deg * Math.PI / 180;
 
@@ -608,6 +626,8 @@ function distanceMeters(lat1, lon1, lat2, lon2) {
     Math.sin(dLon / 2) ** 2;
 
   const c = 2 * Math.asin(Math.sqrt(a));
+
+  console.log(`distanceMeters function `, c , ` lat1, lon1, lat2, lon2 ${lat1}, ${lon1}, ${lat2}, ${lon2} `);
 
   return R * c;
 }
