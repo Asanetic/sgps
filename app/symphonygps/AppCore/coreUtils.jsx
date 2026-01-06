@@ -161,13 +161,41 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
   const [audioReady, setAudioReady] = useState(false);
 
   const [showAlerts, setShowAlerts] = useState(true);
+  const [userMuted, setUserMuted] = useState(false);
 
   useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio("/alarm.mp3");
       audioRef.current.loop = true;
     }
+  
+    // 👇 Unlock audio on ANY first click/tap
+    function unlockAudio() {
+      if (!audioReady && audioRef.current) {
+        audioRef.current
+          .play()
+          .then(() => {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            setAudioReady(true);
+            setSoundEnabled(true);     // enable sound automatically 💥
+          })
+          .catch(() => {});
+      }
+  
+      window.removeEventListener("click", unlockAudio);
+      window.removeEventListener("touchstart", unlockAudio);
+    }
+  
+    window.addEventListener("click", unlockAudio);
+    window.addEventListener("touchstart", unlockAudio);
+  
+    return () => {
+      window.removeEventListener("click", unlockAudio);
+      window.removeEventListener("touchstart", unlockAudio);
+    };
   }, []);
+  
 
   const alarmListUiList = LoadAlarmListUi();
 
@@ -197,47 +225,45 @@ export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
 
   // Detect if alarms exist
   useEffect(() => {
-
+    if (!audioRef.current) return;
+  
     if (alarmListUiList !== null) {
-      
-      const audio = audioRef.current;
-      if (!audioReady) return; // Wait until user enables sound
-      
-      if (soundEnabled){
-        audio.play().catch((err) =>
-          console.warn("Audio play failed:", err.message)
-        );
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
+      // only auto-play if user did NOT mute
+      if (audioReady && !userMuted) {
+        setSoundEnabled(true);
+  
+        audioRef.current
+          .play()
+          .catch(err => console.warn("Play failed:", err.message));
       }
-    }else{
-      
-      setSoundEnabled(false); audioRef.current.pause(); audioRef.current.currentTime = 0;
-
+    } else {
+      setSoundEnabled(false);
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
-  }, [alarmListUiList]);
+  }, [alarmListUiList, audioReady, userMuted]);
+  
+  
   
   
   // Handles first-time permission grant
   function handleSoundToggle() {
     if (!audioReady) {
-      audioRef.current
-        .play()
+      audioRef.current.play()
         .then(() => {
           audioRef.current.pause();
           audioRef.current.currentTime = 0;
           setAudioReady(true);
           setSoundEnabled(true);
+          setUserMuted(false);
         })
-        .catch((err) => {
-          console.warn("User interaction needed:", err.message);
-        });
+        .catch(() => {});
     } else {
-      setSoundEnabled((prev) => !prev);
+      setUserMuted(prev => !prev);
+      setSoundEnabled(prev => !prev);
     }
   }
-
+  
   return (
     <>
     <button
