@@ -71,11 +71,11 @@ export async function GET(request) {
     
     //for date logs filter 
     const dateMutationsKeys = {
-      _sites_site_name_site_id : [],
-      device_logs : [{
-        startDate : startDate,
-        endDate : endDate,
-      }],
+        _sites_site_name_site_id : [],
+        device_logs : [{
+          startDate : startDate,
+          endDate : endDate,
+        }],
       };
 
      if(startDate && endDate)

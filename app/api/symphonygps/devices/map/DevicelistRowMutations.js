@@ -21,7 +21,6 @@ export const DevicelistRowMutations = {
 
     console.log(`device log request data has ${hasEnd} has start ${hasStart}`, startDate, endDate);
 
-
     if (hasStart && hasEnd) {
   
       const formatDate = (v) =>
