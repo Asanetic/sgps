@@ -129,7 +129,8 @@ export function parseGPSData(rawString) {
  *    siteName, remark, hiveSiteId, hiveSiteName, createdAt
  * @returns {object} formatted input for gps_logs
  */
-export async function processDevicePingToLog(parsedGPS, options = {}) {
+export async function processDevicePingToLog(parsedGPS, options = {}) 
+{
     if (!parsedGPS) return null;
   
     const {
@@ -172,7 +173,7 @@ export async function processDevicePingToLog(parsedGPS, options = {}) {
 
 
     const deviceData = await mosyQddata("device_list", "serial_number",`${deviceId}`);
-    console.log(`processssgps pinggggggggggggg imei ${deviceId}`, parsedGPS, deviceData);
+    //console.log(`processssgps pinggggggggggggg imei ${deviceId}`, parsedGPS, deviceData);
 
     const devicePingLog = {
       log_type: 'GPS',                    // fixed type for GPS logs

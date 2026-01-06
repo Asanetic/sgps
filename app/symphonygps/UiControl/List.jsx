@@ -27,10 +27,10 @@ import {
 import MosySnackWidget from '../../../MosyUtils/MosySnackWidget';
 
 //data
-import { loadDevicesummaryListData, popDeleteDialog, InteprateDevicesummaryEvent  } from '../dataControl/DevicesummaryRequestHandler';
+import { loadListData, popDeleteDialog, InteprateEvent  } from '../dataControl/RequestHandler';
 
 //state management
-import { useDevicesummaryState } from '../dataControl/DevicesummaryStateManager';
+import { useState } from '../dataControl/StateManager';
 
 import logo from '../../../img/logo/logo.png'; // outside public!
 
@@ -50,12 +50,12 @@ const apiRoutes = getApiRoutes();
 
 //export list
 
-export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
+export default function List({ dataIn = {}, dataOut = {} }) {
   
   //incoming data in from parent
   const {
     customQueryStr = "",
-    customProfilePath="../devicesummary/profile",
+    customProfilePath="..//profile",
     showDataControlSections = true,
     parentUseEffectKey = "",
     parentStateSetters=null,
@@ -70,8 +70,8 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
   //set default state values
   const settersOverrides  = {localEventSignature : parentUseEffectKey}
   
-  //manage Devicesummary states
-  const [stateItem, stateItemSetters] = useDevicesummaryState(settersOverrides);
+  //manage  states
+  const [stateItem, stateItemSetters] = useState(settersOverrides);
   
   const localEventSignature = stateItem.localEventSignature
   const snackMessage = stateItem.snackMessage
@@ -88,7 +88,7 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
       stateItemSetters.setSnackMessage(snackUrlAlert)
     }
     
-    loadDevicesummaryListData(customQueryStr, stateItemSetters);
+    loadListData(customQueryStr, stateItemSetters);
     
   }, [localEventSignature]);
   
@@ -97,17 +97,17 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
   return (
     
     <div className={`col-md-12 bg-white p-0 m-0  ${showDataControlSections && ("main_list_container")}  `} style={{marginTop: "0px", paddingBottom: "0px"}}>
-      <form method="post" onSubmit={()=>{mosyFilterUrl({tableName:"device_list", keyword:stateItem.devicesummaryQuerySearchStr})}} encType="multipart/form-data">
+      <form method="post" onSubmit={()=>{mosyFilterUrl({tableName:"user_manifest_", keyword:stateItem.QuerySearchStr})}} encType="multipart/form-data">
       
       {showDataControlSections && (<div className="row justify-content-end col-md-12 text-right pt-3 pb-3 data_list_section ml-0 mr-0 mb-3 border-bottom pr-0 pl-0" id="">
         <div className="col-md-6 p-0 text-left pt-3 hive_list_title">
-          <h6 className="text-muted"><b> Device summary </b></h6>
+          <h6 className="text-muted"><b>  </b></h6>
         </div>
         <div className="col-md-6 p-0 text-right hive_list_search_tray">
-          <input type="text" id="txt_device_list" name="txt_device_list" className="custom-search-input form-control" placeholder="Search in Device summary "
-          onChange={(e) => stateItemSetters.setDevicesummaryQuerySearchStr(e.target.value)}
+          <input type="text" id="txt_user_manifest_" name="txt_user_manifest_" className="custom-search-input form-control" placeholder="Search in  "
+          onChange={(e) => stateItemSetters.setQuerySearchStr(e.target.value)}
           />
-          <button className="custom-search-botton" id="qdevice_list_btn" name="qdevice_list_btn" type="submit"><i className="fa fa-search mr-1"></i> Go </button>
+          <button className="custom-search-botton" id="quser_manifest__btn" name="quser_manifest__btn" type="submit"><i className="fa fa-search mr-1"></i> Go </button>
         </div>
         <div className="col-md-12 pt-5 p-0 hive_list_search_divider" id=""></div>
         <div className="row justify-content-end m-0 p-0 col-md-12 hive_list_action_btn_tray" id="">
@@ -119,7 +119,7 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
             <a href="list" className="medium_btn border border_set btn-white hive_list_nav_refresh ml-3"><i className="fa fa-refresh mr-1 "></i> Refresh </a>
             
             
-            <AddNewButton src="DevicesummaryList" link={customProfilePath} label="New Device" icon="plus-circle" />
+            <AddNewButton src="List" link={customProfilePath} label=" Add new" icon="plus-circle" />
           </div>
         </div>
       </div> )}
@@ -128,50 +128,48 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
       <div className="table-responsive  data-tables bg-white bottom_tbl_handler">
         
         
-        <table className="table table-hover  text-left printTarget" id="device_list_data_table">
+        <table className="table table-hover  text-left printTarget" id="user_manifest__data_table">
           <thead className="text-uppercase">
             <tr>
               <th scope="col">#</th>
               
-              <th scope="col"><b>Device Name</b></th>
-              <th scope="col"><b>Serial Number</b></th>
-              <th scope="col"><b>Location site</b></th>
-              <th scope="col"><b>Site id</b></th>
-              <th scope="col"><b>Geofence distance (metres) </b></th>
-              <th scope="col"><b>Installation Date</b></th>
-              <th scope="col"><b>Remark</b></th>
-              <th scope="col"><b>Registration Date</b></th>
-              <th scope="col"><b>Low battery level value</b></th>
-              <th scope="col"><b>Installation longitude</b></th>
-              <th scope="col"><b>Installation latitude</b></th>
+              <th scope="col"><b>User Id</b></th>
+              <th scope="col"><b>User Name</b></th>
+              <th scope="col"><b>Role Id</b></th>
+              <th scope="col"><b>Site Id</b></th>
+              <th scope="col"><b>Role Name</b></th>
+              <th scope="col"><b>Hive Site Id</b></th>
+              <th scope="col"><b>Hive Site Name</b></th>
+              <th scope="col"><b>Project Id</b></th>
+              <th scope="col"><b>Project Name</b></th>
               
             </tr>
             
           </thead>
           <tbody>
-            {stateItem.devicesummaryLoading ? (
+            {stateItem.Loading ? (
               <tr>
                 <th scope="col">#</th>
-                <td colSpan="12" className="text-muted">
-                  <h5 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-spinner fa-spin"></i> Loading Device summary ...</h5>
+                <td colSpan="10" className="text-muted">
+                  <h5 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-spinner fa-spin"></i> Loading  ...</h5>
                 </td>
               </tr>
-            ) : stateItem.devicesummaryListData?.length > 0 ? (
-              stateItem.devicesummaryListData.map((listdevice_list_result, index) => {
+            ) : stateItem.ListData?.length > 0 ? (
+              stateItem.ListData.map((listuser_manifest__result, index) => {
                 
                 
                 
                 return(
-                  <Fragment key={`_row_${listdevice_list_result.primkey}`}>
-                    <tr key={listdevice_list_result.primkey}>
+                  <Fragment key={`_row_${listuser_manifest__result.}`}>
+                    <tr key={listuser_manifest__result.}>
                       <td>
                         <div className="table_cell_dropdown">
                           <div className="table_cell_dropbtn">
                             
-                            <b>{listdevice_list_result.row_count}</b></div>
+                            <b>{listuser_manifest__result.row_count}</b></div>
                             <div className="table_cell_dropdown-content">
                               <MosySmartDropdownActions
-                              tblName="device_list"
+                              tblName="user_manifest_"
                               setters={{
                                 
                                 childStateSetters: stateItemSetters,
@@ -179,7 +177,7 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
                                 
                               }}
                               
-                              attributes={`${listdevice_list_result.primkey}:${customProfilePath}:false`}
+                              attributes={`${listuser_manifest__result.}:${customProfilePath}:false`}
                               callBack={(incomingRequest) => {setChildDataOut(incomingRequest) }}
                               
                               />
@@ -188,23 +186,15 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
                           </div>
                         </td>
                         
-                        <td scope="col"><span title={listdevice_list_result.device_name}>{magicTrimText(listdevice_list_result.device_name, 70)}</span></td>
-                        <td scope="col"><span title={listdevice_list_result.serial_number}>{magicTrimText(listdevice_list_result.serial_number, 70)}</span></td>
-                        <td scope="col"><span title={listdevice_list_result.site_id}>{magicTrimText(listdevice_list_result._sites_site_name_site_id, 70)}</span></td>
-                        <td scope="col"><span title={listdevice_list_result.site_code}>{magicTrimText(listdevice_list_result.site_code, 70)}</span></td>
-                        <td scope="col"><span title={listdevice_list_result.geofence_limit_distance}>{magicTrimText(listdevice_list_result.geofence_limit_distance, 70)}</span></td>
-                        <td scope="col"><span title={listdevice_list_result.date_installed}>{mosyFormatDateOnly(listdevice_list_result.date_installed)}</span></td>
-                        <td scope="col"><span>
-                          <ReactMarkdown>
-                            
-                            {magicTrimText(listdevice_list_result.remark, 70)}
-                            
-                          </ReactMarkdown>
-                        </span></td>
-                        <td scope="col"><span title={listdevice_list_result.reg_date}>{mosyFormatDateOnly(listdevice_list_result.reg_date)}</span></td>
-                        <td scope="col"><span title={listdevice_list_result.low_battery_level}>{magicTrimText(listdevice_list_result.low_battery_level, 70)}</span></td>
-                        <td scope="col"><span title={listdevice_list_result.installation_longitude}>{magicTrimText(listdevice_list_result.installation_longitude, 70)}</span></td>
-                        <td scope="col"><span title={listdevice_list_result.installation_latitude}>{magicTrimText(listdevice_list_result.installation_latitude, 70)}</span></td>
+                        <td scope="col"><span title={listuser_manifest__result.user_id}>{magicTrimText(listuser_manifest__result.user_id, 70)}</span></td>
+                        <td scope="col"><span title={listuser_manifest__result.user_name}>{magicTrimText(listuser_manifest__result.user_name, 70)}</span></td>
+                        <td scope="col"><span title={listuser_manifest__result.role_id}>{magicTrimText(listuser_manifest__result.role_id, 70)}</span></td>
+                        <td scope="col"><span title={listuser_manifest__result.site_id}>{magicTrimText(listuser_manifest__result.site_id, 70)}</span></td>
+                        <td scope="col"><span title={listuser_manifest__result.role_name}>{magicTrimText(listuser_manifest__result.role_name, 70)}</span></td>
+                        <td scope="col"><span title={listuser_manifest__result.hive_site_id}>{magicTrimText(listuser_manifest__result.hive_site_id, 70)}</span></td>
+                        <td scope="col"><span title={listuser_manifest__result.hive_site_name}>{magicTrimText(listuser_manifest__result.hive_site_name, 70)}</span></td>
+                        <td scope="col"><span title={listuser_manifest__result.project_id}>{magicTrimText(listuser_manifest__result.project_id, 70)}</span></td>
+                        <td scope="col"><span title={listuser_manifest__result.project_name}>{magicTrimText(listuser_manifest__result.project_name, 70)}</span></td>
                         
                       </tr>
                       
@@ -215,13 +205,13 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
                   
                 ) : (
                   
-                  <tr><td colSpan="12" className="text-muted">
+                  <tr><td colSpan="10" className="text-muted">
                     
                     
                     <div className="col-md-12 text-center mt-4">
-                      <h6 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-search"></i> Sorry, no devices records found</h6>
+                      <h6 className="col-md-12 text-center p-3 mb-5 text-muted"><i className="fa fa-search"></i> Sorry, no user manifest  records found</h6>
                       
-                      <AddNewButton src="DevicesummaryList"  link={customProfilePath} label="New Device" icon="plus-circle" />
+                      <AddNewButton src="List"  link={customProfilePath} label=" Add new" icon="plus-circle" />
                       <div className="col-md-12 pt-5 " id=""></div>
                     </div>
                   </td></tr>
@@ -240,8 +230,6 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
                   <th scope="col"><b></b></th>
                   <th scope="col"><b></b></th>
                   <th scope="col"><b></b></th>
-                  <th scope="col"><b></b></th>
-                  <th scope="col"><b></b></th>
                   
                 </tr>
               </tbody>
@@ -249,9 +237,9 @@ export default function DevicesummaryList({ dataIn = {}, dataOut = {} }) {
             </table>
             
             <MosyPaginationUi
-            src="DevicesummaryList"
-            tblName="device_list"
-            totalPages={stateItem.devicesummaryListPageCount}
+            src="List"
+            tblName="user_manifest_"
+            totalPages={stateItem.ListPageCount}
             stateItemSetters={stateItemSetters}
             />
           </div>

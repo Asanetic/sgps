@@ -90,16 +90,16 @@
         // Grouped inputs
         "form_input_segmentation_arr" => [
             "device_list" => [
-                "Device Information" => ["device_name","serial_number","site_id","site_code","geofence","low_battery_level","installation_latitude","installation_longitude","date_installed","remark"],
+                "Device Information" => ["device_name","serial_number","site_id","site_code","geofence_limit_distance","device_location","geofence","low_battery_level","installation_latitude","installation_longitude","date_installed","remark"],
             ]
         ],
 
         "image_columns" => [], 
         "default_col_class" => "col-md-6",
-        "hidden_inputs" => ["reg_date","site_name"], 
+        "hidden_inputs" => ["reg_date","site_name","device_location"], 
         "print_tables" => [], 
         "skip_cols_profile" => ["hive_site_id","hive_site_name"], 
-        "skip_cols_list" => ["hive_site_id","hive_site_name","site_name","geofence"], 
+        "skip_cols_list" => ["hive_site_id","hive_site_name","site_name","geofence","device_location"], 
         "running_bal_col_tbl" => [], 
         "grid_tbl" => [], 
         "view_tbl_only" => [], 
@@ -130,6 +130,7 @@
             "site_code" => "Site id",
             "site_id" => "Location site",
             "geofence" => "Geofence cordinates ",
+            "geofence_limit_distance" => "Geofence distance (metres) ",
             "reg_date" => "Registration Date"
         ],
 

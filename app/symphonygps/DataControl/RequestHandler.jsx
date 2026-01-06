@@ -296,7 +296,7 @@ export async function ProfileData(customQueryStr, setters, router, customProfile
     }
     
     //override customQueryStr if there is an active staff_uptoken else use customQueryStr if any
-    let rawQueryStr =`where primkey ='${decodedToken}'`
+    let rawQueryStr =`where  ='${decodedToken}'`
     if(customQueryStr!='')
     {
       // if no user_manifest__uptoken set , use customQueryStr

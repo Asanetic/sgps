@@ -58,5 +58,10 @@
         "logalarm": "/api/symphonygps/assetalarms/logalarm",
         "delete": "/api/symphonygps/assetalarms/delete",
         "import": "/api/symphonygps/assetalarms/assetalarms/import"
+    },
+    "": {
+        "base": "/api/symphonygps//",
+        "delete": "/api/symphonygps//delete",
+        "import": "/api/symphonygps///import"
     }
 }
