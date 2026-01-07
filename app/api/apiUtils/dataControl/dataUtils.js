@@ -499,4 +499,3 @@ export function mosyRightNow() {
   return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
 }
 
-
