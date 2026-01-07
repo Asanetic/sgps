@@ -484,20 +484,19 @@ export function mosyToday() {
   return now.toISOString().split('T')[0]; // "YYYY-MM-DD"
 }
 
+
 export function mosyRightNow() {
   const now = new Date();
+  const nairobi = new Date(now.getTime() + 3 * 60 * 60 * 1000);
 
-  const formatter = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Africa/Nairobi',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
+  const year = nairobi.getUTCFullYear();
+  const month = String(nairobi.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(nairobi.getUTCDate()).padStart(2, '0');
+  const hour = String(nairobi.getUTCHours()).padStart(2, '0');
+  const minute = String(nairobi.getUTCMinutes()).padStart(2, '0');
+  const second = String(nairobi.getUTCSeconds()).padStart(2, '0');
 
-  return formatter.format(now).replace(',', '');
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
 }
+
 
