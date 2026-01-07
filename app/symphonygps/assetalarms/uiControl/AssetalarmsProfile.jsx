@@ -280,9 +280,8 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
                       
                     </select>
                   </div>
-                  
-                  
-                  <MosySmartField
+                                    
+                <MosySmartField
                   module="asset_alarms"
                   field="alarm_time"
                   label="Alarm Time"
@@ -292,10 +291,9 @@ export default function AssetalarmsProfile({ dataIn = {}, dataOut = {} }) {
                   inputOverrides={{}}
                   type="datetime-local"
                   cellOverrides={{additionalClass: "col-md-4 hive_data_cell "}}
-                  />
+                  />                  
                   
-                  
-                  <MosySmartField
+                <MosySmartField
                   module="asset_alarms"
                   field="device_serial"
                   label="Device Serial"

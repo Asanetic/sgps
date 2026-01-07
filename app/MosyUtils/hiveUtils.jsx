@@ -691,15 +691,26 @@ export function mosyFormatDateOnly(dateString) {
   return `${year}-${month}-${day}`;
 }
 
-export function mosyFormatDateTime(dateString) {
+export function mosyFormatDateTime(dateString) 
+{
   const date = dateString ? new Date(dateString) : new Date();
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Africa/Nairobi",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+
+  // Result looks like: 2026-01-07, 14:32:12
+  const parts = formatter.formatToParts(date);
+  const get = t => parts.find(p => p.type === t).value;
+
+  return `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")}:${get("second")}`;
 }
 
 
