@@ -28,12 +28,27 @@ export function startTCPListener({ port = 9000, onData })
       insertObject.log_details = `${JSON.stringify(gpsRequest)} - ${message}`
       AddDevicegpslogs(newId, insertObject, {}, {})      
       logTcpAlarm(gpsRequest, newId)
+      
+      const { latitude, longitude } = insertObject || {};
 
-      const isInsideGeofence = await computeDistanceGeofence(gpsRequest.imei, {lat:insertObject.latitude, lng:insertObject.longitude});  
+      const isBadCoords =
+        latitude == null ||
+        longitude == null ||
+        Number(latitude) === 0 ||
+        Number(longitude) === 0;
 
-      if(!isInsideGeofence)
-      {
-         logTcpAlarm(interpretedData, "geofence");
+      if (!isBadCoords) {
+        const isInsideGeofence = await computeDistanceGeofence(
+          gpsRequest.imei,
+          { lat: latitude, lng: longitude }
+        );
+
+        if (!isInsideGeofence) {
+          logTcpAlarm(interpretedData, "geofence");
+        }
+      } else {
+        // optional: log/debug if you want
+        console.log("Skipping geofence — invalid coords", latitude, longitude);
       }
 
       if(gpsRequest.satellites == 0){

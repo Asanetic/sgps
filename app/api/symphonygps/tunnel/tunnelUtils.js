@@ -25,8 +25,6 @@ function applyDirection(value, direction) {
   return Math.abs(value); // N or E
 }
 
-
-
 export function parseGPSData(rawString) {
     if (!rawString) return null;
   

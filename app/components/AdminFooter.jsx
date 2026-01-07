@@ -21,7 +21,7 @@ export default function AdminFooter() {
       <script type="text/javascript" src="https://cora.asanetic.com/cora.js?coraasset=Symphony gps"></script>
       {/* <BuilderButton/> */}
         
-      <GeofenceMonitor title="Asset alerts"/>
+      {/* <GeofenceMonitor title="Asset alerts"/> */}
 
     </>
   );
