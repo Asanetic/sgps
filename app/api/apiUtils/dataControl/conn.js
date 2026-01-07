@@ -22,12 +22,22 @@ export async function connectDB() {
     //   db: dbSettings.DB_NAME
     // });
 
+    // const conn = await mysql.createConnection({
+    //   host: dbSettings.DB_HOST,
+    //   user: dbSettings.DB_USER,
+    //   password: dbSettings.DB_PASS,
+    //   database: dbSettings.DB_NAME,
+      
+    // });
+    
     const conn = await mysql.createConnection({
       host: dbSettings.DB_HOST,
       user: dbSettings.DB_USER,
       password: dbSettings.DB_PASS,
       database: dbSettings.DB_NAME,
+      dateStrings: true
     });
+    
 
     ///console.log(`✅ Connected to ${isLocal ? 'LOCAL' : 'PRODUCTION'} DB`);
 
