@@ -376,21 +376,7 @@ export default function DevicegpslogsProfile({ dataIn = {}, dataOut = {} }) {
                   inputOverrides={{}}
                   type="datetime-local"
                   cellOverrides={{additionalClass: "col-md-6 hive_data_cell"}}
-                  />
-                  
-                  
-                  <MosySmartField
-                  module="gps_logs"
-                  field="created_at"
-                  label="Created At"
-                  value={gps_logsNode?.created_at || ""}
-                  onChange={handleInputChange}
-                  context={{ hostParent: hostParent  }}
-                  inputOverrides={{}}
-                  type="datetime-local"
-                  cellOverrides={{additionalClass: "col-md-6 hive_data_cell"}}
-                  />
-                  
+                  />                
                   
                   <MosySmartField
                   module="gps_logs"
