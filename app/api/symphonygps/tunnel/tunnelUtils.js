@@ -263,7 +263,7 @@ export async function processDevicePingToLog(parsedGPS, options = {})
 
       }
 
-      if(alarmByte=="00100008")
+      if(alarmByte=="00100008" || alarmByte=="00100009")
       {
           alarmType = "Disturbance";
           description ="Asset disturbance alert";
