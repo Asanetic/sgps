@@ -156,7 +156,6 @@ export default function DevicegpslogsList({ dataIn = {}, dataOut = {} }) {
             <th scope="col"><b>Speed (km/h)</b></th>
             <th scope="col"><b>Remark</b></th>
             <th scope="col"><b>Log Time</b></th>
-            <th scope="col"><b>Created At</b></th>
             <th scope="col"><b>Log Details</b></th>
             
           </tr>
@@ -214,8 +213,7 @@ export default function DevicegpslogsList({ dataIn = {}, dataOut = {} }) {
                         
                       </ReactMarkdown>
                     </span></td>
-                    <td scope="col"><span title={listgps_logs_result.timestamp}>{mosyFormatDateOnly(listgps_logs_result.timestamp)}</span></td>
-                    <td scope="col"><span title={listgps_logs_result.created_at}>{mosyFormatDateOnly(listgps_logs_result.created_at)}</span></td>
+                    <td scope="col"><span title={listgps_logs_result.timestamp}>{mosyFormatDateTime(listgps_logs_result.timestamp)}</span></td>
                     <td scope="col"><span>
                       <ReactMarkdown>
                         
