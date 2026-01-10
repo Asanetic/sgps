@@ -5,7 +5,7 @@ import { UpdateDevicegpslogs } from "../gpslogs/devicegpslogs/DevicegpslogsDbGat
 import nodemailer from 'nodemailer';
 
 
-const devicePageUrl = `https://gps.symphony.co.ke/symphonygps/maps/realtime?device=`
+const devicePageUrl = `https://gps.symphony.co.ke//view/maps/realtime?device=`
 
 /**
  * Parses a GPS device raw string into a structured object.
@@ -289,7 +289,9 @@ export async function processDevicePingToLog(parsedGPS, options = {})
           }
       }
 
-      if(Number(speed) > 0.0)
+      const speedLimit = deviceData?.speed_alert_value || 0.0
+
+      if(Number(speed) > Number(speedLimit))
         {
             alarmType = "Critical_motion";
             description ="Critial motion asset moving";
@@ -335,13 +337,14 @@ export async function processDevicePingToLog(parsedGPS, options = {})
               if(checkSimilarAlarms==0)
               {
 
-              const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
-              const newKey = result.record_id
+                const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
+                const newKey = result.record_id
 
-              const message = `Geofence Violation. Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;  
+                const message = `Geofence Violation. Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;  
 
-              sendAlertSMS(message, siteData);
-              sendAlertEmail(message, `Geofence Violation alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData); 
+                sendAlertSMS(message, siteData);
+                sendAlertEmail(message, `Geofence Violation alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData); 
+
               }
           }
         }

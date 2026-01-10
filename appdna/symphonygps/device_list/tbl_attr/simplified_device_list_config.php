@@ -90,7 +90,7 @@
         // Grouped inputs
         "form_input_segmentation_arr" => [
             "device_list" => [
-                "Device Information" => ["device_name","serial_number","site_id","site_code","geofence_limit_distance","device_location","geofence","low_battery_level","installation_latitude","installation_longitude","date_installed","remark"],
+                "Device Information" => ["device_name","serial_number","site_id","site_code","geofence_limit_distance","speed_alert_value","device_location","geofence","low_battery_level","installation_latitude","installation_longitude","date_installed","remark"],
             ]
         ],
 
@@ -128,6 +128,7 @@
             "installation_longitude" => "Installation longitude:col-md-4",
             "low_battery_level" => "Low battery level value:col-md-4",
             "site_code" => "Site id",
+            "speed_alert_value"=>"Speed alert (km/h)",
             "site_id" => "Location site",
             "geofence" => "Geofence cordinates ",
             "geofence_limit_distance" => "Geofence distance (metres) ",

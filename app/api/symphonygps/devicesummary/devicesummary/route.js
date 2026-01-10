@@ -148,6 +148,7 @@ export async function POST(DevicesummaryRequest) {
     "hive_site_id" : "?", 
     "hive_site_name" : "?", 
     "low_battery_level" : "?", 
+    "speed_alert_value" : "?", 
 
   };
 

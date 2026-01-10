@@ -323,6 +323,19 @@ export default function DevicesummaryProfile({ dataIn = {}, dataOut = {} }) {
                     />
                     
                     
+                    <MosySmartField
+                    module="device_list"
+                    field="speed_alert_value"
+                    label="Speed alert (km/h)"
+                    value={device_listNode?.speed_alert_value || ""}
+                    onChange={handleInputChange}
+                    context={{ hostParent: hostParent  }}
+                    inputOverrides={{}}
+                    type="text"
+                    cellOverrides={{additionalClass: "col-md-6 hive_data_cell "}}
+                    />
+                    
+                    
                     <input className="form-control" id="txt_device_location" name="txt_device_location" value={device_listNode?.device_location || ""} placeholder="Device Location" type="hidden"/>
                     
                     

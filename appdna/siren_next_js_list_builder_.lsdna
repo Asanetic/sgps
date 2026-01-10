@@ -6,7 +6,7 @@ $write_assembly_file='';
  *   Automates creation of Next.js module files
  *   (list, profile, subprofile, routes, UI widgets).
  *
- * MAIN OUTPUT:
+ *  speed_alert_value MAIN OUTPUT:
  *   Assembly DNA file (*.Dnaaf)
  ****************************************************/
 
