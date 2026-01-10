@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { mosyGetData , mosyBtoa, mosyUrlParam, mosyAtob} from "../../../MosyUtils/hiveUtils";
+import { mosyGetData , mosyBtoa, mosyUrlParam, mosyAtob, mosyGetCookie, mosyGetLSData, mosySetLSData} from "../../../MosyUtils/hiveUtils";
 import { getApiRoutes } from "../../../symphonygps/AppRoutes/apiRoutesHandler";
 import Tracker from "./tracker";
 import { refactorDeviceData } from "../../../symphonygps/AppCore/coreUtils";
@@ -29,6 +29,11 @@ export default function TrackerMapData({device_id=""}) {
 
 
   useEffect(() => {
+
+    const tokenVal = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb3dfY291bnQiOjEsInVzZXJfaWQiOiJEVDRLT0lHIiwidGVsIjoiMDcxMDc2NjM5MCIsIm5hbWUiOiJTdXBlcmFkbWluIiwiZW1haWwiOiJzdXBlcmFkbWluIiwiaGl2ZV9zaXRlX2lkIjoiIiwiaGl2ZV9zaXRlX25hbWUiOiIiLCJleHAiOjE4MzEwMDAxNTJ9.BsFyfw8zmRY0jHFhe8SSeOmWYvMvDR4YgOWNwmAANo8`
+    
+    mosySetLSData("gps_authToken", tokenVal);
+
     let intervalId;
   
     async function fetchData() {
@@ -46,14 +51,20 @@ export default function TrackerMapData({device_id=""}) {
       }
     }
   
+    const activeToken = mosyGetLSData("gps_authToken");
+
     // initial fetch
-    fetchData();
-  
-    // poll every 3 seconds
-    intervalId = setInterval(fetchData, 2000);
-  
-    // cleanup on unmount
-    return () => clearInterval(intervalId);
+    if(activeToken!=="")
+    {
+      fetchData();
+    
+      // poll every 3 seconds
+      intervalId = setInterval(fetchData, 2000);
+    
+      // cleanup on unmount
+      return () => clearInterval(intervalId);
+    }
+
   }, [device_id]);
   
   const deviceData= refactorDeviceData(pointsData);
