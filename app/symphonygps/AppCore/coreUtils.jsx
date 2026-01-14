@@ -154,210 +154,253 @@ export  function loadTackerProfile(sitedata)
     
 }
 
+
 export function GeofenceAlerts({ alerts = [], title = "Alarms" }) {
   const audioRef = useRef(null);
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  const prevAlarmCountRef = useRef(0);
+  const hasUnlockedRef = useRef(false);
+
   const [audioReady, setAudioReady] = useState(false);
-
-  const [showAlerts, setShowAlerts] = useState(true);
   const [userMuted, setUserMuted] = useState(false);
-
-  useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio("/alarm.mp3");
-      audioRef.current.loop = true;
-    }
-  
-    // 👇 Unlock audio on ANY first click/tap
-    function unlockAudio() {
-      if (!audioReady && audioRef.current) {
-        audioRef.current
-          .play()
-          .then(() => {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-            setAudioReady(true);
-            setSoundEnabled(true);     // enable sound automatically 💥
-          })
-          .catch(() => {});
-      }
-  
-      //window.removeEventListener("click", unlockAudio);
-      //window.removeEventListener("touchstart", unlockAudio);
-    }
-  
-    //window.addEventListener("click", unlockAudio);
-    //window.addEventListener("touchstart", unlockAudio);
-  
-    return () => {
-      //window.removeEventListener("click", unlockAudio);
-      //window.removeEventListener("touchstart", unlockAudio);
-    };
-  }, []);
-  
+  const [showAlerts, setShowAlerts] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const alarmListUiList = LoadAlarmListUi();
+  
+  // Calculate current alarm count
+  const savedAlarmCount = parseInt(mosyGetLSData("alarm_list_count") || "0", 10);
+  const currentAlarmCount = alerts.length + savedAlarmCount;
+  const hasAlerts = currentAlarmCount > 0 || alarmListUiList !== null;
 
-  const hasAlerts = alerts.length > 0 || Boolean(alarmListUiList);
-
-
+  // Initialize audio element once
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audioReady) return;
-  
-    if (soundEnabled && hasAlerts) {
-      audio.play().catch(err =>
-        console.warn("Audio play failed:", err.message)
-      );
-    } else {
-      audio.pause();
-      audio.currentTime = 0;
-    }
-  
+    const audio = new Audio("/alarm.mp3");
+    audio.loop = true;
+    audio.preload = "auto";
+    audioRef.current = audio;
+
     return () => {
-      audio.pause();
-      audio.currentTime = 0;
-    };
-  }, [hasAlerts, soundEnabled, audioReady]);
-  
-
-  // Detect if alarms exist
-  useEffect(() => {
-    if (!audioRef.current) return;
-  
-    //count saved alarm list
-    const alarmCount = mosyGetLSData("alarm_list_count")
-
-    if (alarmListUiList !== null) {
-      // only auto-play if user did NOT mute
-      if (audioReady && !userMuted) {
-        setSoundEnabled(true);
-  
-        audioRef.current
-          .play()
-          .catch(err => console.warn("Play failed:", err.message));
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
       }
-    } else {
-      setSoundEnabled(false);
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-  }, [alarmListUiList, audioReady, userMuted]);
-  
-  
-  
-  
-  // Handles first-time permission grant
-  function handleSoundToggle() {
-    if (!audioReady) {
-      audioRef.current.play()
+    };
+  }, []);
+
+  // Unlock audio on first user interaction (required by browsers)
+  useEffect(() => {
+    function unlockAudio() {
+      if (hasUnlockedRef.current || !audioRef.current) return;
+
+      const audio = audioRef.current;
+      audio.muted = true;
+      
+      audio.play()
         .then(() => {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
+          audio.pause();
+          audio.muted = false;
+          audio.currentTime = 0;
+          hasUnlockedRef.current = true;
           setAudioReady(true);
-          setSoundEnabled(true);
+        })
+        .catch((err) => {
+          console.warn("Audio unlock failed:", err.message);
+        });
+    }
+
+    // document.addEventListener("click", unlockAudio);
+    // document.addEventListener("touchstart", unlockAudio);
+    // document.addEventListener("keydown", unlockAudio);
+
+    return () => {
+      // document.removeEventListener("click", unlockAudio);
+      // document.removeEventListener("touchstart", unlockAudio);
+      // document.removeEventListener("keydown", unlockAudio);
+    };
+  }, []);
+
+// Play/stop sound based on alerts and mute state
+useEffect(() => {
+  if (!audioReady || !audioRef.current) return;
+
+  const audio = audioRef.current;
+  const prevCount = prevAlarmCountRef.current;
+  const isNewAlarm = currentAlarmCount > prevCount;
+  const shouldPlay = hasAlerts && !userMuted;
+
+  // Force play on NEW alarm, regardless of mute state
+  if (isNewAlarm && hasAlerts) {
+    // Reset mute so user sees unmuted state
+    if (userMuted) {
+      setUserMuted(false);
+    }
+    
+    audio.play()
+      .then(() => {
+        setIsPlaying(true);
+      })
+      .catch((err) => {
+        console.warn("Audio play failed:", err.message);
+        setIsPlaying(false);
+      });
+  }
+  // Normal play: has alerts, not muted, not already playing
+  else if (shouldPlay && !isPlaying) {
+    audio.play()
+      .then(() => {
+        setIsPlaying(true);
+      })
+      .catch((err) => {
+        console.warn("Audio play failed:", err.message);
+        setIsPlaying(false);
+      });
+  }
+  // Stop only if: no alerts OR user muted (and NOT a new alarm)
+  else if (!shouldPlay && isPlaying && !isNewAlarm) {
+    audio.pause();
+    audio.currentTime = 0;
+    setIsPlaying(false);
+  }
+
+  // Update previous count
+  prevAlarmCountRef.current = currentAlarmCount;
+}, [currentAlarmCount, hasAlerts, userMuted, audioReady, isPlaying]);
+
+  // Handle mute/unmute toggle
+  function handleSoundToggle() {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // If audio not ready, try to unlock first
+    if (!audioReady) {
+      audio.muted = true;
+      audio.play()
+        .then(() => {
+          audio.pause();
+          audio.muted = false;
+          audio.currentTime = 0;
+          hasUnlockedRef.current = true;
+          setAudioReady(true);
           setUserMuted(false);
         })
-        .catch(() => {});
+        .catch((err) => {
+          console.warn("Manual unlock failed:", err.message);
+        });
+      return;
+    }
+
+    // Toggle mute state
+    const newMutedState = !userMuted;
+    setUserMuted(newMutedState);
+
+    if (newMutedState) {
+      // Muting - stop audio
+      audio.pause();
+      audio.currentTime = 0;
+      setIsPlaying(false);
     } else {
-      setUserMuted(prev => !prev);
-      setSoundEnabled(prev => !prev);
+      // Unmuting - play if there are alerts
+      if (hasAlerts) {
+        audio.play()
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((err) => {
+            console.warn("Play on unmute failed:", err.message);
+          });
+      }
     }
   }
-  
+
+  // Determine button text
+  function getSoundButtonText() {
+    if (!audioReady) return "🔇 Enable Sound";
+    if (userMuted) return "🔇 Unmute";
+    return "🔊 Mute";
+  }
+
   return (
     <>
-    <button
-      onClick={() => setShowAlerts(prev => !prev)}
-      className="position-fixed rounded-circle shadow"
-      style={{
-        bottom: "20px",
-        right: "20px",
-        width: "55px",
-        height: "55px",
-        zIndex: 10000,
-        border: "none",
-        background: "#dc3545",
-        color: "white",
-        fontSize: "22px"
-      }}
-    >
-      {showAlerts ? "✖" : "🚨"}
-    </button>
-    {showAlerts && (
-    <div
-      className="position-fixed bottom-50 end-0 translate-middle-y p-3"
-      style={{
-        width: "300px",
-        maxHeight: "70vh",
-        overflowY: "auto",
-        bottom: "20px",
-        right: "20px",
-        zIndex: 9999,
-      }}
-    >
-      <div className="card shadow-sm border rounded">
-        <div className="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-          <strong>{title}</strong>
-          {alarmListUiList !=null && (
-          <button type="button"
-            className={`btn btn-sm ${
-              soundEnabled ? "btn-light" : "btn-outline-light"
-            }`}
-            onClick={handleSoundToggle}
+      {/* Floating toggle button */}
+      <button
+        onClick={() => setShowAlerts((prev) => !prev)}
+        className="position-fixed rounded-circle shadow"
+        style={{
+          bottom: "20px",
+          right: "20px",
+          width: "55px",
+          height: "55px",
+          zIndex: 10000,
+          border: "none",
+          background: hasAlerts ? "#dc3545" : "#6c757d",
+          color: "white",
+          fontSize: "22px",
+        }}
+      >
+        {showAlerts ? "✖" : "🚨"}
+        {hasAlerts && !showAlerts && (
+          <span
+            className="position-absolute"
+            style={{
+              top: "-5px",
+              right: "-5px",
+              background: "#ffc107",
+              borderRadius: "50%",
+              width: "20px",
+              height: "20px",
+              fontSize: "12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            {soundEnabled ? "🔊 Mute" : "🔇 Unmute"}
-          </button>
-          )}
+            {currentAlarmCount}
+          </span>
+        )}
+      </button>
+
+      {/* Alerts panel */}
+      {showAlerts && (
+        <div
+          className="position-fixed bottom-50 end-0 translate-middle-y p-3"
+          style={{
+            width: "300px",
+            maxHeight: "70vh",
+            overflowY: "auto",
+            bottom: "20px",
+            right: "20px",
+            zIndex: 9999,
+          }}
+        >
+          <div className="card shadow-sm border rounded">
+            <div className="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+              <strong>
+                {title} {currentAlarmCount > 0 && `(${currentAlarmCount})`}
+              </strong>
+              <button
+                type="button"
+                className={`btn btn-sm ${
+                  !userMuted && audioReady ? "btn-light" : "btn-outline-light"
+                }`}
+                onClick={handleSoundToggle}
+              >
+                {getSoundButtonText()}
+              </button>
+            </div>
+            <div className="card-body p-3">
+              {hasAlerts ? (
+                <ul className="list-group list-group-flush">
+                  <span>{alarmListUiList}</span>
+
+                </ul>
+              ) : (
+                <p className="text-center text-muted mb-0">No active alarms</p>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="card-body p-3">
-        <ul className="list-group list-group-flush">
-          <span>{alarmListUiList}</span>
-        </ul>
-          {/* {alerts.length > 0 ? (
-            <ul className="list-group list-group-flush">
-              {alerts.map((data, i) => (
-                
-                <li
-                  key={`device-${i}`}
-                  onClick={() => logAlarm(data)}
-                  className="cpointer bg-light text-dark mb-3 p-2 row justify-content-center rounded"
-                >
-                  <div className="col-md-12 text-dark border-bottom border-white">
-                    <b>{data.device.device_name}</b> <br />
-                    {data.device_data._sites_site_name_site_id}
-                  </div>
-                  <div className="col-md-12 row justify-content-start pl-3 m-2">
-                    <span className="badge p-1 bg-success text-white mr-1 d-none">
-                      Online
-                    </span>
-                    <span className="pending_alarm">
-                      Geofence
-                    </span>
-                  </div>
-                  <div className="col-md-12 text-dark">
-                    <small className="smal_text">
-                      Serial: {data.device_data.serial_number}
-                    </small>
-                  </div>
-                  {data.device_data.gps_logs?.length > 0 && (
-                    <div className="col-md-12 mt-2">
-                      <small className="text-muted">
-                        GPS Logs: {data.device_data.gps_logs.length}
-                      </small>
-                    </div>
-                  )}
-                </li>
-                
-              ))}
-            </ul>
-          ) : (
-            <p className="text-center text-muted mb-0">_</p>
-          )} */}
-        </div>
-      </div>
-    </div>
-    )}
+      )}
     </>
   );
 }
@@ -598,7 +641,7 @@ export function loadTrackerDataCard(tracker)
     <div className="col-md-12 p-2 m-0 text-left row justify-content-center p-0 m-0 ">
         <div className="col-md-12 row justify-content-start p-2 m-0">
           <span className="badge p-2 bg-success text-white mr-1">Online</span>
-          <span className="badge p-2 bg-warning text-dark">Not moving</span>
+          <span className="badge p-2 bg-warning text-dark d-none">Not moving</span>
         </div>      
     <div className="col-md-12 p-2 border-top border-info"></div>
       <div className="col-md-6">
@@ -1011,9 +1054,9 @@ export function refactorDeviceData(apiResponse) {
  * - Computes geofence breaches
  * - Shows floating alerts card
  */
-export default function GeofenceMonitor({ device_id = "", title ="Device alarms", pollInterval = 3000 }) {
+export default function GeofenceMonitor({title ="Device alarms", pollInterval = 3000 }) {
   const [devices, setDevices] = useState([]);
-  const [alerts, setAlerts] = useState([]);
+  const [alarmsList, setAlarmsList] = useState([]);
   const [showModal, setShowModal] = useState(true);
 
   // Fetch device data periodically
@@ -1022,64 +1065,32 @@ export default function GeofenceMonitor({ device_id = "", title ="Device alarms"
 
     async function fetchData() {
       try {
-        let qparams = { fullQ: false };
-        if (device_id) {
-          qparams = { q: mosyBtoa(`where primkey ='${device_id}'`), fullQ: true };
-        }
+        let qparams = { q: mosyBtoa(`where close_status !='Closed'`), fullQ: true };
 
         const res = await mosyGetData({
-          endpoint: apiRoutes.devicelist.map,
+          endpoint: apiRoutes.assetalarms.base,
           params: qparams
         });
 
-        if (res?.data) setDevices(refactorDeviceData(res));
+        if (res?.data) {
+          const items = (res.data || []).reverse();
+          setAlarmsList(items.length > 0 ? items : []);   // empty array
+        } else {
+          setAlarmsList([]);  // no data
+        }
+
       } catch (err) {
-        console.error("Geofence fetch error:", err);
+        console.error("Alarms fetch error:", err);
+        setAlarmsList([]); // treat errors as empty result
       }
     }
 
     fetchData();
-    
     intervalId = setInterval(fetchData, pollInterval);
     return () => clearInterval(intervalId);
-  }, [device_id, pollInterval]);
+  }, [pollInterval]);
 
-  //console.log(`geofence monitorrrrr`, devices)
-
-  // Compute alerts
-  useEffect(() => {
-    const newAlerts = [];
-
-    devices.forEach(({ latestPoint, geofences = [] , device_data ={} }) => {
-      if (!latestPoint) return;
-
-      geofences.forEach(fence => {
-        const inside = computeGeofence(latestPoint, fence.coords)?.[0]?.inside;
-        if (inside === false) {
-          newAlerts.push({ device: latestPoint, fence, device_data });
-                         
-        }
-      });
-    });
-
-    if(newAlerts.length > 0 && showModal){
-
-      // MosyAlertCard({icon: "warning",
-      //   iconColor:"text-danger",
-      //   message: `⚠️ ${title}`,
-      //   yesLabel:"Noted",
-      //   noLabel : "Action",
-      //   onYes : ()=>{closeMosyCard("modal2"); setShowModal(false)},
-      //   onNo : () =>{viewPendingAlarmHistory()},
-      //   id : "modal2"
-      // })
-
-  }
-
-    setAlerts(newAlerts);
-  }, [devices]);
-
-  return <GeofenceAlerts alerts={alerts} title={title} />;
+  return <GeofenceAlerts alerts={alarmsList} title={title} />;
 
 }
 
