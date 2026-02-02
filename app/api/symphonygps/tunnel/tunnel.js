@@ -26,7 +26,8 @@ export function startTCPListener({ port = 9000, onData })
       insertObject.record_id = newId 
       insertObject.remark = `Sat`   
       insertObject.log_details = `${JSON.stringify(gpsRequest)} - ${message}`
-      AddDevicegpslogs(newId, insertObject, {}, {})      
+      
+      AddDevicegpslogs(newId, insertObject, {}, {})
       logTcpAlarm(gpsRequest, newId)
       
       const { latitude, longitude } = insertObject || {};
@@ -46,13 +47,15 @@ export function startTCPListener({ port = 9000, onData })
         if (!isInsideGeofence) {
           logTcpAlarm(interpretedData, "geofence");
         }
+        
       } else {
         // optional: log/debug if you want
         console.log("Skipping geofence — invalid coords", latitude, longitude);
       }
 
       if(gpsRequest.satellites == 0){
-      //--- End ---//      
+      //--- End ---//    
+
         computeUnknownCoordinates(interpretedData, newId)
 
       }

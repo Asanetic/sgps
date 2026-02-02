@@ -319,35 +319,58 @@ export async function processDevicePingToLog(parsedGPS, options = {})
         } 
         
         
-        if(newId=="geofence")
-        {
-          alarmType = "Geofence";
-          description ="Geofence Violation";
-          addAlarm = true
+        if (newId == "geofence") {
 
+          const hasWifi = parsedData?.wifi?.some(w => w.mac && w.mac !== "00:00:00:00:00:00");
+          const satelliteCount = parseInt(parsedData?.satellites || 0);
+        
+          // SIGNAL QUALITY GATE
+          // Allow alarm if:
+          // 1. WiFi exists OR
+          // 2. No WiFi but satellites > 1
+          // Otherwise ignore
+          if (!hasWifi && satelliteCount < 2) {
+            return; // Not enough signal confidence
+          }
+        
+          alarmType = "Geofence";
+          description = hasWifi
+            ? "Geofence Violation (WiFi Verified)"
+            : "Geofence Violation (GPS Satellite Verified)";
+        
+          addAlarm = true;
+        
           AssetalarmsInputsArr.alarm_type = alarmType;
           AssetalarmsInputsArr.description = description;
-          //--- End asset_alarms inputs array --//
-          const deviceSerial = parsedData.imei
-
-            //if there is no geofence
-            if(deviceData.geofence!=""){
-              const checkSimilarAlarms = await mosyCountRows(`asset_alarms`, `where device_serial='${deviceSerial}' and alarm_type='${alarmType}' and status !='Closed'`)
-
-              if(checkSimilarAlarms==0)
-              {
-
-                const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});  
-                const newKey = result.record_id
-
-                const message = `Geofence Violation. Device -  ${deviceData?.device_name} / Site -  ${siteCode} - ${siteName}     Report time : ${mosyRightNow()} ${deviceURlPageDetails}` ;  
-
-                sendAlertSMS(message, siteData);
-                sendAlertEmail(message, `Geofence Violation alert ${deviceData?.device_name} Site : ${siteCode} - ${siteName}`, siteData); 
-
-              }
+        
+          const deviceSerial = parsedData.imei;
+        
+          if (deviceData.geofence != "") {
+        
+            const checkSimilarAlarms = await mosyCountRows(
+              `asset_alarms`,
+              `where device_serial='${deviceSerial}' and alarm_type='${alarmType}' and status !='Closed'`
+            );
+        
+            if (checkSimilarAlarms == 0) {
+        
+              const result = await AddAssetalarms(newId, AssetalarmsInputsArr, {}, {});
+              const newKey = result.record_id;
+        
+              const sourceText = hasWifi ? "WiFi verified" : "GPS satellites verified";
+        
+              const message = `Geofence Violation (${sourceText}). Device - ${deviceData?.device_name} / Site - ${siteCode} - ${siteName} Report time: ${mosyRightNow()} ${deviceURlPageDetails}`;
+        
+              sendAlertSMS(message, siteData);
+              sendAlertEmail(
+                message,
+                `Geofence Violation alert ${deviceData?.device_name} Site: ${siteCode} - ${siteName}`,
+                siteData
+              );
+            }
           }
         }
+        
     
 
   }
@@ -464,12 +487,16 @@ export async function processDevicePingToLog(parsedGPS, options = {})
 
     console.log(`requestGoogleLocation`, location);
 
+    const gpslogDetails = await mosyQddata("gps_logs","record_id", recordId)
+    const currentLogDetails = gpslogDetails?.log_details || "";
+
     await UpdateDevicegpslogs(recordId, 
       {
 
       latitude: location.lat,
       longitude: location.lng,
-      remark : "Computed"
+      remark : "Computed",
+      log_details : `${currentLogDetails} \n ${JSON.stringify(location)}`
 
      },
     {},{}, ` record_id ='${recordId}'`);
@@ -478,6 +505,7 @@ export async function processDevicePingToLog(parsedGPS, options = {})
 
    if(!isInsideGeofence)
    {
+    const checkWifiData = parseGPSData.
     logTcpAlarm(parseGPSData, "geofence");
    }
 

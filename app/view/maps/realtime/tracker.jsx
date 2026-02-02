@@ -1,6 +1,6 @@
 'use client';
 
-import { GoogleMap, Marker, InfoWindow, Polyline, useLoadScript } from "@react-google-maps/api";
+import { GoogleMap, Marker, InfoWindow, Polyline, Circle, useLoadScript } from "@react-google-maps/api";
 
 import { useState, useEffect, useRef } from "react";
 import { MosyNotify } from "../../../MosyUtils/ActionModals";
@@ -26,6 +26,45 @@ export default function Tracker({ devices = [] }) {
   const animationRef = useRef(null);
   const [trail, setTrail] = useState([]);
 
+
+  const [myLocation, setMyLocation] = useState(null);
+  const [showMyInfo, setShowMyInfo] = useState(false);
+  const [locating, setLocating] = useState(false);
+
+  function handleLocateMe() 
+  {
+    if (!navigator.geolocation) {
+      MosyNotify({ icon: "error", message: "Geolocation not supported" });
+      return;
+    }
+  
+    setLocating(true);
+  
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const coords = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+        };
+  
+        setMyLocation(coords);
+        setShowMyInfo(true);
+        setLocating(false);
+  
+        if (mapRef) {
+          mapRef.panTo(coords);
+          mapRef.setZoom(15);
+        }
+      },
+      () => {
+        MosyNotify({ icon: "error", message: "Unable to get your location" });
+        setLocating(false);
+      },
+      { enableHighAccuracy: true }
+    );
+  }
+  
 
   function animateMove(from, to, duration = 1200) {
     if (!from || !to) return;
@@ -129,6 +168,26 @@ export default function Tracker({ devices = [] }) {
         />
       )}
 
+      <button
+        onClick={handleLocateMe}
+        style={{
+          position: "absolute",
+          top: "80px",
+          right: "15px",
+          zIndex: 10,
+          display: "none",
+          padding: "10px 14px",
+          borderRadius: "30px",
+          border: "none",
+          background: "#111",
+          color: "#fff",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          cursor: "pointer",
+        }}
+      >
+        {locating ? "Locating..." : "📍 My Location"}
+      </button>
+
       <GoogleMap
         onLoad={(map) => setMapRef(map)}
         mapContainerStyle={{ height: "100vh", width: "100%" }}
@@ -169,6 +228,56 @@ export default function Tracker({ devices = [] }) {
             onClick={() => handleMarkerClick(devices?.[0]?.latestPoint)}
           />
         )}
+
+{myLocation && (
+  <>
+    {/* Blue dot marker */}
+    <Marker
+      position={{ lat: myLocation.lat, lng: myLocation.lng }}
+      icon={{
+        path: window.google.maps.SymbolPath.CIRCLE,
+        scale: 8,
+        fillColor: "#4285F4",
+        fillOpacity: 1,
+        strokeColor: "#ffffff",
+        strokeWeight: 2,
+      }}
+      onClick={() => setShowMyInfo(true)}
+    />
+
+    {/* Accuracy circle */}
+    <Circle
+      center={{ lat: myLocation.lat, lng: myLocation.lng }}
+      radius={myLocation.accuracy || 30}
+      options={{
+        fillColor: "#4285F4",
+        fillOpacity: 0.15,
+        strokeColor: "#4285F4",
+        strokeOpacity: 0.4,
+        strokeWeight: 1,
+      }}
+    />
+
+      {/* Info window */}
+      {showMyInfo && (
+        <InfoWindow
+          position={{ lat: myLocation.lat, lng: myLocation.lng }}
+          onCloseClick={() => setShowMyInfo(false)}
+        >
+          <div style={{ fontSize: "14px" }}>
+            <strong>📍 My Location</strong>
+            <br />
+            Y: {myLocation.lat.toFixed(6)}
+            <br />
+            X: {myLocation.lng.toFixed(6)}
+            <br />
+            Accuracy: ±{Math.round(myLocation.accuracy)}m
+          </div>
+        </InfoWindow>
+      )}
+    </>
+    )}
+
 {/* 
         {selected && (
           <InfoWindow
