@@ -26,13 +26,9 @@ export default function Tracker({ devices = [] }) {
   const animationRef = useRef(null);
   const [trail, setTrail] = useState([]);
 
+  const watchIdRef = useRef(null);
 
-  const [myLocation, setMyLocation] = useState(null);
-  const [showMyInfo, setShowMyInfo] = useState(false);
-  const [locating, setLocating] = useState(false);
-
-  function handleLocateMe() 
-  {
+  function startLiveLocation() {
     if (!navigator.geolocation) {
       MosyNotify({ icon: "error", message: "Geolocation not supported" });
       return;
@@ -40,7 +36,7 @@ export default function Tracker({ devices = [] }) {
   
     setLocating(true);
   
-    navigator.geolocation.getCurrentPosition(
+    watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         const coords = {
           lat: pos.coords.latitude,
@@ -51,20 +47,43 @@ export default function Tracker({ devices = [] }) {
         setMyLocation(coords);
         setShowMyInfo(true);
         setLocating(false);
-  
-        if (mapRef) {
-          mapRef.panTo(coords);
-          mapRef.setZoom(15);
-        }
       },
-      () => {
-        MosyNotify({ icon: "error", message: "Unable to get your location" });
+      (err) => {
+        console.log("Geo error:", err);
+  
+        if (err.code === 3) {
+          MosyNotify({
+            icon: "warning",
+            message: "GPS weak. Using network location instead.",
+          });
+        } else {
+          MosyNotify({
+            icon: "error",
+            message: "Location permission or signal issue",
+          });
+        }
+  
         setLocating(false);
       },
-      { enableHighAccuracy: true }
+      {
+        enableHighAccuracy: false,   // 👈 KEY CHANGE
+        maximumAge: 10000,           // allow cached fix
+        timeout: 15000,              // more realistic
+      }
     );
   }
   
+  function stopLiveLocation() {
+    if (watchIdRef.current) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+  }
+
+  const [myLocation, setMyLocation] = useState(null);
+  const [showMyInfo, setShowMyInfo] = useState(false);
+  const [locating, setLocating] = useState(false);
+
 
   function animateMove(from, to, duration = 1200) {
     if (!from || !to) return;
@@ -168,14 +187,13 @@ export default function Tracker({ devices = [] }) {
         />
       )}
 
-      <button
-        onClick={handleLocateMe}
+    <button
+        onClick={startLiveLocation}
         style={{
           position: "absolute",
           top: "80px",
           right: "15px",
           zIndex: 10,
-          display: "none",
           padding: "10px 14px",
           borderRadius: "30px",
           border: "none",
@@ -228,56 +246,39 @@ export default function Tracker({ devices = [] }) {
             onClick={() => handleMarkerClick(devices?.[0]?.latestPoint)}
           />
         )}
-
-{myLocation && (
-  <>
-    {/* Blue dot marker */}
-    <Marker
-      position={{ lat: myLocation.lat, lng: myLocation.lng }}
-      icon={{
-        path: window.google.maps.SymbolPath.CIRCLE,
-        scale: 8,
-        fillColor: "#4285F4",
-        fillOpacity: 1,
-        strokeColor: "#ffffff",
-        strokeWeight: 2,
-      }}
-      onClick={() => setShowMyInfo(true)}
-    />
-
-    {/* Accuracy circle */}
-    <Circle
-      center={{ lat: myLocation.lat, lng: myLocation.lng }}
-      radius={myLocation.accuracy || 30}
-      options={{
-        fillColor: "#4285F4",
-        fillOpacity: 0.15,
-        strokeColor: "#4285F4",
-        strokeOpacity: 0.4,
-        strokeWeight: 1,
-      }}
-    />
-
-      {/* Info window */}
-      {showMyInfo && (
-        <InfoWindow
-          position={{ lat: myLocation.lat, lng: myLocation.lng }}
-          onCloseClick={() => setShowMyInfo(false)}
-        >
-          <div style={{ fontSize: "14px" }}>
-            <strong>📍 My Location</strong>
-            <br />
-            Y: {myLocation.lat.toFixed(6)}
-            <br />
-            X: {myLocation.lng.toFixed(6)}
-            <br />
-            Accuracy: ±{Math.round(myLocation.accuracy)}m
-          </div>
-        </InfoWindow>
-      )}
-    </>
-    )}
-
+        {myLocation && window.google?.maps && (
+          <Marker
+            position={{
+              lat: Number(myLocation.lat),
+              lng: Number(myLocation.lng),
+            }}
+            icon={{
+              path: window.google.maps.SymbolPath.CIRCLE,
+              scale: 8,
+              fillColor: "#4285F4",
+              fillOpacity: 1,
+              strokeColor: "#ffffff",
+              strokeWeight: 2,
+            }}
+            onClick={() => setShowMyInfo(true)}
+          />
+        )}
+        {myLocation && window.google?.maps && (
+          <Circle
+            center={{
+              lat: Number(myLocation.lat),
+              lng: Number(myLocation.lng),
+            }}
+            radius={Number(900) || 500}
+            options={{
+              fillColor: "#4285F4",
+              fillOpacity: 0.15,
+              strokeColor: "#4285F4",
+              strokeOpacity: 0.4,
+              strokeWeight: 1,
+            }}
+          />
+        )}
 {/* 
         {selected && (
           <InfoWindow

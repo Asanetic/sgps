@@ -33,7 +33,9 @@ export default function Tracker({ devices = [] }) {
   const animationRef = useRef(null);
   const [trail, setTrail] = useState([]);
 
-  function handleLocateMe() {
+  const watchIdRef = useRef(null);
+
+  function startLiveLocation() {
     if (!navigator.geolocation) {
       MosyNotify({ icon: "error", message: "Geolocation not supported" });
       return;
@@ -41,36 +43,50 @@ export default function Tracker({ devices = [] }) {
   
     setLocating(true);
   
-    navigator.geolocation.getCurrentPosition(
+    watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         const coords = {
-          lat: Number(pos.coords.latitude),
-          lng: Number(pos.coords.longitude),
-          accuracy: Number(pos.coords.accuracy),
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
         };
-        
   
         setMyLocation(coords);
         setShowMyInfo(true);
-        setLocating(false);        
-        setMapCenter({ lat: coords.lat, lng: coords.lng });
-
-        if (mapRef) {
-          mapRef.panTo(coords);
-          mapRef.setZoom(15);
-        }
-      },
-      () => {
-        MosyNotify({ icon: "error", message: "Unable to get your location" });
         setLocating(false);
       },
-      { enableHighAccuracy: true }
+      (err) => {
+        console.log("Geo error:", err);
+  
+        if (err.code === 3) {
+          MosyNotify({
+            icon: "warning",
+            message: "GPS weak. Using network location instead.",
+          });
+        } else {
+          MosyNotify({
+            icon: "error",
+            message: "Location permission or signal issue",
+          });
+        }
+  
+        setLocating(false);
+      },
+      {
+        enableHighAccuracy: false,   // 👈 KEY CHANGE
+        maximumAge: 10000,           // allow cached fix
+        timeout: 15000,              // more realistic
+      }
     );
   }
-
-  console.log("MyLocation:", myLocation);
-  console.log("Google ready:", !!window.google?.maps);
-
+  
+  function stopLiveLocation() {
+    if (watchIdRef.current) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+  }
+  
 
   function animateMove(from, to, duration = 1200) {
     if (!from || !to) return;
@@ -177,7 +193,7 @@ useEffect(() => {
         />
       )}
      <button
-        onClick={handleLocateMe}
+        onClick={startLiveLocation}
         style={{
           position: "absolute",
           top: "80px",
@@ -258,7 +274,7 @@ useEffect(() => {
               lat: Number(myLocation.lat),
               lng: Number(myLocation.lng),
             }}
-            radius={Number(200) || 30}
+            radius={Number(900) || 500}
             options={{
               fillColor: "#4285F4",
               fillOpacity: 0.15,
