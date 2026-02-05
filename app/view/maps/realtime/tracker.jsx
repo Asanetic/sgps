@@ -27,6 +27,9 @@ export default function Tracker({ devices = [] }) {
   const [trail, setTrail] = useState([]);
 
   const watchIdRef = useRef(null);
+  const [myLocation, setMyLocation] = useState(null);
+  const [showMyInfo, setShowMyInfo] = useState(false);
+  const [locating, setLocating] = useState(false);
 
   function startLiveLocation() {
     if (!navigator.geolocation) {
@@ -80,10 +83,41 @@ export default function Tracker({ devices = [] }) {
     }
   }
 
-  const [myLocation, setMyLocation] = useState(null);
-  const [showMyInfo, setShowMyInfo] = useState(false);
-  const [locating, setLocating] = useState(false);
-
+  useEffect(() => {
+    if (!mapRef || !window.google?.maps) return;
+  
+    const devicePoint = devices?.[0]?.latestPoint;
+    if (!devicePoint && !myLocation) return;
+  
+    const bounds = new window.google.maps.LatLngBounds();
+  
+    // Add device location
+    if (devicePoint) {
+      bounds.extend({
+        lat: Number(devicePoint.y),
+        lng: Number(devicePoint.x),
+      });
+    }
+  
+    // Add your live location
+    if (myLocation) {
+      bounds.extend({
+        lat: Number(myLocation.lat),
+        lng: Number(myLocation.lng),
+      });
+    }
+  
+    // If both points same (rare), set manual zoom
+    if (bounds.getNorthEast().equals(bounds.getSouthWest())) {
+      mapRef.setCenter(bounds.getCenter());
+      mapRef.setZoom(15);
+    } else {
+      mapRef.fitBounds(bounds, 100); // padding so markers not at edges
+    }
+  
+  }, [devices?.[0]?.latestPoint, myLocation, mapRef]);
+  
+  
 
   function animateMove(from, to, duration = 1200) {
     if (!from || !to) return;
@@ -209,8 +243,7 @@ export default function Tracker({ devices = [] }) {
       <GoogleMap
         onLoad={(map) => setMapRef(map)}
         mapContainerStyle={{ height: "100vh", width: "100%" }}
-        center={center}
-        zoom={12}
+    
         onRightClick={(e) => {
           e.domEvent.preventDefault();
           const lat = e.latLng.lat();
