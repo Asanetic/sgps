@@ -27,7 +27,9 @@ export default function Tracker({ devices = [] }) {
   const [locating, setLocating] = useState(false);
   const [mapCenter, setMapCenter] = useState(defaultCenter);
 
-
+  const [autoFollow, setAutoFollow] = useState(true);
+  const userInteractedRef = useRef(false);
+  
   // --- Smooth animated marker position ---
   const [animatedPos, setAnimatedPos] = useState(null);
   const animationRef = useRef(null);
@@ -42,7 +44,8 @@ export default function Tracker({ devices = [] }) {
     }
   
     setLocating(true);
-  
+    userInteractedRef.current = false;
+    setAutoFollow(true);
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         const coords = {
@@ -137,42 +140,38 @@ export default function Tracker({ devices = [] }) {
     animateMove(animatedPos, next, 1200);
   }, [devices?.[0]?.latestPoint]);
   
-// useEffect(() => {
-//   setMapCenter(center);
-// }, [devices]);
-useEffect(() => {
-  if (!mapRef || !window.google?.maps) return;
-
-  const devicePoint = devices?.[0]?.latestPoint;
-  if (!devicePoint && !myLocation) return;
-
-  const bounds = new window.google.maps.LatLngBounds();
-
-  // Add device location
-  if (devicePoint) {
-    bounds.extend({
-      lat: Number(devicePoint.y),
-      lng: Number(devicePoint.x),
-    });
-  }
-
-  // Add your live location
-  if (myLocation) {
-    bounds.extend({
-      lat: Number(myLocation.lat),
-      lng: Number(myLocation.lng),
-    });
-  }
-
-  // If both points same (rare), set manual zoom
-  if (bounds.getNorthEast().equals(bounds.getSouthWest())) {
-    mapRef.setCenter(bounds.getCenter());
-    mapRef.setZoom(15);
-  } else {
-    mapRef.fitBounds(bounds, 100); // padding so markers not at edges
-  }
-
-}, [devices?.[0]?.latestPoint, myLocation, mapRef]);
+  useEffect(() => {
+    if (!mapRef || !window.google?.maps) return;
+    if (!autoFollow) return; // ⛔ STOP if user took control
+  
+    const devicePoint = devices?.[0]?.latestPoint;
+    if (!devicePoint && !myLocation) return;
+  
+    const bounds = new window.google.maps.LatLngBounds();
+  
+    if (devicePoint) {
+      bounds.extend({
+        lat: Number(devicePoint.y),
+        lng: Number(devicePoint.x),
+      });
+    }
+  
+    if (myLocation) {
+      bounds.extend({
+        lat: Number(myLocation.lat),
+        lng: Number(myLocation.lng),
+      });
+    }
+  
+    if (bounds.getNorthEast().equals(bounds.getSouthWest())) {
+      mapRef.setCenter(bounds.getCenter());
+      mapRef.setZoom(15);
+    } else {
+      mapRef.fitBounds(bounds, 100);
+    }
+  
+  }, [devices?.[0]?.latestPoint, myLocation, mapRef, autoFollow]);
+  
 
   const handleMarkerClick = (point) => {
     setSelected(point);
@@ -225,7 +224,32 @@ useEffect(() => {
           onDeviceSelectFull={handleDeviceSelect}
         />
       )}
+      {!autoFollow && (
+  <button
+    onClick={() => {
+      userInteractedRef.current = false;
+      setAutoFollow(true);
+    }}
+    style={{
+      position: "absolute",
+      top: "130px",
+      right: "15px",
+      zIndex: 10,
+      padding: "10px 14px",
+      borderRadius: "30px",
+      border: "none",
+      background: "#0d6efd",
+      color: "#fff",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+      cursor: "pointer",
+    }}
+  >
+    🎯 Resume Auto Follow
+  </button>
+)}
+
      <button
+     
         onClick={startLiveLocation}
         style={{
           position: "absolute",
@@ -247,6 +271,20 @@ useEffect(() => {
         onLoad={(map) => setMapRef(map)}
         mapContainerStyle={{ height: "100vh", width: "100%" }}
 
+        onZoomChanged={() => {
+          if (!mapRef) return;
+          if (!userInteractedRef.current) {
+            userInteractedRef.current = true;
+            setAutoFollow(false);
+          }
+        }}
+      
+        onDragStart={() => {
+          if (!userInteractedRef.current) {
+            userInteractedRef.current = true;
+            setAutoFollow(false);
+          }
+        }}
 
         onRightClick={(e) => {
           e.domEvent.preventDefault();
